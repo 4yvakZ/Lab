@@ -98,7 +98,5 @@ class Lab {
             System.out.println(e.getMessage());
         }
     }
-
-
 }
 

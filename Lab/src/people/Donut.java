@@ -4,7 +4,7 @@ import rocket.room.*;
 import static timeline.Timeline.*;
 
 public class Donut extends Human{
-    private String foodName;
+    private String foodName = "";
     public Donut(String name,int timeUntilHunger, Room room){
         super(name, timeUntilHunger, room);
     }

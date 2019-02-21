@@ -134,7 +134,7 @@ public abstract class Activity {
             if (name.equals("")){
                 human = new Human(timeUntilHunger, room);
             }else if (thumbLength != 0){
-                if (!foodName.toString().equals("")) {
+                if (!foodName.equals("")) {
                     human = new  Fool(name, timeUntilHunger, room, foodName, thumbLength);
                 }else{
                     human = new  Fool(name, timeUntilHunger, room, thumbLength);
