@@ -4,7 +4,7 @@ import rocket.room.*;
 import space.objects.SpaceObject;
 import static timeline.Timeline.*;
 
-public class Fool extends Human{
+public class Fool extends Donut{
     private final Thumb thumb;
 
     class Thumb{
@@ -29,6 +29,10 @@ public class Fool extends Human{
 
     public Fool(String name, int timeUntilHunger,  Room room, int thumbLength){
         super(name, timeUntilHunger, room);
+        thumb = new Thumb(thumbLength);
+    }
+    public Fool(String name, int timeUntilHunger,  Room room, String foodName,int thumbLength){
+        super(name, timeUntilHunger, room, foodName);
         thumb = new Thumb(thumbLength);
     }
 

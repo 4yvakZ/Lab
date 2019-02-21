@@ -14,17 +14,16 @@ import java.util.TreeSet;
  */
 public abstract class Activity {
     private static final String saveFile = "save.csv";
-    /**
-     * @param passengers
-     * @param file
-     * @param cabin
-     * @param rocket
+    private static Room room;
+    /**<p>Read csv file and add it to Human collection</p>
+     * @param file name of csv
+     * @param rocket start rocket
      */
-    private static void readCSV(TreeSet<Human> passengers, String file, Room cabin, Rocket rocket){
+    private static void readCSV(String file, Rocket rocket){
         try {
             FileReader reader = new FileReader(file);
             int c;
-            while((c = reader.read())!= -1) //noinspection Duplicates,Duplicates
+            while((c = reader.read())!= -1) // noinspection Duplicates
             {
                 int timeUntilHunger = 0;
                 int thumbLength = 0;
@@ -80,14 +79,18 @@ public abstract class Activity {
                     timeUntilHunger = timeUntilHunger * 10 + c - '0';
                     c = reader.read();
                 }
-                if (name.equals("")){
-                    rocket.addPassenger(new Human(timeUntilHunger, cabin));
+                if (name.toString().equals("")){
+                    rocket.addPassenger(new Human(timeUntilHunger, room));
                 }else if (thumbLength != 0){
-                    rocket.addPassenger(new Fool(name.toString(), timeUntilHunger, cabin, thumbLength));
+                    if (!foodName.toString().equals("")) {
+                        rocket.addPassenger(new Fool(name.toString(), timeUntilHunger, room, foodName.toString(), thumbLength));
+                    }else{
+                        rocket.addPassenger(new Fool(name.toString(), timeUntilHunger, room, thumbLength));
+                    }
                 }else if (!foodName.toString().equals("")){
-                    rocket.addPassenger((new Donut(name.toString(), timeUntilHunger, cabin, foodName.toString())));
+                    rocket.addPassenger((new Donut(name.toString(), timeUntilHunger, room, foodName.toString())));
                 }else {
-                    rocket.addPassenger(new Human(name.toString(), timeUntilHunger, cabin));
+                    rocket.addPassenger(new Human(name.toString(), timeUntilHunger, room));
                 }
             }
             reader.close();
@@ -96,12 +99,12 @@ public abstract class Activity {
         }
     }
 
-    /**
+    /**<p>Convert String to JSON and generate Human</p>
      * @param string JSON string
      * @return human from JSON
      */
-    private static Human readJSON(String string, Room cabin){
-        Human human = new Human(0,cabin);
+    private static Human readJSON(String string){
+        Human human = new Human(0, room);
         string = string.replace(" ", "");
         string = string.replace("   ", "");
         string = string.replace("{", "");
@@ -129,35 +132,39 @@ public abstract class Activity {
                     break;
             }
             if (name.equals("")){
-                human = new Human(timeUntilHunger, cabin);
+                human = new Human(timeUntilHunger, room);
             }else if (thumbLength != 0){
-                human = new  Fool(name, timeUntilHunger, cabin, thumbLength);
+                if (!foodName.toString().equals("")) {
+                    human = new  Fool(name, timeUntilHunger, room, foodName, thumbLength);
+                }else{
+                    human = new  Fool(name, timeUntilHunger, room, thumbLength);
+                }
             }else if (!foodName.equals("")){
-                human = new Donut(name, timeUntilHunger, cabin, foodName);
+                human = new Donut(name, timeUntilHunger, room, foodName);
             }else {
-                human = new Human(name, timeUntilHunger, cabin);
+                human = new Human(name, timeUntilHunger, room);
             }
         }
         return human;
     }
 
-    /**
-     * @param passengers
-     * @param file
-     * @param cabin
-     * @param rocket
+    /**<p>Read from saves and argument file</p>
+     * @param file name of csv
+     * @param startRoom start room
+     * @param rocket start rocket
      */
-    public static void start(TreeSet<Human> passengers, String file, Room cabin, Rocket rocket){
-        readCSV(passengers, saveFile, cabin, rocket);
-        readCSV(passengers, file, cabin, rocket);
+    public static void start(String file, Room startRoom, Rocket rocket){
+        room = startRoom;
+        readCSV(saveFile, rocket);
+        readCSV(file, rocket);
     }
 
-    /**
-     * @param passengers
-     * @param string
+    /**<p>Add new element to Human collection</p>
+     * @param passengers Human collection
+     * @param string JSON string
      */
-    public static void add(TreeSet<Human> passengers, Room cabin,String string){
-        Human human = readJSON(string, cabin);
+    public static void add(TreeSet<Human> passengers,String string){
+        Human human = readJSON(string);
         if(human.getTimeUntilHunger()<1){
             System.out.println("Wrong format");
             return;
@@ -165,8 +172,8 @@ public abstract class Activity {
         passengers.add(human);
     }
 
-    /**
-     * @param passengers
+    /**<p>Show all elements from Human collection in terminal</p>
+     * @param passengers Human collection
      */
     public static void show(TreeSet<Human> passengers){
         for (Human human:passengers) {
@@ -174,21 +181,20 @@ public abstract class Activity {
         }
     }
 
-    /**
-     * @param passengers
+    /**<p>Show info about Human collection in terminal</p>
+     * @param passengers Human collection
      */
     public static void info(TreeSet<Human> passengers){
         System.out.println("Тип коллекции TreeSet<Human>, кол-во элементов коллекции "+passengers.size());
     }
 
-    /**
-     * @param passengers
-     * @param string
-     * @param cabin
+    /**<p>Remove all elements lower than written</p>
+     * @param passengers Human collection
+     * @param string JSON string
      */
-    public static void removeLower(TreeSet<Human> passengers, String string, Room cabin){
+    public static void removeLower(TreeSet<Human> passengers, String string){
         Human removable;
-        Human human = readJSON(string, cabin);
+        Human human = readJSON(string);
         if(human.getTimeUntilHunger()<1){
             System.out.println("Wrong format");
             return;
@@ -198,33 +204,30 @@ public abstract class Activity {
         }
     }
 
-    /**
-     * @param passengers
-     * @param file
-     * @param cabin
-     * @param rocket
+    /**<p>Reload Human collection from argument file</p>
+     * @param passengers Human collection
+     * @param file name of csv
+     * @param rocket start rocket
      */
-    public static void load(TreeSet<Human> passengers, String file, Room cabin, Rocket rocket){
+    public static void load(TreeSet<Human> passengers, String file,  Rocket rocket){
         passengers.clear();
-        readCSV(passengers,file, cabin, rocket);
+        readCSV(file, rocket);
     }
 
-    /**
-     * @param passengers
-     * @param string
-     * @param cabin
+    /**<p>Remove element from Human collection</p>
+     * @param passengers Human collection
+     * @param string JSON string
      */
-    public static void remove(TreeSet<Human> passengers, String string, Room cabin){
-        passengers.remove(readJSON(string,cabin));
+    public static void remove(TreeSet<Human> passengers, String string){
+        passengers.remove(readJSON(string));
     }
 
-    /**
-     * @param passengers
-     * @param string
-     * @param cabin
+    /**<p>Add element to Human collection if it bigger then biggest one in collection</p>
+     * @param passengers Human collection
+     * @param string JSON string
      */
-    public static void addIfMax(TreeSet<Human> passengers, String string, Room cabin){
-        Human human = readJSON(string, cabin);
+    public static void addIfMax(TreeSet<Human> passengers, String string){
+        Human human = readJSON(string);
         if(human.getTimeUntilHunger()<1){
             System.out.println("Wrong format");
             return;
@@ -232,13 +235,14 @@ public abstract class Activity {
         if(passengers.higher(human)==null)passengers.add(human);
     }
 
-    /**
-     * @param passengers
+    /**<p>Saves collection to save.csv and ends program</p>
+     * @param passengers Human collection
      */
     public static void shutdown(TreeSet<Human> passengers){
         try {
             FileWriter writer = new FileWriter(saveFile);
-            for (Human human: passengers) {
+            for (Human human: passengers) //noinspection Duplicates
+            {
                 String name = human.getName();
                 char c = '"';
                 name = name.replace(Character.toString(c), Character.toString(c)+ c);
@@ -254,8 +258,10 @@ public abstract class Activity {
                 if(human instanceof Fool){
                     Fool fool = (Fool) human;
                     writer.write(Integer.toString(fool.getThumbLength()));
-                    writer.write(",,");
-                }else if (human instanceof Donut){
+                }
+                writer.write(",");
+                if (human instanceof Donut)//noinspection Duplicates,Duplicates
+                {
                     writer.write(",");
                     Donut donut = (Donut) human;
                     String foodName = donut.getFoodName();

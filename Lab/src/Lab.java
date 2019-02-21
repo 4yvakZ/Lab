@@ -17,7 +17,7 @@ class Lab {
             setTime(0);
             Room cabin = new Room(Type.CABIN, "Кабина");
             Room foodStorage = new Room(Type.FOODSTORAGE, "Пищевой блок");
-            Room space = null;
+//            Room space = null;
             SpaceObject earth = new Earth(6400);
             Moon moon = new Moon(1740, 400000, earth);
             Rocket rocket = new Rocket(12, moon);
@@ -30,7 +30,7 @@ class Lab {
             System.out.println(rocket.toString() + ".");
             moon.orbitInfo();
             TreeSet<Human> passengers = rocket.getPassengers();
-            start(passengers, args[0], cabin, rocket);
+            start(args[0], cabin, rocket);
 //            show(passengers);
 //            info(passengers);
 //            fool.seems(moon.getOrbit(), rocket.getVelocity());
@@ -40,7 +40,7 @@ class Lab {
             while (true){
                 switch (scanner.next()){
                     case "add":
-                        add(passengers,cabin,scanner.nextLine());
+                        add(passengers,scanner.nextLine());
                         break;
                     case "shutdown":
                         shutdown(passengers);
@@ -56,16 +56,16 @@ class Lab {
                         System.out.println(help);
                         break;
                     case "remove_lower":
-                        removeLower(passengers, scanner.nextLine(), cabin);
+                        removeLower(passengers, scanner.nextLine());
                         break;
                     case "remove":
-                        remove(passengers,scanner.nextLine(), cabin);
+                        remove(passengers,scanner.nextLine());
                         break;
                     case "load":
-                        load(passengers, scanner.nextLine(),cabin,rocket);
+                        load(passengers, scanner.nextLine(),rocket);
                         break;
                     case "add_if_max":
-                        addIfMax(passengers, scanner.nextLine(), cabin);
+                        addIfMax(passengers, scanner.nextLine());
                         break;
                     case "next_hour":
                         for(Human human : passengers){

@@ -3,192 +3,243 @@
   <ID>JAVA</ID>
   <OriginalElement />
   <nodes>
-    <node x="51.121757260596496" y="428.0">people.Donut</node>
-    <node x="10.499999999999943" y="197.0">people.Dream</node>
-    <node x="984.6226501177392" y="197.0">space.objects.Earth</node>
-    <node x="364.49999999999994" y="185.0">rocket.SpeedException</node>
-    <node x="447.24999999999994" y="621.0">Lab</node>
-    <node x="206.41967392726303" y="356.0">rocket.Rocket</node>
-    <node x="715.7880208333331" y="0.0">space.objects.SpaceObject</node>
-    <node x="125.49999999999994" y="149.0">people.Human</node>
-    <node x="698.2984064298794" y="404.0">space.objects.Moon</node>
-    <node x="815.25" y="197.0">space.objects.OrbitalObject</node>
-    <node x="85.46659226190445" y="12.0">timeline.Timeline</node>
-    <node x="512.2984064298794" y="416.0">people.Fool</node>
-    <node x="554.5833333333333" y="185.0">people.Fool.Thumb</node>
+    <node x="971.2559037900874" y="336.0">people.Donut</node>
+    <node x="1041.7559037900874" y="154.0">people.Dream</node>
+    <node x="10.5" y="564.0">space.objects.Earth</node>
+    <node x="363.593021137026" y="336.0">rocket.SpeedException</node>
+    <node x="462.8496537900874" y="906.0">Lab</node>
+    <node x="391.1590743440232" y="504.0">rocket.Rocket</node>
+    <node x="123.47499999999997" y="324.0">space.objects.SpaceObject</node>
+    <node x="553.8816326530614" y="106.0">people.Human</node>
+    <node x="119.49999999999994" y="726.0">space.objects.Moon</node>
+    <node x="178.83407434402324" y="564.0">space.objects.OrbitalObject</node>
+    <node x="664.5714285714284" y="0.0">timeline.Timeline</node>
+    <node x="723.077332361516" y="726.0">activity.Activity</node>
+    <node x="762.0653243440232" y="552.0">people.Fool</node>
+    <node x="813.2559037900874" y="336.0">people.Fool.Thumb</node>
   </nodes>
   <notes />
   <edges>
     <edge source="Lab" target="space.objects.SpaceObject">
-      <point x="28.076923076923094" y="-15.5" />
-      <point x="511.82692307692304" y="591.0" />
-      <point x="974.1226501177392" y="591.0" />
-      <point x="974.1226501177392" y="119.0" />
-      <point x="829.7880208333331" y="119.0" />
-      <point x="38.0" y="39.5" />
+      <point x="-24.10714285714289" y="-16.0" />
+      <point x="476.2425109329445" y="866.0" />
+      <point x="108.99999999999994" y="866.0" />
+      <point x="108.99999999999994" y="464.0" />
+      <point x="161.97499999999997" y="464.0" />
+      <point x="-38.5" y="40.0" />
     </edge>
     <edge source="Lab" target="people.Human">
-      <point x="-16.84615384615381" y="-15.5" />
-      <point x="466.90384615384613" y="571.0" />
-      <point x="162.9655072605965" y="571.0" />
-      <point x="162.9655072605965" y="336.0" />
-      <point x="190.18749999999994" y="336.0" />
-      <point x="-38.8125" y="63.5" />
+      <point x="8.035714285714334" y="-16.0" />
+      <point x="508.38536807580175" y="836.0" />
+      <point x="671.6590743440232" y="836.0" />
+      <point x="671.6590743440232" y="304.0" />
+      <point x="619.1941326530614" y="304.0" />
+      <point x="-39.1875" y="64.0" />
     </edge>
     <edge source="people.Human" target="timeline.Timeline">
-      <point x="0.0" y="-63.5" />
-      <point x="228.99999999999994" y="129.0" />
-      <point x="194.84159226190445" y="129.0" />
-      <point x="21.875" y="27.5" />
+      <point x="0.0" y="-64.0" />
+      <point x="658.3816326530614" y="86.0" />
+      <point x="730.9464285714284" y="86.0" />
+      <point x="-22.125" y="28.0" />
+    </edge>
+    <edge source="activity.Activity" target="people.Donut">
+      <point x="48.85714285714289" y="-40.0" />
+      <point x="857.4344752186589" y="696.0" />
+      <point x="1083.577332361516" y="696.0" />
+      <point x="1083.577332361516" y="484.0" />
+      <point x="1050.0059037900874" y="484.0" />
+      <point x="-15.75" y="28.0" />
     </edge>
     <edge source="Lab" target="rocket.Rocket">
-      <point x="-11.230769230769283" y="-15.5" />
-      <point x="472.51923076923066" y="561.0" />
-      <point x="264.41967392726303" y="561.0" />
-      <point x="-58.0" y="87.5" />
+      <point x="-2.678571428571445" y="-16.0" />
+      <point x="497.67108236151597" y="826.0" />
+      <point x="487.0120080174927" y="826.0" />
+      <point x="487.0120080174927" y="706.0" />
+      <point x="436.1590743440232" y="706.0" />
+      <point x="-90.0" y="76.0" />
+    </edge>
+    <edge source="activity.Activity" target="people.Fool">
+      <point x="0.0" y="-40.0" />
+      <point x="808.577332361516" y="676.0" />
+      <point x="783.0653243440232" y="676.0" />
+      <point x="-63.0" y="28.0" />
     </edge>
     <edge source="Lab" target="people.Fool">
-      <point x="11.23076923076917" y="-15.5" />
-      <point x="494.9807692307691" y="561.0" />
-      <point x="636.7984064298794" y="561.0" />
-      <point x="41.5" y="27.5" />
+      <point x="18.75" y="-16.0" />
+      <point x="519.0996537900874" y="856.0" />
+      <point x="904.577332361516" y="856.0" />
+      <point x="904.577332361516" y="686.0" />
+      <point x="867.0653243440232" y="686.0" />
+      <point x="21.0" y="28.0" />
     </edge>
     <edge source="people.Fool" target="people.Fool.Thumb">
-      <point x="0.0" y="-27.5" />
-      <point x="595.2984064298794" y="336.0" />
-      <point x="577.2499999999999" y="336.0" />
-      <point x="-45.333333333333314" y="27.5" />
+      <point x="10.5" y="-28.0" />
+      <point x="856.5653243440232" y="454.0" />
+      <point x="882.2559037900874" y="454.0" />
+      <point x="0.0" y="28.0" />
     </edge>
     <edge source="Lab" target="space.objects.Earth">
-      <point x="33.692307692307736" y="-15.5" />
-      <point x="517.4423076923076" y="601.0" />
-      <point x="1027.6226501177393" y="601.0" />
-      <point x="0.0" y="15.5" />
+      <point x="-29.464285714285666" y="-16.0" />
+      <point x="470.88536807580175" y="876.0" />
+      <point x="54.5" y="876.0" />
+      <point x="0.0" y="16.0" />
     </edge>
     <edge source="people.Fool.Thumb" target="people.Fool">
-      <point x="45.33333333333337" y="27.5" />
-      <point x="667.9166666666666" y="316.0" />
-      <point x="642.7269778584508" y="316.0" />
-      <point x="47.428571428571445" y="-27.5" />
+      <point x="46.0" y="28.0" />
+      <point x="928.2559037900874" y="464.0" />
+      <point x="877.5653243440232" y="464.0" />
+      <point x="31.5" y="-28.0" />
     </edge>
     <edge source="space.objects.Earth" target="space.objects.SpaceObject">
-      <point x="-21.5" y="-15.5" />
-      <point x="1006.1226501177392" y="109.0" />
-      <point x="844.9880208333329" y="109.0" />
-      <point x="53.19999999999993" y="39.5" />
+      <point x="22.0" y="-16.0" />
+      <point x="76.5" y="454.0" />
+      <point x="146.575" y="454.0" />
+      <point x="-53.89999999999998" y="40.0" />
     </edge>
     <edge source="people.Fool" target="people.Human">
-      <point x="-71.14285714285711" y="-27.5" />
-      <point x="524.1555492870223" y="316.0" />
-      <point x="293.68749999999994" y="316.0" />
-      <point x="64.6875" y="63.5" />
+      <point x="-52.5" y="-28.0" />
+      <point x="793.5653243440232" y="434.0" />
+      <point x="753.1593294460641" y="434.0" />
+      <point x="753.1593294460641" y="274.0" />
+      <point x="697.5691326530614" y="274.0" />
+      <point x="39.1875" y="64.0" />
     </edge>
     <edge source="rocket.Rocket" target="space.objects.SpaceObject">
-      <point x="19.33333333333337" y="-87.5" />
-      <point x="341.7530072605964" y="336.0" />
-      <point x="342.99999999999994" y="336.0" />
-      <point x="342.99999999999994" y="109.0" />
-      <point x="723.388020833333" y="109.0" />
-      <point x="-68.39999999999998" y="39.5" />
+      <point x="-108.0" y="-76.0" />
+      <point x="418.1590743440232" y="464.0" />
+      <point x="238.97499999999997" y="464.0" />
+      <point x="38.5" y="40.0" />
     </edge>
     <edge source="people.Fool" target="timeline.Timeline">
-      <point x="-23.714285714285666" y="-27.5" />
-      <point x="571.5841207155937" y="296.0" />
-      <point x="539.0416666666666" y="296.0" />
-      <point x="539.0416666666666" y="99.0" />
-      <point x="238.59159226190445" y="99.0" />
-      <point x="65.625" y="27.5" />
+      <point x="-31.5" y="-28.0" />
+      <point x="814.5653243440232" y="424.0" />
+      <point x="773.3816326530614" y="424.0" />
+      <point x="773.3816326530614" y="86.0" />
+      <point x="775.1964285714284" y="86.0" />
+      <point x="22.125" y="28.0" />
     </edge>
-    <edge source="Lab" target="space.objects.Moon">
-      <point x="16.84615384615381" y="-15.5" />
-      <point x="500.59615384615375" y="571.0" />
-      <point x="757.7984064298794" y="571.0" />
-      <point x="-59.5" y="39.5" />
+    <edge source="people.Fool" target="people.Donut">
+      <point x="52.5" y="-28.0" />
+      <point x="898.5653243440232" y="474.0" />
+      <point x="987.0059037900874" y="474.0" />
+      <point x="-78.75" y="28.0" />
     </edge>
     <edge source="space.objects.Moon" target="space.objects.OrbitalObject">
-      <point x="89.25" y="-39.5" />
-      <point x="906.5484064298794" y="336.0" />
-      <point x="886.75" y="336.0" />
-      <point x="0.0" y="15.5" />
+      <point x="30.0" y="-40.0" />
+      <point x="269.49999999999994" y="706.0" />
+      <point x="251.33407434402324" y="706.0" />
+      <point x="0.0" y="16.0" />
+    </edge>
+    <edge source="Lab" target="space.objects.Moon">
+      <point x="-13.39285714285711" y="-16.0" />
+      <point x="486.9567966472303" y="846.0" />
+      <point x="299.49999999999994" y="846.0" />
+      <point x="60.0" y="40.0" />
     </edge>
     <edge source="space.objects.OrbitalObject" target="space.objects.SpaceObject">
-      <point x="0.0" y="-15.5" />
-      <point x="886.75" y="129.0" />
-      <point x="814.5880208333331" y="129.0" />
-      <point x="22.799999999999955" y="39.5" />
+      <point x="0.0" y="-16.0" />
+      <point x="251.33407434402324" y="484.0" />
+      <point x="208.175" y="484.0" />
+      <point x="7.7000000000000455" y="40.0" />
     </edge>
     <edge source="people.Donut" target="people.Dream">
-      <point x="-36.80000000000007" y="-15.5" />
-      <point x="60.32175726059643" y="336.0" />
-      <point x="33.99999999999994" y="336.0" />
-      <point x="-23.5" y="15.5" />
+      <point x="37.799999999999955" y="-28.0" />
+      <point x="1103.5559037900873" y="304.0" />
+      <point x="1113.7559037900874" y="304.0" />
+      <point x="24.0" y="16.0" />
     </edge>
     <edge source="Lab" target="rocket.SpeedException">
-      <point x="0.0" y="-15.5" />
-      <point x="39.75" y="27.5" />
+      <point x="-8.035714285714334" y="-16.0" />
+      <point x="492.3139395043731" y="836.0" />
+      <point x="380.6590743440232" y="836.0" />
+      <point x="380.6590743440232" y="484.0" />
+      <point x="403.843021137026" y="484.0" />
+      <point x="-40.25" y="28.0" />
+    </edge>
+    <edge source="activity.Activity" target="people.Human">
+      <point x="-24.428571428571445" y="-40.0" />
+      <point x="784.1487609329445" y="686.0" />
+      <point x="711.7305029154518" y="686.0" />
+      <point x="711.7305029154518" y="284.0" />
+      <point x="671.4441326530614" y="284.0" />
+      <point x="13.0625" y="64.0" />
     </edge>
     <edge source="people.Fool" target="space.objects.SpaceObject">
-      <point x="71.14285714285711" y="-27.5" />
-      <point x="666.4412635727365" y="326.0" />
-      <point x="737.5393167844059" y="326.0" />
-      <point x="737.5393167844059" y="129.0" />
-      <point x="753.7880208333331" y="129.0" />
-      <point x="-38.0" y="39.5" />
+      <point x="-73.5" y="-28.0" />
+      <point x="772.5653243440232" y="444.0" />
+      <point x="269.77500000000003" y="444.0" />
+      <point x="69.30000000000007" y="40.0" />
     </edge>
     <edge source="Lab" target="people.Donut">
-      <point x="-28.076923076923094" y="-15.5" />
-      <point x="455.67307692307685" y="591.0" />
-      <point x="74.1217572605965" y="591.0" />
-      <point x="-23.0" y="15.5" />
+      <point x="29.464285714285666" y="-16.0" />
+      <point x="529.8139395043731" y="876.0" />
+      <point x="1105.577332361516" y="876.0" />
+      <point x="1105.577332361516" y="474.0" />
+      <point x="1113.0059037900874" y="474.0" />
+      <point x="47.24999999999994" y="28.0" />
     </edge>
     <edge source="people.Donut" target="people.Human">
-      <point x="18.399999999999864" y="-15.5" />
-      <point x="115.52175726059636" y="316.0" />
-      <point x="138.43749999999994" y="316.0" />
-      <point x="-90.5625" y="63.5" />
+      <point x="-37.799999999999955" y="-28.0" />
+      <point x="1027.9559037900874" y="254.0" />
+      <point x="749.8191326530614" y="254.0" />
+      <point x="91.4375" y="64.0" />
     </edge>
     <edge source="people.Donut" target="timeline.Timeline">
-      <point x="-1.1368683772161603E-13" y="-15.5" />
-      <point x="97.12175726059638" y="306.0" />
-      <point x="114.99999999999994" y="306.0" />
-      <point x="114.99999999999994" y="129.0" />
-      <point x="151.09159226190445" y="129.0" />
-      <point x="-21.875" y="27.5" />
+      <point x="75.59999999999985" y="-28.0" />
+      <point x="1141.3559037900873" y="304.0" />
+      <point x="1148.2559037900874" y="304.0" />
+      <point x="1148.2559037900874" y="86.0" />
+      <point x="819.4464285714284" y="86.0" />
+      <point x="66.375" y="28.0" />
+    </edge>
+    <edge source="activity.Activity" target="rocket.Rocket">
+      <point x="-73.28571428571422" y="-40.0" />
+      <point x="735.2916180758018" y="706.0" />
+      <point x="616.1590743440232" y="706.0" />
+      <point x="90.0" y="76.0" />
     </edge>
     <edge source="space.objects.Moon" target="space.objects.SpaceObject">
-      <point x="-29.75" y="-39.5" />
-      <point x="787.5484064298794" y="336.0" />
-      <point x="793.75" y="336.0" />
-      <point x="793.75" y="129.0" />
-      <point x="784.188020833333" y="129.0" />
-      <point x="-7.600000000000023" y="39.5" />
+      <point x="90.0" y="-40.0" />
+      <point x="329.49999999999994" y="706.0" />
+      <point x="334.33407434402324" y="706.0" />
+      <point x="334.33407434402324" y="474.0" />
+      <point x="223.575" y="474.0" />
+      <point x="23.100000000000023" y="40.0" />
     </edge>
     <edge source="rocket.Rocket" target="rocket.SpeedException">
-      <point x="96.66666666666663" y="-87.5" />
-      <point x="419.08634059392966" y="336.0" />
-      <point x="404.24999999999994" y="336.0" />
-      <point x="-39.75" y="27.5" />
+      <point x="0.0" y="-76.0" />
+      <point x="526.1590743440232" y="484.0" />
+      <point x="484.343021137026" y="484.0" />
+      <point x="40.25" y="28.0" />
+    </edge>
+    <edge source="Lab" target="activity.Activity">
+      <point x="13.39285714285711" y="-16.0" />
+      <point x="513.7425109329445" y="846.0" />
+      <point x="808.577332361516" y="846.0" />
+      <point x="0.0" y="40.0" />
     </edge>
     <edge source="rocket.Rocket" target="people.Human">
-      <point x="-19.33333333333337" y="-87.5" />
-      <point x="303.08634059392966" y="326.0" />
-      <point x="267.81249999999994" y="326.0" />
-      <point x="38.8125" y="63.5" />
+      <point x="54.0" y="-76.0" />
+      <point x="580.1590743440232" y="484.0" />
+      <point x="591.0" y="484.0" />
+      <point x="591.0" y="304.0" />
+      <point x="566.9441326530614" y="304.0" />
+      <point x="-91.4375" y="64.0" />
     </edge>
     <edge source="Lab" target="timeline.Timeline">
-      <point x="-33.692307692307736" y="-15.5" />
-      <point x="450.0576923076922" y="601.0" />
-      <point x="0.0" y="601.0" />
-      <point x="0.0" y="129.0" />
-      <point x="107.34159226190445" y="129.0" />
-      <point x="-65.625" y="27.5" />
+      <point x="-34.821428571428555" y="-16.0" />
+      <point x="465.52822521865886" y="886.0" />
+      <point x="0.0" y="886.0" />
+      <point x="0.0" y="76.0" />
+      <point x="686.6964285714284" y="76.0" />
+      <point x="-66.375" y="28.0" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="0.6593886462882096" x="766.0" y="677.0" />
+  <settings layout="Hierarchic Group" zoom="1.0" x="430.5" y="281.0" />
   <SelectedNodes />
   <Categories>
-    <Category>Fields</Category>
     <Category>Inner Classes</Category>
+    <Category>Fields</Category>
   </Categories>
   <SCOPE>All</SCOPE>
   <VISIBILITY>private</VISIBILITY>
