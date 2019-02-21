@@ -57,7 +57,7 @@ public class Human implements Comparable<Human>{
         return name;
     }
 
-    private int getTimeUntilHunger(){
+    public int getTimeUntilHunger(){
         return timeUntilHunger;
     }
 

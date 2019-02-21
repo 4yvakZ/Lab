@@ -45,4 +45,8 @@ public class Fool extends Human{
     public void lookAt(SpaceObject spaceObject){
         System.out.println(getCurrentTime() + " часов: " + name + ": смотрит на " + spaceObject.toString());
     }
+
+    public int getThumbLength() {
+        return thumb.getLength();
+    }
 }

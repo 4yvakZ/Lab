@@ -5,6 +5,7 @@ import rocket.Rocket;
 import rocket.room.Room;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.TreeSet;
 
@@ -79,7 +80,9 @@ public abstract class Activity {
                     timeUntilHunger = timeUntilHunger * 10 + c - '0';
                     c = reader.read();
                 }
-                if(thumbLength != 0){
+                if (name.equals("")){
+                    rocket.addPassenger(new Human(timeUntilHunger, cabin));
+                }else if (thumbLength != 0){
                     rocket.addPassenger(new Fool(name.toString(), timeUntilHunger, cabin, thumbLength));
                 }else if (!foodName.toString().equals("")){
                     rocket.addPassenger((new Donut(name.toString(), timeUntilHunger, cabin, foodName.toString())));
@@ -98,8 +101,43 @@ public abstract class Activity {
      * @return human from JSON
      */
     private static Human readJSON(String string, Room cabin){
-        Human human;
-        string.replaceAll(" ", "");
+        Human human = new Human(0,cabin);
+        string = string.replace(" ", "");
+        string = string.replace("   ", "");
+        string = string.replace("{", "");
+        string = string.replace("}", "");
+        String[] array = string.split(",");
+        String name = "", foodName = "";
+        int timeUntilHunger = 0,thumbLength = 0;
+        for (String line: array) {
+            String[] param = line.split(":");
+            param[0]= param[0].replace(Character.toString('"'), "");
+            switch (param[0]){
+                case "timeUntilHunger":
+                    timeUntilHunger = Integer.parseInt(param[1]);
+                    break;
+                case "thumbLength":
+                    thumbLength = Integer.parseInt(param[1]);
+                    break;
+                case "name":
+                    name = param[1].replaceFirst(Character.toString('"'), "");
+                    name = name.substring(0, name.length() - 1);
+                    break;
+                case "foodName":
+                    foodName= param[1].replaceFirst(Character.toString('"'), "");
+                    foodName = foodName.substring(0, foodName.length() - 1);
+                    break;
+            }
+            if (name.equals("")){
+                human = new Human(timeUntilHunger, cabin);
+            }else if (thumbLength != 0){
+                human = new  Fool(name, timeUntilHunger, cabin, thumbLength);
+            }else if (!foodName.equals("")){
+                human = new Donut(name, timeUntilHunger, cabin, foodName);
+            }else {
+                human = new Human(name, timeUntilHunger, cabin);
+            }
+        }
         return human;
     }
 
@@ -116,10 +154,14 @@ public abstract class Activity {
 
     /**
      * @param passengers
-     * @param human
+     * @param string
      */
-    public static void add(TreeSet<Human> passengers, Human human, String string){
-        //ADD CONSOLE READER
+    public static void add(TreeSet<Human> passengers, Room cabin,String string){
+        Human human = readJSON(string, cabin);
+        if(human.getTimeUntilHunger()<1){
+            System.out.println("Wrong format");
+            return;
+        }
         passengers.add(human);
     }
 
@@ -141,10 +183,16 @@ public abstract class Activity {
 
     /**
      * @param passengers
-     * @param human
+     * @param string
+     * @param cabin
      */
-    public static void removeLower(TreeSet<Human> passengers, Human human){
+    public static void removeLower(TreeSet<Human> passengers, String string, Room cabin){
         Human removable;
+        Human human = readJSON(string, cabin);
+        if(human.getTimeUntilHunger()<1){
+            System.out.println("Wrong format");
+            return;
+        }
         while((removable = passengers.lower(human))!=null){
             passengers.remove(removable);
         }
@@ -163,24 +211,71 @@ public abstract class Activity {
 
     /**
      * @param passengers
-     * @param human
+     * @param string
+     * @param cabin
      */
-    public static void remove(TreeSet<Human> passengers, Human human){
-        passengers.remove(human);
+    public static void remove(TreeSet<Human> passengers, String string, Room cabin){
+        passengers.remove(readJSON(string,cabin));
     }
 
     /**
      * @param passengers
-     * @param human
+     * @param string
+     * @param cabin
      */
-    public static void addIfMax(TreeSet<Human> passengers, Human human){
+    public static void addIfMax(TreeSet<Human> passengers, String string, Room cabin){
+        Human human = readJSON(string, cabin);
+        if(human.getTimeUntilHunger()<1){
+            System.out.println("Wrong format");
+            return;
+        }
         if(passengers.higher(human)==null)passengers.add(human);
     }
 
     /**
      * @param passengers
      */
-    public static void shutDown(TreeSet<Human> passengers){
-
+    public static void shutdown(TreeSet<Human> passengers){
+        try {
+            FileWriter writer = new FileWriter(saveFile);
+            for (Human human: passengers) {
+                String name = human.getName();
+                char c = '"';
+                name = name.replace(Character.toString(c), Character.toString(c)+ c);
+                if(name.contains(" ")){
+                    writer.write('"');
+                    writer.write(name);
+                    writer.write('"');
+                }else {
+                    writer.write(name);
+                }
+                writer.write(",");
+                //thumb
+                if(human instanceof Fool){
+                    Fool fool = (Fool) human;
+                    writer.write(Integer.toString(fool.getThumbLength()));
+                    writer.write(",,");
+                }else if (human instanceof Donut){
+                    writer.write(",");
+                    Donut donut = (Donut) human;
+                    String foodName = donut.getFoodName();
+                    foodName = foodName.replace(Character.toString(c), c +Character.toString(c));
+                    if(foodName.contains(" ")){
+                        writer.write('"');
+                        writer.write(foodName);
+                        writer.write('"');
+                    }else {
+                        writer.write(foodName);
+                    }writer.write(",");
+                }else {
+                    writer.write(",,");
+                }
+                writer.write(Integer.toString(human.getTimeUntilHunger()));
+                writer.write("\n");
+            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

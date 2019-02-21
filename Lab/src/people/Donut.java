@@ -12,6 +12,9 @@ public class Donut extends Human{
         super(name, timeUntilHunger, room);
         this.foodName = foodName;
     }
+    public String getFoodName(){
+        return foodName;
+    }
     public void sleep(){
         Dream dream = new Dream(){
             public void sleep(){
