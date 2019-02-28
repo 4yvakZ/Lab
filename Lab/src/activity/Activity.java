@@ -12,14 +12,14 @@ import java.util.TreeSet;
 /**
  *
  */
-public abstract class Activity {
-    private static final String saveFile = "save.csv";
-    private static Room room;
+public class Activity {
+    private final String saveFile = "save.csv";
+    private Room room;
     /**<p>Read csv file and add it to Human collection</p>
      * @param file name of csv
      * @param rocket start rocket
      */
-    private static void readCSV(String file, Rocket rocket){
+    private void readCSV(String file, Rocket rocket){
         try {
             FileReader reader = new FileReader(file);
             int c;
@@ -79,15 +79,15 @@ public abstract class Activity {
                     timeUntilHunger = timeUntilHunger * 10 + c - '0';
                     c = reader.read();
                 }
-                if (name.toString().equals("")){
+                if (name.toString().isEmpty()){
                     rocket.addPassenger(new Human(timeUntilHunger, room));
                 }else if (thumbLength != 0){
-                    if (!foodName.toString().equals("")) {
+                    if (!foodName.toString().isEmpty()) {
                         rocket.addPassenger(new Fool(name.toString(), timeUntilHunger, room, foodName.toString(), thumbLength));
                     }else{
                         rocket.addPassenger(new Fool(name.toString(), timeUntilHunger, room, thumbLength));
                     }
-                }else if (!foodName.toString().equals("")){
+                }else if (!foodName.toString().isEmpty()){
                     rocket.addPassenger((new Donut(name.toString(), timeUntilHunger, room, foodName.toString())));
                 }else {
                     rocket.addPassenger(new Human(name.toString(), timeUntilHunger, room));
@@ -103,7 +103,7 @@ public abstract class Activity {
      * @param string JSON string
      * @return human from JSON
      */
-    private static Human readJSON(String string){
+    private Human readJSON(String string){
         Human human = new Human(0, room);
         string = string.replace(" ", "");
         string = string.replace("   ", "");
@@ -131,15 +131,15 @@ public abstract class Activity {
                     foodName = foodName.substring(0, foodName.length() - 1);
                     break;
             }
-            if (name.equals("")){
+            if (name.isEmpty()){
                 human = new Human(timeUntilHunger, room);
             }else if (thumbLength != 0){
-                if (!foodName.equals("")) {
+                if (!foodName.isEmpty()) {
                     human = new  Fool(name, timeUntilHunger, room, foodName, thumbLength);
                 }else{
                     human = new  Fool(name, timeUntilHunger, room, thumbLength);
                 }
-            }else if (!foodName.equals("")){
+            }else if (!foodName.isEmpty()){
                 human = new Donut(name, timeUntilHunger, room, foodName);
             }else {
                 human = new Human(name, timeUntilHunger, room);
@@ -153,7 +153,7 @@ public abstract class Activity {
      * @param startRoom start room
      * @param rocket start rocket
      */
-    public static void start(String file, Room startRoom, Rocket rocket){
+    public void start(String file, Room startRoom, Rocket rocket){
         room = startRoom;
         readCSV(saveFile, rocket);
         readCSV(file, rocket);
@@ -163,19 +163,21 @@ public abstract class Activity {
      * @param passengers Human collection
      * @param string JSON string
      */
-    public static void add(TreeSet<Human> passengers,String string){
+    public void add(TreeSet<Human> passengers,String string){
         Human human = readJSON(string);
         if(human.getTimeUntilHunger()<1){
             System.out.println("Wrong format");
             return;
         }
-        passengers.add(human);
+        if(!passengers.add(human)){
+            System.out.println("Object with same name has already exist");
+        }
     }
 
     /**<p>Show all elements from Human collection in terminal</p>
      * @param passengers Human collection
      */
-    public static void show(TreeSet<Human> passengers){
+    public void show(TreeSet<Human> passengers){
         for (Human human:passengers) {
             System.out.println(human.toString());
         }
@@ -184,7 +186,7 @@ public abstract class Activity {
     /**<p>Show info about Human collection in terminal</p>
      * @param passengers Human collection
      */
-    public static void info(TreeSet<Human> passengers){
+    public void info(TreeSet<Human> passengers){
         System.out.println("Тип коллекции TreeSet<Human>, кол-во элементов коллекции "+passengers.size());
     }
 
@@ -192,7 +194,7 @@ public abstract class Activity {
      * @param passengers Human collection
      * @param string JSON string
      */
-    public static void removeLower(TreeSet<Human> passengers, String string){
+    public void removeLower(TreeSet<Human> passengers, String string){
         Human removable;
         Human human = readJSON(string);
         if(human.getTimeUntilHunger()<1){
@@ -209,7 +211,7 @@ public abstract class Activity {
      * @param file name of csv
      * @param rocket start rocket
      */
-    public static void load(TreeSet<Human> passengers, String file,  Rocket rocket){
+    public void load(TreeSet<Human> passengers, String file,  Rocket rocket){
         passengers.clear();
         readCSV(file, rocket);
     }
@@ -218,7 +220,7 @@ public abstract class Activity {
      * @param passengers Human collection
      * @param string JSON string
      */
-    public static void remove(TreeSet<Human> passengers, String string){
+    public void remove(TreeSet<Human> passengers, String string){
         passengers.remove(readJSON(string));
     }
 
@@ -226,19 +228,21 @@ public abstract class Activity {
      * @param passengers Human collection
      * @param string JSON string
      */
-    public static void addIfMax(TreeSet<Human> passengers, String string){
+    public void addIfMax(TreeSet<Human> passengers, String string){
         Human human = readJSON(string);
         if(human.getTimeUntilHunger()<1){
+
             System.out.println("Wrong format");
             return;
         }
         if(passengers.higher(human)==null)passengers.add(human);
+        else System.out.println("Objects isn't bigger then maximum one, so nothing was added");
     }
 
     /**<p>Saves collection to save.csv and ends program</p>
      * @param passengers Human collection
      */
-    public static void shutdown(TreeSet<Human> passengers){
+    public void shutdown(TreeSet<Human> passengers){
         try {
             FileWriter writer = new FileWriter(saveFile);
             for (Human human: passengers) //noinspection Duplicates
@@ -254,15 +258,14 @@ public abstract class Activity {
                     writer.write(name);
                 }
                 writer.write(",");
-                //thumb
+
                 if(human instanceof Fool){
                     Fool fool = (Fool) human;
                     writer.write(Integer.toString(fool.getThumbLength()));
                 }
                 writer.write(",");
-                if (human instanceof Donut)//noinspection Duplicates,Duplicates
-                {
-                    writer.write(",");
+
+                if (human instanceof Donut){
                     Donut donut = (Donut) human;
                     String foodName = donut.getFoodName();
                     foodName = foodName.replace(Character.toString(c), c +Character.toString(c));
@@ -272,10 +275,10 @@ public abstract class Activity {
                         writer.write('"');
                     }else {
                         writer.write(foodName);
-                    }writer.write(",");
-                }else {
-                    writer.write(",,");
+                    }
                 }
+                writer.write(",");
+
                 writer.write(Integer.toString(human.getTimeUntilHunger()));
                 writer.write("\n");
             }

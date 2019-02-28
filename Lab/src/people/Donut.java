@@ -50,7 +50,7 @@ public class Donut extends Human{
             }
         }
         DonutFood food;
-        if(!foodName.equals("")){
+        if(!foodName.isEmpty()){
             food = new DonutFood(foodName);
         }else {
             food = new DonutFood();

@@ -1,6 +1,7 @@
 package timeline;
 
-public abstract class Timeline {
+public class Timeline {
+    private Timeline(){};
     static private int currentTime;
 
     static public void setTime(int Time){

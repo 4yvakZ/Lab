@@ -2,9 +2,9 @@ import people.*;
 import rocket.*;
 import rocket.room.*;
 import space.objects.*;
+import activity.*;
 
 import static timeline.Timeline.*;
-import static activity.Activity.*;
 
 import java.util.Scanner;
 import java.util.TreeSet;
@@ -13,6 +13,7 @@ import java.util.TreeSet;
 class Lab {
     public static void main(String[] args) {
         try{
+            Activity activity = new Activity();
             Scanner scanner = new Scanner(System.in);
             setTime(0);
             Room cabin = new Room(Type.CABIN, "Кабина");
@@ -30,7 +31,7 @@ class Lab {
             System.out.println(rocket.toString() + ".");
             moon.orbitInfo();
             TreeSet<Human> passengers = rocket.getPassengers();
-            start(args[0], cabin, rocket);
+            activity.start(args[0], cabin, rocket);
 //            show(passengers);
 //            info(passengers);
 //            fool.seems(moon.getOrbit(), rocket.getVelocity());
@@ -40,32 +41,32 @@ class Lab {
             while (true){
                 switch (scanner.next()){
                     case "add":
-                        add(passengers,scanner.nextLine());
+                        activity.add(passengers,scanner.nextLine());
                         break;
                     case "shutdown":
-                        shutdown(passengers);
+                        activity.shutdown(passengers);
                         shutDown = true;
                         break;
                     case "show":
-                        show(passengers);
+                        activity.show(passengers);
                         break;
                     case "info":
-                        info(passengers);
+                        activity.info(passengers);
                         break;
                     case "help":
-                        System.out.println(help);
+                        System.out.print(help);
                         break;
                     case "remove_lower":
-                        removeLower(passengers, scanner.nextLine());
+                        activity.removeLower(passengers, scanner.nextLine());
                         break;
                     case "remove":
-                        remove(passengers,scanner.nextLine());
+                        activity.remove(passengers,scanner.nextLine());
                         break;
                     case "load":
-                        load(passengers, scanner.nextLine(),rocket);
+                        activity.load(passengers, args[0],rocket);
                         break;
                     case "add_if_max":
-                        addIfMax(passengers, scanner.nextLine());
+                        activity.addIfMax(passengers, scanner.nextLine());
                         break;
                     case "next_hour":
                         for(Human human : passengers){
