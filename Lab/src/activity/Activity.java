@@ -242,7 +242,7 @@ public class Activity {
     /**<p>Saves collection to save.csv and ends program</p>
      * @param passengers Human collection
      */
-    public void shutdown(TreeSet<Human> passengers){
+    public void save(TreeSet<Human> passengers){
         try {
             FileWriter writer = new FileWriter(saveFile);
             for (Human human: passengers) //noinspection Duplicates

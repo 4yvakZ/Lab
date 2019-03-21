@@ -31,6 +31,9 @@ class Lab {
             System.out.println(rocket.toString() + ".");
             moon.orbitInfo();
             TreeSet<Human> passengers = rocket.getPassengers();
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                activity.save(passengers);
+            }));
             activity.start(args[0], cabin, rocket);
 //            show(passengers);
 //            info(passengers);
@@ -44,7 +47,7 @@ class Lab {
                         activity.add(passengers,scanner.nextLine());
                         break;
                     case "shutdown":
-                        activity.shutdown(passengers);
+                        activity.save(passengers);
                         shutDown = true;
                         break;
                     case "show":
