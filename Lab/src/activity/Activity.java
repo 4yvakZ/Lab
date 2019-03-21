@@ -1,5 +1,9 @@
 package activity;
 
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import people.*;
 import rocket.Rocket;
 import rocket.room.Room;
@@ -8,7 +12,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.TreeSet;
-
 /**
  *
  */
@@ -103,15 +106,25 @@ public class Activity {
      * @param string JSON string
      * @return human from JSON
      */
-    private Human readJSON(String string){
-        Human human = new Human(0, room);
-        string = string.replace(" ", "");
-        string = string.replace("   ", "");
-        string = string.replace("{", "");
-        string = string.replace("}", "");
-        String[] array = string.split(",");
-        String name = "", foodName = "";
-        int timeUntilHunger = 0,thumbLength = 0;
+    private Human readJSON(String string) throws ParseException, NullPointerException {
+        Human human;
+
+        JSONObject jo = (JSONObject) new JSONParser().parse(string);
+        String name = (String) jo.get("name");
+        String foodName;
+        try {
+            foodName = (String) jo.get("foodName");
+        }catch (NullPointerException e){
+            foodName = "";
+        }
+        int timeUntilHunger = ((Long)jo.get("timeUntilHunger")).intValue();
+        int thumbLength;
+        try {
+            thumbLength = ((Long)jo.get("thumbLength")).intValue();
+        }catch (NullPointerException e){
+            thumbLength = 0;
+        }
+        /*int timeUntilHunger = 0,thumbLength = 0;
         for (String line: array) {
             String[] param = line.split(":");
             param[0]= param[0].replace(Character.toString('"'), "");
@@ -131,19 +144,19 @@ public class Activity {
                     foodName = foodName.substring(0, foodName.length() - 1);
                     break;
             }
-            if (name.isEmpty()){
-                human = new Human(timeUntilHunger, room);
-            }else if (thumbLength != 0){
-                if (!foodName.isEmpty()) {
-                    human = new  Fool(name, timeUntilHunger, room, foodName, thumbLength);
-                }else{
-                    human = new  Fool(name, timeUntilHunger, room, thumbLength);
-                }
-            }else if (!foodName.isEmpty()){
-                human = new Donut(name, timeUntilHunger, room, foodName);
-            }else {
-                human = new Human(name, timeUntilHunger, room);
+        }*/
+        if (name.isEmpty()){
+            human = new Human(timeUntilHunger, room);
+        }else if (thumbLength != 0){
+            if (!foodName.isEmpty()) {
+                human = new  Fool(name, timeUntilHunger, room, foodName, thumbLength);
+            }else{
+                human = new  Fool(name, timeUntilHunger, room, thumbLength);
             }
+        }else if (!foodName.isEmpty()){
+            human = new Donut(name, timeUntilHunger, room, foodName);
+        }else{
+            human = new Human(name, timeUntilHunger, room);
         }
         return human;
     }
@@ -163,12 +176,9 @@ public class Activity {
      * @param passengers Human collection
      * @param string JSON string
      */
-    public void add(TreeSet<Human> passengers,String string){
-        Human human = readJSON(string);
-        if(human.getTimeUntilHunger()<1){
-            System.out.println("Wrong format");
-            return;
-        }
+    public void add(TreeSet<Human> passengers,String string) throws NullPointerException, ParseException {
+        Human human = null;
+        human = readJSON(string);
         if(!passengers.add(human)){
             System.out.println("Object with same name has already exist");
         }
@@ -194,13 +204,10 @@ public class Activity {
      * @param passengers Human collection
      * @param string JSON string
      */
-    public void removeLower(TreeSet<Human> passengers, String string){
+    public void removeLower(TreeSet<Human> passengers, String string) throws ParseException, NullPointerException {
         Human removable;
-        Human human = readJSON(string);
-        if(human.getTimeUntilHunger()<1){
-            System.out.println("Wrong format");
-            return;
-        }
+        Human human = null;
+        human = readJSON(string);
         while((removable = passengers.lower(human))!=null){
             passengers.remove(removable);
         }
@@ -220,7 +227,9 @@ public class Activity {
      * @param passengers Human collection
      * @param string JSON string
      */
-    public void remove(TreeSet<Human> passengers, String string){
+    public void remove(TreeSet<Human> passengers, String string) throws NullPointerException, ParseException {
+        Human human = null;
+        human = readJSON(string);
         passengers.remove(readJSON(string));
     }
 
@@ -228,13 +237,9 @@ public class Activity {
      * @param passengers Human collection
      * @param string JSON string
      */
-    public void addIfMax(TreeSet<Human> passengers, String string){
-        Human human = readJSON(string);
-        if(human.getTimeUntilHunger()<1){
-
-            System.out.println("Wrong format");
-            return;
-        }
+    public void addIfMax(TreeSet<Human> passengers, String string) throws NullPointerException, ParseException {
+        Human human = null;
+        human = readJSON(string);
         if(passengers.higher(human)==null)passengers.add(human);
         else System.out.println("Objects isn't bigger then maximum one, so nothing was added");
     }

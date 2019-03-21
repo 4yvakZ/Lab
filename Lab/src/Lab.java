@@ -1,3 +1,4 @@
+import org.json.simple.parser.ParseException;
 import people.*;
 import rocket.*;
 import rocket.room.*;
@@ -42,49 +43,56 @@ class Lab {
             String help = "List of Commands:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nload\nadd_if_max\nnext_hour\nshutdown\n";
             System.out.print(help+">");
             while (true){
-                switch (scanner.next()){
-                    case "add":
-                        activity.add(passengers,scanner.nextLine());
-                        break;
-                    case "shutdown":
-                        activity.save(passengers);
-                        shutDown = true;
-                        break;
-                    case "show":
-                        activity.show(passengers);
-                        break;
-                    case "info":
-                        activity.info(passengers);
-                        break;
-                    case "help":
-                        System.out.print(help);
-                        break;
-                    case "remove_lower":
-                        activity.removeLower(passengers, scanner.nextLine());
-                        break;
-                    case "remove":
-                        activity.remove(passengers,scanner.nextLine());
-                        break;
-                    case "load":
-                        activity.load(passengers, args[0],rocket);
-                        break;
-                    case "add_if_max":
-                        activity.addIfMax(passengers, scanner.nextLine());
-                        break;
-                    case "next_hour":
-                        for(Human human : passengers){
-                            if(human.isHungryNow()){
-                                human.goTo(foodStorage);
-                                human.eat();
+                try {
+                    switch (scanner.next()) {
+                        case "add":
+                            activity.add(passengers, scanner.nextLine());
+                            break;
+                        case "shutdown":
+                            activity.save(passengers);
+                            shutDown = true;
+                            break;
+                        case "show":
+                            activity.show(passengers);
+                            break;
+                        case "info":
+                            activity.info(passengers);
+                            break;
+                        case "help":
+                            System.out.print(help);
+                            break;
+                        case "remove_lower":
+                            activity.removeLower(passengers, scanner.nextLine());
+                            break;
+                        case "remove":
+                            activity.remove(passengers, scanner.nextLine());
+                            break;
+                        case "load":
+                            activity.load(passengers, args[0], rocket);
+                            break;
+                        case "add_if_max":
+                            activity.addIfMax(passengers, scanner.nextLine());
+                            break;
+                        case "next_hour":
+                            for (Human human : passengers) {
+                                if (human.isHungryNow()) {
+                                    human.goTo(foodStorage);
+                                    human.eat();
+                                }
                             }
-                        }
-                        increaseTime();
-                        break;
-                    default:
-                        System.out.println("Error: Wrong command!!! Please try again!");
-                        break;
+                            increaseTime();
+                            break;
+                        default:
+                            System.out.println("Error: Wrong command!!! Please try again!");
+                            scanner.nextLine();
+                            break;
+                    }
+                    if (shutDown) break;
+                }catch (NullPointerException e){
+                    System.out.println("Wrong format");
+                }catch (ParseException e){
+                    System.out.println("Wrong format");
                 }
-                if(shutDown)break;
                 System.out.print(">");
             }
             /*for(int i = 0; i<=3; i++){
