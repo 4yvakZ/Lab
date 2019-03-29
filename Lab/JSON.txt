@@ -1,3 +1,0 @@
-{ "name": "JsonTest", "thumbLength": 10, "foodName":"KEk", "timeUntilHunger": 8, }
-{ "name": "Keklol","thumbLength": 10, "foodName":"KEk", "timeUntilHunger": 8, }
-next_hour
