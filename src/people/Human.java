@@ -1,14 +1,20 @@
 package people;
 
 import rocket.room.*;
+
+
+
 import static timeline.Timeline.*;
+import java.util.Date;
 
 public class Human implements Comparable<Human>{
     final String name;
     final int timeUntilHunger;
     int lastMealTime = 0;
     Room room;
+    private Date date;
     public Human(int timeUntilHunger, Room room){
+        date = new Date();
         this.timeUntilHunger = timeUntilHunger;
         this.name = "Эй ты";
         try{
@@ -21,6 +27,7 @@ public class Human implements Comparable<Human>{
         }
     }
     public Human(String name, int timeUntilHunger, Room room){
+        date = new Date();
         this.timeUntilHunger = timeUntilHunger;
         this.name = name;
         try{
@@ -79,6 +86,6 @@ public class Human implements Comparable<Human>{
 
     @Override
     public int compareTo(Human human) {
-        return name.compareTo(human.toString());
+        return room.compareTo(human.getRoom());
     }
 }
