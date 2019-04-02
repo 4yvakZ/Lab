@@ -5,12 +5,12 @@ import people.Human;
 import rocket.room.Room;
 import space.objects.SpaceObject;
 
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 
 public class Rocket {
     private int velocity;
-    private final TreeSet<Human> passengers = new TreeSet<>();
+    private final ConcurrentSkipListSet<Human> passengers = new ConcurrentSkipListSet<>();
     private Room[] rooms;
     private int numberOfRooms = 0;
     private SpaceObject target;
@@ -27,7 +27,7 @@ public class Rocket {
         passengers.add(human);
     }
 
-    public TreeSet<Human> getPassengers(){
+    public ConcurrentSkipListSet<Human> getPassengers(){
         return passengers;
     }
 

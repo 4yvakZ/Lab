@@ -8,10 +8,12 @@ import people.*;
 import rocket.Rocket;
 import rocket.room.Room;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
+
 /**
  *
  */
@@ -98,7 +100,7 @@ public class Activity {
             }
             reader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("File " + file + " does not exist, but anyway");
         }
     }
 
@@ -195,7 +197,7 @@ public class Activity {
      * @param passengers Human collection
      * @param string JSON string
      */
-    public void add(TreeSet<Human> passengers,String string) throws NullPointerException, ParseException {
+    public void add(ConcurrentSkipListSet<Human> passengers, String string) throws NullPointerException, ParseException {
         Human human = readJSON(string);
         if(!passengers.add(human)){
             System.out.println("Object with same name has already exist");
@@ -205,7 +207,7 @@ public class Activity {
     /**<p>Show all elements from Human collection in terminal</p>
      * @param passengers Human collection
      */
-    public void show(TreeSet<Human> passengers){
+    public void show(ConcurrentSkipListSet<Human> passengers){
         for (Human human:passengers) {
             System.out.println(human.toString());
         }
@@ -214,15 +216,15 @@ public class Activity {
     /**<p>Show info about Human collection in terminal</p>
      * @param passengers Human collection
      */
-    public void info(TreeSet<Human> passengers){
-        System.out.println("Тип коллекции TreeSet<Human>, кол-во элементов коллекции "+passengers.size());
+    public void info(ConcurrentSkipListSet<Human> passengers){
+        System.out.println("Тип коллекции ConcurrentSkipListSet<Human>, кол-во элементов коллекции "+passengers.size());
     }
 
     /**<p>Remove all elements lower than written</p>
      * @param passengers Human collection
      * @param string JSON string
      */
-    public void removeLower(TreeSet<Human> passengers, String string) throws ParseException, NullPointerException {
+    public void removeLower(ConcurrentSkipListSet<Human> passengers, String string) throws ParseException, NullPointerException {
         Human removable;
         Human human;
         human = readJSON(string);
@@ -236,7 +238,7 @@ public class Activity {
      * @param file name of csv
      * @param rocket start rocket
      */
-    public void load(TreeSet<Human> passengers, String file,  Rocket rocket){
+    public void load(ConcurrentSkipListSet<Human> passengers, String file,  Rocket rocket){
         passengers.clear();
         readCSV(file, rocket);
     }
@@ -245,7 +247,7 @@ public class Activity {
      * @param passengers Human collection
      * @param string JSON string
      */
-    public void remove(TreeSet<Human> passengers, String string) throws NullPointerException, ParseException {
+    public void remove(ConcurrentSkipListSet<Human> passengers, String string) throws NullPointerException, ParseException {
         passengers.remove(readJSON(string));
     }
 
@@ -253,7 +255,7 @@ public class Activity {
      * @param passengers Human collection
      * @param string JSON string
      */
-    public void addIfMax(TreeSet<Human> passengers, String string) throws NullPointerException, ParseException {
+    public void addIfMax(ConcurrentSkipListSet<Human> passengers, String string) throws NullPointerException, ParseException {
         Human human = readJSON(string);
         if(passengers.higher(human)==null)passengers.add(human);
         else System.out.println("Objects isn't bigger then maximum one, so nothing was added");
@@ -262,7 +264,7 @@ public class Activity {
     /**<p>Saves collection to save.csv and ends program</p>
      * @param passengers Human collection
      */
-    public void save(TreeSet<Human> passengers){
+    public void save(ConcurrentSkipListSet<Human> passengers){
         try {
             FileWriter writer = new FileWriter(saveFile);
             for (Human human: passengers) //noinspection Duplicates

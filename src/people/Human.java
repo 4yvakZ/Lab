@@ -86,6 +86,9 @@ public class Human implements Comparable<Human>{
 
     @Override
     public int compareTo(Human human) {
+        if (room.compareTo(human.getRoom()) == 0){
+            return name.compareTo(human.name);
+        }
         return room.compareTo(human.getRoom());
     }
 }

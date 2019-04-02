@@ -8,7 +8,7 @@ import activity.*;
 import static timeline.Timeline.*;
 
 import java.util.Scanner;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 
 class Lab {
@@ -31,10 +31,12 @@ class Lab {
             rocket.addPassenger(donut);
             System.out.println(rocket.toString() + ".");
             moon.orbitInfo();
-            TreeSet<Human> passengers = rocket.getPassengers();
+            ConcurrentSkipListSet<Human> passengers = rocket.getPassengers();
+
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 activity.save(passengers);
             }));
+
             activity.start(args[0], cabin, rocket);
             boolean shutDown = false;
             String help = "List of Commands:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nload\nadd_if_max\nnext_hour\nshutdown\n";
@@ -46,7 +48,6 @@ class Lab {
                             activity.add(passengers, scanner.nextLine());
                             break;
                         case "shutdown":
-                            activity.save(passengers);
                             shutDown = true;
                             break;
                         case "show":
