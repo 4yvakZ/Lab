@@ -36,9 +36,6 @@ class Lab {
                 activity.save(passengers);
             }));
             activity.start(args[0], cabin, rocket);
-//            show(passengers);
-//            info(passengers);
-//            fool.seems(moon.getOrbit(), rocket.getVelocity());
             boolean shutDown = false;
             String help = "List of Commands:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nload\nadd_if_max\nnext_hour\nshutdown\n";
             System.out.print(help+">");
@@ -95,17 +92,6 @@ class Lab {
                 }
                 System.out.print(">");
             }
-            /*for(int i = 0; i<=3; i++){
-                donut.sleep();
-                fool.lookAt(moon);
-                for(Human human : passengers){
-                    if(human.isHungryNow()){
-                        human.goTo(foodStorage);
-                        human.eat();
-                    }
-                }
-                increaseTime();
-            }*/
         }catch(SpeedException e){
             System.out.println(e.getMessage());
         }
