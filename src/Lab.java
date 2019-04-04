@@ -1,14 +1,21 @@
+import activity.Activity;
 import org.json.simple.parser.ParseException;
-import people.*;
-import rocket.*;
-import rocket.room.*;
-import space.objects.*;
-import activity.*;
-
-import static timeline.Timeline.*;
+import people.Donut;
+import people.Fool;
+import people.Human;
+import rocket.Rocket;
+import rocket.SpeedException;
+import rocket.room.Room;
+import rocket.room.Type;
+import space.objects.Earth;
+import space.objects.Moon;
+import space.objects.SpaceObject;
 
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentSkipListSet;
+
+import static timeline.Timeline.increaseTime;
+import static timeline.Timeline.setTime;
 
 
 class Lab {
