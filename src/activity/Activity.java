@@ -12,7 +12,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -208,9 +212,7 @@ public class Activity {
      * @param passengers Human collection
      */
     public void show(ConcurrentSkipListSet<Human> passengers){
-        for (Human human:passengers) {
-            System.out.println(human.toString());
-        }
+        passengers.stream().forEach(x-> System.out.println(x.toString()));
     }
 
     /**<p>Show info about Human collection in terminal</p>
@@ -225,12 +227,11 @@ public class Activity {
      * @param string JSON string
      */
     public void removeLower(ConcurrentSkipListSet<Human> passengers, String string) throws ParseException, NullPointerException {
-        Human removable;
         Human human;
         human = readJSON(string);
-        while((removable = passengers.lower(human))!=null){
-            passengers.remove(removable);
-        }
+        passengers.retainAll(passengers.stream()
+                .filter(x -> x.compareTo(human) >= 0)
+                .collect(Collectors.toCollection(ConcurrentSkipListSet::new)));
     }
 
     /**<p>Reload Human collection from argument file</p>
