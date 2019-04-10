@@ -4,7 +4,9 @@ package activity;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import people.*;
+import people.Donut;
+import people.Fool;
+import people.Human;
 import rocket.Rocket;
 import rocket.room.Room;
 

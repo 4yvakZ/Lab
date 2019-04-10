@@ -1,9 +1,12 @@
 package people;
 
 import rocket.room.*;
+
+import java.io.Serializable;
+
 import static timeline.Timeline.*;
 
-public class Human implements Comparable<Human>{
+public class Human implements Comparable<Human>, Serializable {
     final String name;
     final int timeUntilHunger;
     int lastMealTime = 0;
