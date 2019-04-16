@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import static timeline.Timeline.increaseTime;
 import static timeline.Timeline.setTime;
@@ -38,7 +38,7 @@ public class NewServer {
             rocket.addPassenger(fool);
             rocket.addPassenger(donut);
             moon.orbitInfo();
-            TreeSet<Human> passengers = rocket.getPassengers();
+            ConcurrentSkipListSet<Human> passengers = rocket.getPassengers();
             activity.start("test.csv", cabin, rocket);
             while (true) {
                 byte[] buf = new byte[65000];
