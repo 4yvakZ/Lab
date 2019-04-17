@@ -14,6 +14,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -213,8 +215,14 @@ public class Activity {
     /**<p>Show all elements from Human collection in terminal</p>
      * @param passengers Human collection
      */
-    public void show(ConcurrentSkipListSet<Human> passengers){
-        passengers.stream().forEach(x-> System.out.println(x.toString()));
+    public String show(ConcurrentSkipListSet<Human> passengers){
+        ArrayList<String> list = new ArrayList<>();
+        String r = "";
+        passengers.stream().forEach(x -> list.add(x.toString()));
+        for (String l : list) {
+            r = r.concat("\n" + l);
+        }
+        return r;
     }
 
     /**<p>Show info about Human collection in terminal</p>

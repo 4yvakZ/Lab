@@ -14,7 +14,10 @@ public class DatagramChannelClient {
         while (true) {
             System.out.print("->");
             String line = scanner.nextLine();
-            if (line.equalsIgnoreCase("close")) break;
+            if (line.equalsIgnoreCase("close")) {
+                System.out.println("Closed.");
+                break;
+            }
             ByteBuffer buffer = ByteBuffer.wrap(line.getBytes());
             client.send(buffer, serverAddress);
             buffer.clear();

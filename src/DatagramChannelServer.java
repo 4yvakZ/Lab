@@ -15,7 +15,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import static timeline.Timeline.increaseTime;
@@ -59,23 +58,28 @@ public class DatagramChannelServer {
             buffer.get(bytes, 0, limits);
             String msg = new String(bytes);
 
-            if (msg.equalsIgnoreCase("exit")) break;
+            String reply = null;
+            if (msg.equalsIgnoreCase("exit"))
+            {
+                reply = "The end.";
+                ByteBuffer buf = ByteBuffer.wrap(reply.getBytes());
+                server.send(buf, remoteAdd);
+                break;
+            }
             try {
                 switch (msg) {
                     case "add":
                         activity.add(passengers, msg);
                         break;
                     case "show":
-                        activity.show(passengers);
+                        reply = activity.show(passengers);
                         break;
                     case "info":
                         activity.info(passengers);
                         break;
                     case "help":
                         //System.out.print(help);
-                        String reply = "help message - test";
-                        ByteBuffer buf = ByteBuffer.wrap(reply.getBytes());
-                        server.send(buf, remoteAdd);
+                        reply = "help message - test";
                         break;
                     case "remove_lower":
                         activity.removeLower(passengers, msg);
@@ -99,14 +103,12 @@ public class DatagramChannelServer {
                         increaseTime();
                         break;
                     default:
-                        String err_msg = "Input error. Please try again or see 'help'.";
-                        System.out.println(err_msg);
-                        ByteBuffer buf1 = ByteBuffer.wrap(err_msg.getBytes(StandardCharsets.UTF_8));
-                        server.send(buf1, remoteAdd);
-                        //String reply1 = new String(buf1.array(), StandardCharsets.UTF_8);
-                        //System.out.println(reply1);
+                        reply = "Input error. Please try again or see 'help'.";
                         break;
                 }
+                System.out.println(reply);
+                ByteBuffer buf = ByteBuffer.wrap(reply.getBytes());
+                server.send(buf, remoteAdd);
             } catch (Exception e) {
                 System.out.println("Oops... Something went wrong.");
             }
