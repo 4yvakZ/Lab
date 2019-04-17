@@ -30,7 +30,7 @@ public class Donut extends Human{
             dream.wakeUp();
         }
     }
-    public void eat(){
+    public String eat(){
         class DonutFood{
             private String name;
             private DonutFood(){
@@ -56,8 +56,9 @@ public class Donut extends Human{
             food = new DonutFood();
         }
         if(room.getType() == Type.FOODSTORAGE){
-            System.out.println(getCurrentTime() + " часов: " + name + ": ест "+ food.toString() + ", находясь в " + room.toString() + ".");
             lastMealTime = getCurrentTime();
+            return getCurrentTime() + " часов: " + name + ": ест "+ food.toString() + ", находясь в " + room.toString() + ".";
         }
+        return getCurrentTime() + " часов: " + name + ": не нашёл "+ food.toString() + ", находясь в " + room.toString() + ".";
     }
 }

@@ -21,7 +21,7 @@ public class NewClient {
 
             System.out.print("->");
             String line = scanner.nextLine();
-            if (line.equalsIgnoreCase("close")) break;
+            if (line.equalsIgnoreCase("disconnect")) break;
             buf = line.getBytes();
             DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 1025);
             socket.send(packet);

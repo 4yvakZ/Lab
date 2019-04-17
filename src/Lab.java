@@ -14,8 +14,7 @@ import space.objects.SpaceObject;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import static timeline.Timeline.increaseTime;
-import static timeline.Timeline.setTime;
+import static timeline.Timeline.*;
 
 
 class Lab {
@@ -46,28 +45,28 @@ class Lab {
 
             activity.start(args[0], cabin, rocket);
             boolean shutDown = false;
-            String help = "List of Commands:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nload\nadd_if_max\nnext_hour\nshutdown\n";
+            String help = "List of Command:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nload\nadd_if_max\nnext_hour\nshutdown\n";
             System.out.print(help+">");
             while (true){
                 try {
                     switch (scanner.next()) {
                         case "add":
-                            activity.add(passengers, scanner.nextLine());
+                            System.out.println(activity.add(passengers, scanner.nextLine()));
                             break;
                         case "shutdown":
                             shutDown = true;
                             break;
                         case "show":
-                            activity.show(passengers);
+                            System.out.println(activity.show(passengers));
                             break;
                         case "info":
-                            activity.info(passengers);
+                            System.out.println(activity.info(passengers));
                             break;
                         case "help":
                             System.out.print(help);
                             break;
                         case "remove_lower":
-                            activity.removeLower(passengers, scanner.nextLine());
+                            System.out.println(activity.removeLower(passengers, scanner.nextLine()));
                             break;
                         case "remove":
                             activity.remove(passengers, scanner.nextLine());
@@ -79,11 +78,18 @@ class Lab {
                             activity.addIfMax(passengers, scanner.nextLine());
                             break;
                         case "next_hour":
+                            StringBuilder out = new StringBuilder();
                             for (Human human : passengers) {
                                 if (human.isHungryNow()) {
-                                    human.goTo(foodStorage);
-                                    human.eat();
+                                    out.append(human.goTo(foodStorage) + "\n");
+                                    out.append(human.eat()+ "\n");
                                 }
+                            }
+                            if (!out.toString().isEmpty()) {
+                                out.deleteCharAt(out.length() - 1);
+                                System.out.println(out.toString());
+                            }else{
+                                System.out.println((getCurrentTime()) + "часов : Ничего не происходит");
                             }
                             increaseTime();
                             break;
