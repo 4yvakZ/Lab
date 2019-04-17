@@ -11,7 +11,6 @@ import space.objects.Moon;
 import space.objects.SpaceObject;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -53,9 +52,7 @@ public class DatagramChannelServer {
 
         while (true) {
             ByteBuffer buffer = ByteBuffer.allocate(1024);
-            //receive buffer from client.
             SocketAddress remoteAdd = server.receive(buffer);
-            //change mode of buffer
             buffer.flip();
             int limits = buffer.limit();
             byte bytes[] = new byte[limits];
@@ -106,6 +103,8 @@ public class DatagramChannelServer {
                         System.out.println(err_msg);
                         ByteBuffer buf1 = ByteBuffer.wrap(err_msg.getBytes(StandardCharsets.UTF_8));
                         server.send(buf1, remoteAdd);
+                        //String reply1 = new String(buf1.array(), StandardCharsets.UTF_8);
+                        //System.out.println(reply1);
                         break;
                 }
             } catch (Exception e) {

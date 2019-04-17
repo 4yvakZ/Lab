@@ -1,16 +1,12 @@
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-import java.util.concurrent.TimeoutException;
 
 public class DatagramChannelClient {
     public static void main(String[] args) throws IOException {
-        DatagramChannel client = null;
-        client = DatagramChannel.open();
+        DatagramChannel client = DatagramChannel.open();
         client.bind(null);
         InetSocketAddress serverAddress = new InetSocketAddress("localhost", 8989);
 
@@ -22,13 +18,12 @@ public class DatagramChannelClient {
             ByteBuffer buffer = ByteBuffer.wrap(line.getBytes());
             client.send(buffer, serverAddress);
             buffer.clear();
-            /*if (!client.isConnected()) {
-                System.out.println("Disconnected.");
-                break;
-            }*/
-            client.receive(buffer);
-            String reply = new String(buffer.array(), StandardCharsets.UTF_8);
+
+            ByteBuffer buf = ByteBuffer.allocate(1024);
+            client.receive(buf);
+            String reply = new String(buf.array(), 0, buf.position());
             System.out.println(reply);
+
             buffer.flip();
         }
         client.close();

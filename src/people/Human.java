@@ -2,11 +2,11 @@ package people;
 
 import rocket.room.*;
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
 
-=======
+//=======
 import java.io.Serializable;
->>>>>>> branch
+//>>>>>>> branch
 
 import static timeline.Timeline.*;
 import java.util.Date;
