@@ -12,7 +12,7 @@ public class DatagramChannelClient {
         DatagramChannel client = null;
         client = DatagramChannel.open();
         client.bind(null);
-        InetSocketAddress serverAddress = new InetSocketAddress("localhost", 8989);
+        InetSocketAddress serverAddress = new InetSocketAddress("localhost", 1025);
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
