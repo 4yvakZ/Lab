@@ -71,52 +71,7 @@ public class DatagramChannelServer {
                 } else {
                     //server.send(ByteBuffer.wrap(msg.getBytes(StandardCharsets.UTF_8)), remoteAdd);
                     new DatagramCommand(remoteAdd, passengers, activity, server, foodStorage, msg);
-
                 }
-                /*switch (msg) {
-                    case "add":
-                        activity.add(passengers, msg);
-                        break;
-                    case "show":
-                        activity.show(passengers);
-                        break;
-                    case "info":
-                        activity.info(passengers);
-                        break;
-                    case "help":
-                        //System.out.print(help);
-                        String reply = "help message - test";
-                        ByteBuffer buf = ByteBuffer.wrap(reply.getBytes());
-                        server.send(buf, remoteAdd);
-                        break;
-                    case "remove_lower":
-                        activity.removeLower(passengers, msg);
-                        break;
-                    case "remove":
-                        activity.remove(passengers, msg);
-                        break;
-                    case "load":
-                        //activity.load(passengers, args[0], rocket);
-                        break;
-                    case "add_if_max":
-                        activity.addIfMax(passengers, msg);
-                        break;
-                    case "next_hour":
-                        for (Human human : passengers) {
-                            if (human.isHungryNow()) {
-                                human.goTo(foodStorage);
-                                human.eat();
-                            }
-                        }
-                        increaseTime();
-                        break;
-                    default:
-                        String err_msg = "Input error. Please try again or see 'help'.";
-                        System.out.println(err_msg);
-                        ByteBuffer buf1 = ByteBuffer.wrap(err_msg.getBytes(StandardCharsets.UTF_8));
-                        server.send(buf1, remoteAdd);
-                        break;
-                }*/
             } catch (Exception e) {
                 System.out.println("Oops... Something went wrong.");
             }

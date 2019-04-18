@@ -1,8 +1,11 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.PortUnreachableException;
+import java.nio.CharBuffer;
 import java.util.Scanner;
 
 public class NewClient {
@@ -16,20 +19,22 @@ public class NewClient {
         String received = null;
         try {
             while (true) {
-                if (!socket.isConnected()) {
-                    System.out.println("Connection error. Please try again later.");
-                    //break;
-                    System.exit(-1);
-                }
 
                 System.out.print("->");
                 String line = scanner.nextLine();
                 if (line.equalsIgnoreCase("disconnect")) break;
-                buf = line.getBytes();
                 if (line.isEmpty()) continue;
+                try {
+                    if (line.split(" ", 2)[0].equals("import")){
+                        line = "load "+ readFile(line.split(" ", 2)[1]);
+                    }
+                }catch (IOException e) {
+                    System.out.println("File " + line.split( " ", 2)[1] + " does not exist");
+                    continue;
+                }
+                buf = line.getBytes();
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.send(packet);
-
 
                 byte[] buffer = new byte[65000];
                 DatagramPacket packet1 = new DatagramPacket(buffer, buffer.length);
@@ -91,5 +96,19 @@ public class NewClient {
                     "---██─█---█──██─█─█─█─█─█──█──█─█─█──█────█─██─█──█──█──█---█──█─█───█────█──██─█───█\n" +
                     "---█──█---████──███─█─█──█─█──█─█──██─────█─█──█──█──████---████─███─█────████──███─█\n");
         }
+    }
+    private static String readFile(String file) throws IOException {
+        String data = "";
+        CharBuffer buffer = CharBuffer.allocate(65000);
+        FileReader reader = new FileReader(file);
+        reader.read(buffer);
+        buffer.flip();
+        int limits = buffer.limit();
+        char chars[] = new char[limits];
+        buffer.get(chars, 0, limits);
+        String msg = new String(chars);
+        reader.close();
+        System.out.println(msg);
+        return data;
     }
 }

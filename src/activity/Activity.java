@@ -26,7 +26,7 @@ public class Activity {
      * @param file name of csv
      * @param rocket start rocket
      */
-    private void readCSV(String file, Rocket rocket){
+    private void readCSVFile(String file, Rocket rocket){
         try {
             FileReader reader = new FileReader(file);
             int c;
@@ -104,6 +104,27 @@ public class Activity {
         } catch (IOException e) {
             System.out.println("File " + file + " does not exist, but anyway");
         }
+    }
+
+    /*private void readCSV(String data, Rocket rocket){
+        int timeUntilHunger = 0;
+        int thumbLength = 0;
+        StringBuilder name = new StringBuilder();
+        StringBuilder foodName = new StringBuilder();
+        String[] lines = data.split("\n");
+        for(int i = 0; i < lines.length; i++){
+            String[] csvObject = lines[i].split(",");
+        }
+    }*/
+
+    /**<p>Reload Human collection from argument file</p>
+     * @param passengers Human collection
+     * @param data with csv
+     * @param rocket start rocket
+     */
+    public void load(ConcurrentSkipListSet<Human> passengers, String data,  Rocket rocket){
+        passengers.clear();
+        //readCSV(data, rocket);
     }
 
     /**<p>Convert String to JSON and generate Human</p>
@@ -191,8 +212,8 @@ public class Activity {
      */
     public void start(String file, Room startRoom, Rocket rocket){
         room = startRoom;
-        readCSV(saveFile, rocket);
-        readCSV(file, rocket);
+        readCSVFile(saveFile, rocket);
+        readCSVFile(file, rocket);
     }
 
     /**<p>Read from saves</p>
@@ -201,7 +222,7 @@ public class Activity {
      */
     public void start(Room startRoom, Rocket rocket){
         room = startRoom;
-        readCSV(saveFile, rocket);
+        readCSVFile(saveFile, rocket);
     }
 
     /**<p>Add new element to Human collection</p>
@@ -255,16 +276,6 @@ public class Activity {
             return "Some objects were removed";
         }
         return "Nothing happened";
-    }
-
-    /**<p>Reload Human collection from argument file</p>
-     * @param passengers Human collection
-     * @param file name of csv
-     * @param rocket start rocket
-     */
-    public void load(ConcurrentSkipListSet<Human> passengers, String file,  Rocket rocket){
-        passengers.clear();
-        readCSV(file, rocket);
     }
 
     /**<p>Remove element from Human collection</p>

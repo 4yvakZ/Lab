@@ -39,6 +39,9 @@ public class DatagramCommand extends Thread{
         String command = msg.split(" ", 2)[0];
         try {
             switch (command) {
+                case "load":
+
+                    break;
                 case "add":
                     channel.send(ByteBuffer.wrap(activity.add(passengers, msg.split(" ", 2)[1], foodStorage).getBytes()),received);
                     break;
@@ -49,7 +52,7 @@ public class DatagramCommand extends Thread{
                     channel.send(ByteBuffer.wrap(activity.info(passengers).getBytes()), received);
                     break;
                 case "help":
-                    String help = "List of Command:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nadd_if_max\nnext_hour\ndisconnect\nexit";
+                    String help = "List of Command:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nadd_if_max\nnext_hour\ndisconnect\nexit\nimport";
                     channel.send(ByteBuffer.wrap(help.getBytes()), received);break;
                 case "remove_lower":
                     channel.send(ByteBuffer.wrap(activity.removeLower(passengers, msg.split(" ", 2)[1]).getBytes()), received);break;
