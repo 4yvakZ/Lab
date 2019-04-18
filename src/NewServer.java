@@ -60,6 +60,7 @@ public class NewServer {
                 e.printStackTrace();
             }
             String received = new String(packet.getData(), 0, packet.getLength());
+            System.out.println(received);
             if (received.equalsIgnoreCase("exit")) {
                 buf = "Server shutdown".getBytes();
                 socket.send(new DatagramPacket(buf, buf.length, packet.getAddress(), packet.getPort()));
