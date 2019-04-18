@@ -8,7 +8,7 @@ public class DatagramChannelClient {
     public static void main(String[] args) throws IOException {
         DatagramChannel client = DatagramChannel.open();
         client.bind(null);
-        InetSocketAddress serverAddress = new InetSocketAddress("localhost", 8989);
+        InetSocketAddress serverAddress = new InetSocketAddress("localhost", 1025);
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
