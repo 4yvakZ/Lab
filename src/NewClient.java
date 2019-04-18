@@ -1,3 +1,12 @@
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import people.Donut;
+import people.Fool;
+import people.Human;
+import rocket.room.Room;
+
+import java.io.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,7 +17,10 @@ import java.net.PortUnreachableException;
 import java.nio.CharBuffer;
 import java.util.Scanner;
 
+import static java.lang.System.out;
+
 public class NewClient {
+    private Room room;
     public static void main(String[] args) throws IOException {
         System.out.println("Welcome to Client side");
         DatagramSocket socket = new DatagramSocket();
@@ -40,7 +52,7 @@ public class NewClient {
                 DatagramPacket packet1 = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet1);
                 received = new String(packet1.getData(), 0, packet1.getLength());
-                System.out.println(received);
+                out.println(received);
             }
             socket.close();
         }catch (PortUnreachableException e){
@@ -110,5 +122,56 @@ public class NewClient {
         reader.close();
         System.out.println(msg);
         return data;
+    }
+    private Human readJSON(String string) throws ParseException, NullPointerException {
+        Human human;
+        JSONObject jo = (JSONObject) new JSONParser().parse(string);
+        String name;
+        if(jo.get("name") instanceof String) {
+            name = (String) jo.get("name");
+        }else{
+            throw new ParseException(0);
+        }
+        String foodName;
+        try {
+            if(jo.get("foodName") instanceof String) {
+                foodName = (String) jo.get("foodName");
+            }else{
+                throw new ParseException(0);
+            }
+        }catch (NullPointerException e){
+            foodName = "";
+        }
+        int timeUntilHunger;
+        if(jo.get("timeUntilHunger") instanceof Long) {
+            timeUntilHunger = ((Long) jo.get("timeUntilHunger")).intValue();
+        }else{
+            throw new ParseException(0);
+        }
+        int thumbLength;
+        try {
+            if(jo.get("thumbLength") instanceof Long) {
+                thumbLength = ((Long)jo.get("thumbLength")).intValue();
+            }else {
+                throw new ParseException(0);
+            }
+        }catch (NullPointerException e){
+            thumbLength = 0;
+        }
+        if (timeUntilHunger < 1) throw new ParseException(1);
+        if (name.isEmpty()){
+            human = new Human(timeUntilHunger, room);
+        }else if (thumbLength > 0){
+            if (!foodName.isEmpty()) {
+                human = new Fool(name, timeUntilHunger, room, foodName, thumbLength);
+            }else{
+                human = new  Fool(name, timeUntilHunger, room, thumbLength);
+            }
+        }else if (!foodName.isEmpty()){
+            human = new Donut(name, timeUntilHunger, room, foodName);
+        }else{
+            human = new Human(name, timeUntilHunger, room);
+        }
+        return human;
     }
 }
