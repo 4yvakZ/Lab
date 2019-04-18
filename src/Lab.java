@@ -51,7 +51,7 @@ class Lab {
                 try {
                     switch (scanner.next()) {
                         case "add":
-                            System.out.println(activity.add(passengers, scanner.nextLine()));
+                            System.out.println(activity.add(passengers, scanner.nextLine(), foodStorage));
                             break;
                         case "shutdown":
                             shutDown = true;
@@ -75,7 +75,7 @@ class Lab {
                             activity.load(passengers, args[0], rocket);
                             break;
                         case "add_if_max":
-                            activity.addIfMax(passengers, scanner.nextLine());
+                            activity.addIfMax(passengers, scanner.nextLine(), foodStorage);
                             break;
                         case "next_hour":
                             StringBuilder out = new StringBuilder();

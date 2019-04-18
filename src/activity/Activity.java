@@ -211,7 +211,8 @@ public class Activity {
      * @throws NullPointerException
      * @throws ParseException
      */
-    public String add(ConcurrentSkipListSet<Human> passengers, String string) throws NullPointerException, ParseException {
+    public String add(ConcurrentSkipListSet<Human> passengers, String string, Room startRoom) throws NullPointerException, ParseException {
+        room = startRoom;
         Human human = readJSON(string);
         if(!passengers.add(human)){
             return "Object with same name has already exist";
@@ -288,7 +289,8 @@ public class Activity {
      * @throws NullPointerException
      * @throws ParseException
      */
-    public String addIfMax(ConcurrentSkipListSet<Human> passengers, String string) throws NullPointerException, ParseException {
+    public String addIfMax(ConcurrentSkipListSet<Human> passengers, String string,Room startRoom) throws NullPointerException, ParseException {
+        room = startRoom;
         Human human = readJSON(string);
         if(passengers.higher(human)==null){
             passengers.add(human);

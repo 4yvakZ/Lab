@@ -34,12 +34,12 @@ public class Command extends Thread {
 
     public void sendAnswer() throws IOException {
         String string = new String(received.getData(), 0, received.getLength());
-        String command = string.split("", 1)[0];
+        String command = string.split(" ", 2)[0];
         byte[] buffer;
         try {
             switch (command) {
                 case "add":
-                    buffer = activity.add(passengers, string.split("", 1)[1]).getBytes();
+                    buffer = activity.add(passengers, string.split("", 2)[1], foodStorage).getBytes();
                     socket.send(new DatagramPacket(buffer, buffer.length, received.getAddress(), received.getPort()));
                     break;
                 case "show":
@@ -56,15 +56,15 @@ public class Command extends Thread {
                     socket.send(new DatagramPacket(buffer, buffer.length, received.getAddress(), received.getPort()));
                     break;
                 case "remove_lower":
-                    buffer = activity.removeLower(passengers, string.split("", 1)[1]).getBytes();
+                    buffer = activity.removeLower(passengers, string.split(" ", 2)[1]).getBytes();
                     socket.send(new DatagramPacket(buffer, buffer.length, received.getAddress(), received.getPort()));
                     break;
                 case "remove":
-                    buffer = activity.remove(passengers, string.split("", 1)[1]).getBytes();
+                    buffer = activity.remove(passengers, string.split(" ", 2)[1]).getBytes();
                     socket.send(new DatagramPacket(buffer, buffer.length, received.getAddress(), received.getPort()));
                     break;
                 case "add_if_max":
-                    buffer = activity.addIfMax(passengers, string.split("", 1)[1]).getBytes();
+                    buffer = activity.addIfMax(passengers, string.split(" ", 2)[1], foodStorage).getBytes();
                     socket.send(new DatagramPacket(buffer, buffer.length, received.getAddress(), received.getPort()));
                     break;
                 case "next_hour":

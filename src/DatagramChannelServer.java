@@ -1,4 +1,5 @@
 import activity.Activity;
+import activity.DatagramCommand;
 import people.Donut;
 import people.Fool;
 import people.Human;
@@ -11,7 +12,6 @@ import space.objects.Moon;
 import space.objects.SpaceObject;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -19,7 +19,6 @@ import java.nio.channels.DatagramChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import static timeline.Timeline.increaseTime;
 import static timeline.Timeline.setTime;
 
 public class DatagramChannelServer {
@@ -28,6 +27,7 @@ public class DatagramChannelServer {
         InetSocketAddress iAdd = new InetSocketAddress("localhost", 8989);
         server.bind(iAdd);
         System.out.println("Server Started: " + iAdd);
+
 
         Activity activity = new Activity();
         setTime(0);
@@ -47,12 +47,14 @@ public class DatagramChannelServer {
         Donut donut = new Donut("Пончик", 2, cabin, "Пышка");
         rocket.addPassenger(fool);
         rocket.addPassenger(donut);
-        moon.orbitInfo();
         ConcurrentSkipListSet<Human> passengers = rocket.getPassengers();
-        activity.start("test.csv", cabin, rocket);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            activity.save(passengers);
+        }));
 
         while (true) {
-            ByteBuffer buffer = ByteBuffer.allocate(1024);
+            ByteBuffer buffer = ByteBuffer.allocate(650000);
             //receive buffer from client.
             SocketAddress remoteAdd = server.receive(buffer);
             //change mode of buffer
@@ -61,10 +63,17 @@ public class DatagramChannelServer {
             byte bytes[] = new byte[limits];
             buffer.get(bytes, 0, limits);
             String msg = new String(bytes);
-
-            if (msg.equalsIgnoreCase("exit")) break;
             try {
-                switch (msg) {
+                System.out.println(msg);
+                if (msg.equalsIgnoreCase("shutdown")) {
+                    server.send(ByteBuffer.wrap("Server shutdown".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+                    break;
+                } else {
+                    //server.send(ByteBuffer.wrap(msg.getBytes(StandardCharsets.UTF_8)), remoteAdd);
+                    new DatagramCommand(remoteAdd, passengers, activity, server, foodStorage, msg);
+
+                }
+                /*switch (msg) {
                     case "add":
                         activity.add(passengers, msg);
                         break;
@@ -107,11 +116,12 @@ public class DatagramChannelServer {
                         ByteBuffer buf1 = ByteBuffer.wrap(err_msg.getBytes(StandardCharsets.UTF_8));
                         server.send(buf1, remoteAdd);
                         break;
-                }
+                }*/
             } catch (Exception e) {
                 System.out.println("Oops... Something went wrong.");
             }
         }
+        System.out.println("Server shutdown");
         server.close();
     }
 }
