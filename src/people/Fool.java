@@ -2,12 +2,15 @@ package people;
 
 import rocket.room.*;
 import space.objects.SpaceObject;
+
+import java.io.Serializable;
+
 import static timeline.Timeline.*;
 
 public class Fool extends Donut{
     private final Thumb thumb;
 
-    class Thumb{
+    class Thumb implements Serializable {
         private final int length;
         Thumb(int length){
             this.length = length;

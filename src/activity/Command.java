@@ -51,7 +51,7 @@ public class Command extends Thread {
                     socket.send(new DatagramPacket(buffer, buffer.length, received.getAddress(), received.getPort()));
                     break;
                 case "help":
-                    String help = "List of Command:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nadd_if_max\nnext_hour\ndisconnect\nexit";
+                    String help = "List of Command:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nadd_if_max {element}\nnext_hour\ndisconnect\nexit";
                     buffer = help.getBytes();
                     socket.send(new DatagramPacket(buffer, buffer.length, received.getAddress(), received.getPort()));
                     break;

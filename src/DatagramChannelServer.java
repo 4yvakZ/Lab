@@ -1,5 +1,6 @@
 import activity.Activity;
 import activity.DatagramCommand;
+import activity.DoublePacket;
 import people.Donut;
 import people.Fool;
 import people.Human;
@@ -11,7 +12,9 @@ import space.objects.Earth;
 import space.objects.Moon;
 import space.objects.SpaceObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -20,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import static timeline.Timeline.setTime;
+import static activity.Serializer.*;
 
 public class DatagramChannelServer {
     public static void main(String[] args) throws IOException {
@@ -62,18 +66,34 @@ public class DatagramChannelServer {
             int limits = buffer.limit();
             byte bytes[] = new byte[limits];
             buffer.get(bytes, 0, limits);
-            String msg = new String(bytes);
+            DoublePacket doublePacket = null;
             try {
-                System.out.println(msg);
-                if (msg.equalsIgnoreCase("shutdown")) {
-                    server.send(ByteBuffer.wrap("Server shutdown".getBytes(StandardCharsets.UTF_8)), remoteAdd);
-                    break;
-                } else {
-                    //server.send(ByteBuffer.wrap(msg.getBytes(StandardCharsets.UTF_8)), remoteAdd);
-                    new DatagramCommand(remoteAdd, passengers, activity, server, foodStorage, msg);
-                }
-            } catch (Exception e) {
-                System.out.println("Oops... Something went wrong.");
+                doublePacket = (DoublePacket) deserialize(buffer.array());
+            } catch (ClassNotFoundException e) {
+                System.out.println("Not serialized object");
+            }
+            String msg = doublePacket.getCommad();
+            System.out.println(msg);
+            String command = msg.split(" ", 2)[0];
+            if (msg.equalsIgnoreCase("shutdown")) {
+                server.send(ByteBuffer.wrap("Server shutdown".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+                break;
+            } else if(command.equals("add")|| command.equals("remove_lower")|| command.equals("add_if_max")|| command.equals("remove")) {
+                //ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(msg.split(" ", 2)[1].getBytes()));
+                //Human human = (Human) objectInputStream.readObject();
+                Human human = doublePacket.getHuman();
+                //objectInputStream.close();
+                /*buffer.flip();
+                limits = buffer.limit();
+                bytes = new byte[limits];
+                buffer.get(bytes, 0, limits);
+                ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+                ObjectInputStream objos = new ObjectInputStream(bis);*/
+                human.setRoom(cabin);
+                new DatagramCommand(remoteAdd, passengers, activity, server, command, human);
+            } else {
+                //server.send(ByteBuffer.wrap(msg.getBytes(StandardCharsets.UTF_8)), remoteAdd);
+                new DatagramCommand(remoteAdd, passengers, activity, server, foodStorage, msg, rocket);
             }
         }
         System.out.println("Server shutdown");

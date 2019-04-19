@@ -91,4 +91,8 @@ public class Human implements Comparable<Human>, Serializable {
         }
         return room.compareTo(human.getRoom());
     }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
 }

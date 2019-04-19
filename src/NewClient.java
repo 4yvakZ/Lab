@@ -1,3 +1,4 @@
+import activity.DoublePacket;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -5,6 +6,7 @@ import people.Donut;
 import people.Fool;
 import people.Human;
 import rocket.room.Room;
+import rocket.room.Type;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
@@ -16,10 +18,11 @@ import java.net.InetAddress;
 import java.net.PortUnreachableException;
 import java.nio.CharBuffer;
 import java.util.Scanner;
+import static activity.Serializer.*;
 
 
 public class NewClient {
-    private static Room room;
+    private static Room temporyRoom = new Room(Type.FOODSTORAGE, "Бездна");
     public static void main(String[] args) throws IOException {
         System.out.println("Welcome to Client side");
         DatagramSocket socket = new DatagramSocket();
@@ -47,16 +50,18 @@ public class NewClient {
                 Human human = null;
                 if(firstWord.equals("add")|| firstWord.equals("remove_lower")|| firstWord.equals("add_if_max")|| firstWord.equals("remove")){
                     try {
-                        human = readJSON(line.split(" ", 2)[1]);
-                        buf = firstWord.getBytes();
+                        /*buf = firstWord.getBytes();
                         DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                        socket.send(packet);
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        socket.send(packet);*/
+                        human = readJSON(line.split(" ", 2)[1]);
+                        /*ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         ObjectOutputStream objos = new ObjectOutputStream(bos);
                         objos.writeObject(human);
                         objos.close();
-                        buf = bos.toByteArray();
-                        packet = new DatagramPacket(buf, buf.length);
+                        buf = bos.toByteArray();*/
+                        DoublePacket doublePacket = new DoublePacket(firstWord, human);
+                        buf = serialize(doublePacket);
+                        DatagramPacket packet = new DatagramPacket(buf, buf.length);
                         socket.send(packet);
                     } catch (ParseException e) {
                         System.out.println("Wrong format!");
@@ -65,8 +70,9 @@ public class NewClient {
                         System.out.println("wrong format!");
                         continue;
                     }
-                }else {
-                    buf = line.getBytes();
+                }else{
+                    DoublePacket doublePacket = new DoublePacket(line, null);
+                    buf = serialize(doublePacket);
                     DatagramPacket packet = new DatagramPacket(buf, buf.length);
                     socket.send(packet);
                 }
@@ -128,11 +134,11 @@ public class NewClient {
                     "---█──█---█──██─█───█─█─█───█─█─█─█──█─█──█─█──█──█──█───---█──█─█───█──█─█──██─█───█──█\n" +
                     "---█─██---████──███─█─██───█──█─████─█─████─█─██──█──████---█────███─████─████──███─████\n" +
                     "---██─█---█──██─█─█─█─█─█──█──█─█─█──█────█─██─█──█──█──█---█──█─█───█────█──██─█───█\n" +
-                    "---█──█---████──███─█─█──█─█──█─█──██─────█─█──█──█──████---████─███─█────████──███─█\n");
+                    "---█──█---████──███─█─█──█─█──█─█──██─────█─█──█──█──████---████─███─█────████──███─█\n"+
+                    "Power the server!");
         }
     }
     private static String readFile(String file) throws IOException {
-        String data = "";
         CharBuffer buffer = CharBuffer.allocate(65000);
         FileReader reader = new FileReader(file);
         reader.read(buffer);
@@ -142,8 +148,7 @@ public class NewClient {
         buffer.get(chars, 0, limits);
         String msg = new String(chars);
         reader.close();
-        System.out.println(msg);
-        return data;
+        return msg;
     }
     private static Human readJSON(String string) throws ParseException, NullPointerException {
         Human human;
@@ -182,17 +187,17 @@ public class NewClient {
         }
         if (timeUntilHunger < 1) throw new ParseException(1);
         if (name.isEmpty()){
-            human = new Human(timeUntilHunger, room);
+            human = new Human(timeUntilHunger, temporyRoom);
         }else if (thumbLength > 0){
             if (!foodName.isEmpty()) {
-                human = new Fool(name, timeUntilHunger, room, foodName, thumbLength);
+                human = new Fool(name, timeUntilHunger, temporyRoom, foodName, thumbLength);
             }else{
-                human = new  Fool(name, timeUntilHunger, room, thumbLength);
+                human = new  Fool(name, timeUntilHunger, temporyRoom, thumbLength);
             }
         }else if (!foodName.isEmpty()){
-            human = new Donut(name, timeUntilHunger, room, foodName);
+            human = new Donut(name, timeUntilHunger, temporyRoom, foodName);
         }else{
-            human = new Human(name, timeUntilHunger, room);
+            human = new Human(name, timeUntilHunger, temporyRoom);
         }
         return human;
     }

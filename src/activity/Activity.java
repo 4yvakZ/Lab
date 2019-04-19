@@ -106,25 +106,55 @@ public class Activity {
         }
     }
 
-    /*private void readCSV(String data, Rocket rocket){
+    private void readCSV(String data, Rocket rocket) throws ParseException {
         int timeUntilHunger = 0;
         int thumbLength = 0;
-        StringBuilder name = new StringBuilder();
-        StringBuilder foodName = new StringBuilder();
+        String name = new String();
+        String foodName = new String();
         String[] lines = data.split("\n");
-        for(int i = 0; i < lines.length; i++){
+        for(int i = 0; i < lines.length; i++) {
             String[] csvObject = lines[i].split(",");
+            if (csvObject.length != 4) {
+                throw new ParseException(0);
+            } else {
+                name = csvObject[0];
+                if (!csvObject[1].isEmpty()) {
+                    thumbLength = Integer.parseInt(csvObject[1]);
+                }else{
+                    thumbLength = 0;
+                }
+                foodName = csvObject[2];
+                if (!csvObject[3].isEmpty()) {
+                    timeUntilHunger = Integer.parseInt(csvObject[3]);
+                }else{
+                    timeUntilHunger = 0;
+                }
+            }
+            if (name.isEmpty()) {
+                rocket.addPassenger(new Human(timeUntilHunger, room));
+            } else if (thumbLength != 0) {
+                if (!foodName.isEmpty()) {
+                    rocket.addPassenger(new Fool(name, timeUntilHunger, room, foodName, thumbLength));
+                } else {
+                    rocket.addPassenger(new Fool(name, timeUntilHunger, room, thumbLength));
+                }
+            } else if (!foodName.isEmpty()) {
+                rocket.addPassenger((new Donut(name, timeUntilHunger, room, foodName)));
+            } else {
+                rocket.addPassenger(new Human(name, timeUntilHunger, room));
+            }
         }
-    }*/
+    }
 
     /**<p>Reload Human collection from argument file</p>
      * @param passengers Human collection
      * @param data with csv
      * @param rocket start rocket
      */
-    public void load(ConcurrentSkipListSet<Human> passengers, String data,  Rocket rocket){
-        passengers.clear();
-        //readCSV(data, rocket);
+    public String load(ConcurrentSkipListSet<Human> passengers, String data,  Rocket rocket, Room room) throws ParseException {
+        this.room = room;
+        readCSV(data, rocket);
+        return "Uniq objects from files were added";
     }
 
     /**<p>Convert String to JSON and generate Human</p>
@@ -241,6 +271,18 @@ public class Activity {
         return "Object was successfully added";
     }
 
+    /**<p>Add new element to Human collection</p>
+     * @param passengers Human collection
+     * @param human to add
+     * @return action message
+     * @throws NullPointerException
+     */
+    public String add(ConcurrentSkipListSet<Human> passengers, Human human)  {
+        if(!passengers.add(human)){
+            return "Object with same name has already exist";
+        }
+        return "Object was successfully added";
+    }
     /**<p>Show all elements from Human collection in terminal</p>
      * @param passengers Human collection
      * @return action message
@@ -278,6 +320,22 @@ public class Activity {
         return "Nothing happened";
     }
 
+    /**<p>Remove all elements lower than written</p>
+     * @param passengers Human collection
+     * @param human to remove lower
+     * @return action message
+     * @throws ParseException
+     * @throws NullPointerException
+     */
+    public String removeLower(ConcurrentSkipListSet<Human> passengers, Human human) throws NullPointerException {
+        if(passengers.retainAll(passengers.stream()
+                .filter(x -> x.compareTo(human) >= 0)
+                .collect(Collectors.toCollection(ConcurrentSkipListSet::new)))){
+            return "Some objects were removed";
+        }
+        return "Nothing happened";
+    }
+
     /**<p>Remove element from Human collection</p>
      * @param passengers Human collection
      * @param string JSON string
@@ -287,6 +345,20 @@ public class Activity {
      */
     public String remove(ConcurrentSkipListSet<Human> passengers, String string) throws NullPointerException, ParseException {
         Human human = readJSON(string);
+        if(passengers.remove(human)){
+            return human.toString() + " was successfully removed";
+        }
+        return "Nothing was removed";
+    }
+
+    /**<p>Remove element from Human collection</p>
+     * @param passengers Human collection
+     * @param human to remove
+     * @return action message
+     * @throws NullPointerException
+     * @throws ParseException
+     */
+    public String remove(ConcurrentSkipListSet<Human> passengers, Human human) throws NullPointerException {
         if(passengers.remove(human)){
             return human.toString() + " was successfully removed";
         }
@@ -303,6 +375,20 @@ public class Activity {
     public String addIfMax(ConcurrentSkipListSet<Human> passengers, String string,Room startRoom) throws NullPointerException, ParseException {
         room = startRoom;
         Human human = readJSON(string);
+        if(passengers.higher(human)==null){
+            passengers.add(human);
+            return "Objects was successfully added";
+        }
+        return "Objects isn't bigger then maximum one, so nothing was added";
+    }
+
+    /**<p>Add element to Human collection if it bigger then biggest one in collection</p>
+     * @param passengers Human collection
+     * @param human to remove
+     * @throws NullPointerException
+     * @throws ParseException
+     */
+    public String addIfMax(ConcurrentSkipListSet<Human> passengers, Human human) throws NullPointerException{
         if(passengers.higher(human)==null){
             passengers.add(human);
             return "Objects was successfully added";

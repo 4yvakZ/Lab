@@ -45,7 +45,7 @@ class Lab {
 
             activity.start(args[0], cabin, rocket);
             boolean shutDown = false;
-            String help = "List of Command:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nload\nadd_if_max\nnext_hour\nshutdown\n";
+            String help = "List of Command:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nload\nadd_if_max {element}\nnext_hour\nshutdown\n";
             System.out.print(help+">");
             while (true){
                 try {
@@ -72,7 +72,7 @@ class Lab {
                             activity.remove(passengers, scanner.nextLine());
                             break;
                         case "load":
-                            activity.load(passengers, args[0], rocket);
+                            activity.load(passengers, args[0], rocket, foodStorage);
                             break;
                         case "add_if_max":
                             activity.addIfMax(passengers, scanner.nextLine(), foodStorage);

@@ -1,6 +1,8 @@
 package rocket.room;
 
-public class Room implements Comparable<Room>{
+import java.io.Serializable;
+
+public class Room implements Comparable<Room>, Serializable {
     private final Type type;
     private final String name;
     public Room(Type type, String name){
