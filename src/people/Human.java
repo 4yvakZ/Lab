@@ -11,6 +11,8 @@ public class Human implements Comparable<Human>, Serializable {
     int lastMealTime = 0;
     Room room;
     private Date date;
+    ZoneId zone = ZoneId.of("Europe/Moscow");
+    ZonedDateTime zonedDateTime = ZonedDateTime.now(zone);
     public Human(int timeUntilHunger, Room room){
         date = new Date();
         this.timeUntilHunger = timeUntilHunger;
