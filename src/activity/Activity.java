@@ -1,6 +1,5 @@
 package activity;
 
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -13,6 +12,10 @@ import rocket.room.Room;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
@@ -22,6 +25,43 @@ import java.util.stream.Collectors;
 public class Activity {
     private final String saveFile = "save.csv";
     private Room room;
+
+    /**<p>Read collection from SQL database</p>
+     * @param connection connection to SQL database
+     * @param rocket start rocket
+     */
+    private void readSQL(Connection connection, Rocket rocket){
+        Statement statement;
+        try {
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM HUMANS;");
+            while (resultSet.next()){
+                int timeUntilHunger = resultSet.getInt("time_until_hunger");
+                int thumbLength = resultSet.getInt("thumb_length");
+                String name = resultSet.getString("name");
+                String foodName = resultSet.getString("food_name");
+                if (name.isEmpty()){
+                    rocket.addPassenger(new Human(timeUntilHunger, room));
+                }else if (thumbLength != 0){
+                    if (foodName !=null) {
+                        rocket.addPassenger(new Fool(name, timeUntilHunger, room, foodName, thumbLength));
+                    }else{
+                        rocket.addPassenger(new Fool(name, timeUntilHunger, room, thumbLength));
+                    }
+                }else if (foodName != null){
+                    rocket.addPassenger((new Donut(name, timeUntilHunger, room, foodName)));
+                }else {
+                    rocket.addPassenger(new Human(name, timeUntilHunger, room));
+                }
+            }
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**<p>Read csv file and add it to Human collection</p>
      * @param file name of csv
      * @param rocket start rocket
@@ -255,6 +295,16 @@ public class Activity {
         readCSVFile(saveFile, rocket);
     }
 
+    /**<p>Read from saves from SQL database</p>
+     * @param startRoom start room
+     * @param rocket start rocket
+     * @param connection connection to SQL database
+     */
+    public void start(Room startRoom, Rocket rocket, Connection connection){
+        room = startRoom;
+        readSQL(connection, rocket);
+    }
+
     /**<p>Add new element to Human collection</p>
      * @param passengers Human collection
      * @param string JSON string
@@ -396,7 +446,7 @@ public class Activity {
         return "Objects isn't bigger then maximum one, so nothing was added";
     }
 
-    /**<p>Saves collection to save.csv and ends program</p>
+    /**<p>Saves collection to save.csv</p>
      * @param passengers Human collection
      */
     public void save(ConcurrentSkipListSet<Human> passengers){
@@ -441,6 +491,45 @@ public class Activity {
             }
             writer.close();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**<p>Saves collection to SQL database</p>
+     * @param passengers Human collection
+     * @param connection connection to SQL database
+     */
+    public void save(ConcurrentSkipListSet<Human> passengers, Connection connection){
+        Statement statement;
+        try {
+            connection.setAutoCommit(false);
+            statement = connection.createStatement();
+            String table = "INSERT INTO HUMANS ";
+            String colums, value;
+            for (Human human: passengers) {
+                String name = human.getName();
+                int timeUntilHunger = human.getTimeUntilHunger();
+                if(human instanceof Fool){
+                    Fool fool = (Fool) human;
+                    String foodName = fool.getFoodName();
+                    int thumbLength = fool.getThumbLength();
+                    colums = "(name, time_until_hunger, food_name, thumb_length, username) ";
+                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"',"+thumbLength+",'admin');";
+                }else if (human instanceof Donut){
+                    Donut donut = (Donut) human;
+                    String foodName = donut.getFoodName();
+                    colums = "(name, time_until_hunger, food_name, username) ";
+                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"','admin');";
+                }else{
+                    colums = "(name, time_until_hunger, username) ";
+                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'admin');";
+                }
+                statement.executeUpdate(table+colums+value);
+            }
+            statement.close();
+            connection.commit();
+            connection.close();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

@@ -1,6 +1,7 @@
 import activity.Activity;
 import activity.DatagramCommand;
 import activity.DoublePacket;
+import activity.PostgresConnector;
 import people.Donut;
 import people.Fool;
 import people.Human;
@@ -12,14 +13,13 @@ import space.objects.Earth;
 import space.objects.Moon;
 import space.objects.SpaceObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import static timeline.Timeline.setTime;
@@ -53,9 +53,12 @@ public class DatagramChannelServer {
         rocket.addPassenger(donut);
         ConcurrentSkipListSet<Human> passengers = rocket.getPassengers();
 
+        Connection connection = (new PostgresConnector()).getSQLConnection();
+        activity.start(cabin, rocket, connection);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            activity.save(passengers);
+            activity.save(passengers, connection);
         }));
+
 
         while (true) {
             ByteBuffer buffer = ByteBuffer.allocate(650000);

@@ -1,3 +1,4 @@
+/*
 import activity.Activity;
 import activity.Command;
 import people.Donut;
@@ -74,3 +75,4 @@ public class NewServer {
         socket.close();
     }
 }
+*/
