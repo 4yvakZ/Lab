@@ -47,10 +47,6 @@ public class DatagramChannelServer {
         }
         rocket.addRoom(cabin);
         rocket.addRoom(foodStorage);
-        Fool fool = new Fool("Незнайка", 3, cabin, 10);
-        Donut donut = new Donut("Пончик", 2, cabin, "Пышка");
-        rocket.addPassenger(fool);
-        rocket.addPassenger(donut);
         ConcurrentSkipListSet<Human> passengers = rocket.getPassengers();
 
         Connection connection = (new PostgresConnector()).getSQLConnection();

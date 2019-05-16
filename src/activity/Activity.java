@@ -504,6 +504,7 @@ public class Activity {
         try {
             connection.setAutoCommit(false);
             statement = connection.createStatement();
+            statement.executeUpdate("DELETE FROM HUMANS *");
             String table = "INSERT INTO HUMANS ";
             String colums, value;
             for (Human human: passengers) {
