@@ -1,7 +1,4 @@
-import activity.Activity;
-import activity.DatagramCommand;
-import activity.DoublePacket;
-import activity.PostgresConnector;
+import activity.*;
 import people.Donut;
 import people.Fool;
 import people.Human;
@@ -20,6 +17,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import static timeline.Timeline.setTime;
@@ -55,6 +56,17 @@ public class DatagramChannelServer {
             activity.save(passengers, connection);
         }));
 
+        TreeSet<User> users = new TreeSet<User>();
+        try {
+            connection.setAutoCommit(false);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM users");
+            while (resultSet.next()){
+                users.add(new User(resultSet.getString("login"),resultSet.getString("password")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         while (true) {
             ByteBuffer buffer = ByteBuffer.allocate(650000);
@@ -70,6 +82,20 @@ public class DatagramChannelServer {
                 doublePacket = (DoublePacket) deserialize(buffer.array());
             } catch (ClassNotFoundException e) {
                 System.out.println("Not serialized object");
+            }
+
+
+            User user = doublePacket.getUser();
+            boolean authorisation = false;
+            for(User user1: users){
+                if(user.equals(user1)){
+                    authorisation = true;
+                    break;
+                }
+            }
+            if(!authorisation){
+                server.send(ByteBuffer.wrap("Wrong login or password!".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+                continue;
             }
             String msg = doublePacket.getCommad();
             System.out.println(msg);

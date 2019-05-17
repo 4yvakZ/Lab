@@ -79,9 +79,9 @@ public class DatagramCommand extends Thread{
                 case "load":
                     channel.send(ByteBuffer.wrap(activity.load(passengers, msg.split(" ", 2)[1], rocket, foodStorage).getBytes()), received);
                     break;
-                case "add":
+                /*case "add":
                     channel.send(ByteBuffer.wrap(activity.add(passengers, msg.split(" ", 2)[1], foodStorage).getBytes()),received);
-                    break;
+                    break;*/
                 case "show":
                     channel.send(ByteBuffer.wrap(activity.show(passengers).getBytes()), received);
                     break;
@@ -92,7 +92,7 @@ public class DatagramCommand extends Thread{
                     String help = "List of Command:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nadd_if_max {element}\nnext_hour\ndisconnect\nshutdown\nimport file";
                     channel.send(ByteBuffer.wrap(help.getBytes()), received);
                     break;
-                case "remove_lower":
+                /*case "remove_lower":
                     channel.send(ByteBuffer.wrap(activity.removeLower(passengers, msg.split(" ", 2)[1]).getBytes()), received);
                     break;
                 case "remove":
@@ -100,7 +100,7 @@ public class DatagramCommand extends Thread{
                     break;
                 case "add_if_max":
                     channel.send(ByteBuffer.wrap(activity.addIfMax(passengers, msg.split(" ", 1)[1], foodStorage).getBytes()), received);
-                    break;
+                    break;*/
                 case "next_hour":
                     StringBuilder out = new StringBuilder();
                     passengers.stream().filter(x -> x.isHungryNow()).forEach(x ->{

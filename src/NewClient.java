@@ -1,4 +1,5 @@
 import activity.DoublePacket;
+import activity.User;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -8,10 +9,8 @@ import people.Human;
 import rocket.room.Room;
 import rocket.room.Type;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -33,54 +32,61 @@ public class NewClient {
         String received = null;
         try {
             while (true) {
-
-                System.out.print("->");
-                String line = scanner.nextLine();
-                if (line.equalsIgnoreCase("disconnect")) break;
-                if (line.isEmpty()) continue;
-                String firstWord = line.split(" ")[0];
                 try {
-                    if (firstWord.equals("import")){
-                        line = "load "+ readFile(line.split(" ", 2)[1]);
-                    }
-                }catch (IOException e) {
-                    System.out.println("File " + line.split( " ", 2)[1] + " does not exist");
-                    continue;
-                }
-                Human human = null;
-                if(firstWord.equals("add")|| firstWord.equals("remove_lower")|| firstWord.equals("add_if_max")|| firstWord.equals("remove")){
+
+
+                    System.out.print("->");
+                    String line = scanner.nextLine();
+                    if (line.equalsIgnoreCase("disconnect")) break;
+                    if (line.isEmpty()) continue;
+                    String login = line.split(" ")[0];
+                    String password = line.split(" ")[1];
+                    String commandWord = line.split(" ")[2];
                     try {
-                        /*buf = firstWord.getBytes();
+                        if (commandWord.equals("import")) {
+                            line = "load " + readFile(line.split(" ", 2)[1]);
+                        }
+                    } catch (IOException e) {
+                        System.out.println("File " + line.split(" ", 2)[1] + " does not exist");
+                        continue;
+                    }
+                    Human human = null;
+                    if (commandWord.equals("add") || commandWord.equals("remove_lower") || commandWord.equals("add_if_max") || commandWord.equals("remove")) {
+                        try {
+                        /*buf = commandWord.getBytes();
                         DatagramPacket packet = new DatagramPacket(buf, buf.length);
                         socket.send(packet);*/
-                        human = readJSON(line.split(" ", 2)[1]);
+                            human = readJSON(line.split(" ", 2)[1]);
                         /*ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         ObjectOutputStream objos = new ObjectOutputStream(bos);
                         objos.writeObject(human);
                         objos.close();
                         buf = bos.toByteArray();*/
-                        DoublePacket doublePacket = new DoublePacket(firstWord, human);
+                            DoublePacket doublePacket = new DoublePacket(commandWord, human, new User(login, password));
+                            buf = serialize(doublePacket);
+                            DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                            socket.send(packet);
+                        } catch (ParseException e) {
+                            System.out.println("Wrong format!");
+                            continue;
+                        } catch (NullPointerException e) {
+                            System.out.println("wrong format!");
+                            continue;
+                        }
+                    } else {
+                        DoublePacket doublePacket = new DoublePacket(line.split(" ", 3)[2], null, new User(login, password));
                         buf = serialize(doublePacket);
                         DatagramPacket packet = new DatagramPacket(buf, buf.length);
                         socket.send(packet);
-                    } catch (ParseException e) {
-                        System.out.println("Wrong format!");
-                        continue;
-                    } catch (NullPointerException e){
-                        System.out.println("wrong format!");
-                        continue;
                     }
-                }else{
-                    DoublePacket doublePacket = new DoublePacket(line, null);
-                    buf = serialize(doublePacket);
-                    DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                    socket.send(packet);
+                    byte[] buffer = new byte[65000];
+                    DatagramPacket packet1 = new DatagramPacket(buffer, buffer.length);
+                    socket.receive(packet1);
+                    received = new String(packet1.getData(), 0, packet1.getLength());
+                    System.out.println(received);
+                }catch (ArrayIndexOutOfBoundsException e){
+                    System.out.println("Wrong format!");
                 }
-                byte[] buffer = new byte[65000];
-                DatagramPacket packet1 = new DatagramPacket(buffer, buffer.length);
-                socket.receive(packet1);
-                received = new String(packet1.getData(), 0, packet1.getLength());
-                System.out.println(received);
             }
             socket.close();
         }catch (PortUnreachableException e){

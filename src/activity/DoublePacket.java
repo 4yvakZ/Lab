@@ -8,10 +8,12 @@ import java.io.Serializable;
 public final class DoublePacket implements Serializable {
     private String commad;
     private Human human;
+    private User user;
 
-    public DoublePacket(String commad, Human human) {
+    public DoublePacket(String commad, Human human, User user) {
         this.commad = commad;
         this.human = human;
+        this.user = user;
     }
 
     public String getCommad() {
@@ -28,6 +30,10 @@ public final class DoublePacket implements Serializable {
 
     public void setHuman(Human human) {
         this.human = human;
+    }
+
+    public User getUser() {
+        return user;
     }
 }
 
