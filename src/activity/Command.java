@@ -1,3 +1,4 @@
+/*
 package activity;
 
 import org.json.simple.parser.ParseException;
@@ -21,7 +22,7 @@ public class Command extends Thread {
     private Room foodStorage;
     private Rocket rocket;
 
-    public Command(DatagramPacket received, ConcurrentSkipListSet<Human> passengers, Activity activity, DatagramSocket socket, Room foodStorage, Rocket rocket) throws IOException {
+    public Command(DatagramPacket received, ConcurrentSkipListSet<Human> passengers, Activity activity, DatagramSocket socket, Room foodStorage, Rocket rocket, String user) throws IOException {
         this.received = received;
         this.passengers = passengers;
         this.activity = activity;
@@ -29,17 +30,17 @@ public class Command extends Thread {
         this.foodStorage = foodStorage;
         this.rocket = rocket;
         start();
-        sendAnswer();
+        sendAnswer(user);
     }
 
-    public void sendAnswer() throws IOException {
+    public void sendAnswer(String user) throws IOException {
         String string = new String(received.getData(), 0, received.getLength());
         String command = string.split(" ", 2)[0];
         byte[] buffer;
         try {
             switch (command) {
                 case "add":
-                    buffer = activity.add(passengers, string.split("", 2)[1], foodStorage).getBytes();
+                    buffer = activity.add(passengers, string.split("", 2)[1], foodStorage, user).getBytes();
                     socket.send(new DatagramPacket(buffer, buffer.length, received.getAddress(), received.getPort()));
                     break;
                 case "show":
@@ -56,15 +57,15 @@ public class Command extends Thread {
                     socket.send(new DatagramPacket(buffer, buffer.length, received.getAddress(), received.getPort()));
                     break;
                 case "remove_lower":
-                    buffer = activity.removeLower(passengers, string.split(" ", 2)[1]).getBytes();
+                    buffer = activity.removeLower(passengers, string.split(" ", 2)[1], user).getBytes();
                     socket.send(new DatagramPacket(buffer, buffer.length, received.getAddress(), received.getPort()));
                     break;
                 case "remove":
-                    buffer = activity.remove(passengers, string.split(" ", 2)[1]).getBytes();
+                    buffer = activity.remove(passengers, string.split(" ", 2)[1], user).getBytes();
                     socket.send(new DatagramPacket(buffer, buffer.length, received.getAddress(), received.getPort()));
                     break;
                 case "add_if_max":
-                    buffer = activity.addIfMax(passengers, string.split(" ", 2)[1], foodStorage).getBytes();
+                    buffer = activity.addIfMax(passengers, string.split(" ", 2)[1], foodStorage, user).getBytes();
                     socket.send(new DatagramPacket(buffer, buffer.length, received.getAddress(), received.getPort()));
                     break;
                 case "next_hour":
@@ -102,3 +103,4 @@ public class Command extends Thread {
         }
     }
 }
+*/

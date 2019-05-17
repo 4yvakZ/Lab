@@ -33,7 +33,7 @@ public class DatagramCommand extends Thread{
         start();
         sendAnswer(human);
     }
-    public DatagramCommand(SocketAddress received, ConcurrentSkipListSet<Human> passengers, Activity activity, DatagramChannel channel, Room foodStorage, String msg, Rocket rocket) throws IOException {
+    public DatagramCommand(SocketAddress received, ConcurrentSkipListSet<Human> passengers, Activity activity, DatagramChannel channel, Room foodStorage, String msg, Rocket rocket, String username) throws IOException {
         this.received = received;
         this.passengers = passengers;
         this.activity = activity;
@@ -42,7 +42,7 @@ public class DatagramCommand extends Thread{
         this.msg = msg;
         this.rocket = rocket;
         start();
-        sendAnswer();
+        sendAnswer(username);
     }
 
     private void sendAnswer(Human human) throws IOException {
@@ -72,12 +72,12 @@ public class DatagramCommand extends Thread{
             e.printStackTrace();
         }
     }
-    private void sendAnswer() throws IOException {
+    private void sendAnswer(String username) throws IOException {
         String command = msg.split(" ", 2)[0];
         try {
             switch (command) {
                 case "load":
-                    channel.send(ByteBuffer.wrap(activity.load(passengers, msg.split(" ", 2)[1], rocket, foodStorage).getBytes()), received);
+                    channel.send(ByteBuffer.wrap(activity.load(msg.split(" ", 2)[1], rocket, foodStorage, username).getBytes()), received);
                     break;
                 /*case "add":
                     channel.send(ByteBuffer.wrap(activity.add(passengers, msg.split(" ", 2)[1], foodStorage).getBytes()),received);

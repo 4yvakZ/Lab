@@ -85,6 +85,7 @@ public class DatagramChannelServer {
 
 
             User user = doublePacket.getUser();
+            String username = user.getLogin();
             boolean authorisation = false;
             for(User user1: users){
                 if(user.equals(user1)){
@@ -117,7 +118,7 @@ public class DatagramChannelServer {
                 new DatagramCommand(remoteAdd, passengers, activity, server, command, human);
             } else {
                 //server.send(ByteBuffer.wrap(msg.getBytes(StandardCharsets.UTF_8)), remoteAdd);
-                new DatagramCommand(remoteAdd, passengers, activity, server, foodStorage, msg, rocket);
+                new DatagramCommand(remoteAdd, passengers, activity, server, foodStorage, msg, rocket, username);
             }
         }
         System.out.println("Server shutdown");

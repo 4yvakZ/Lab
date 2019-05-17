@@ -1,18 +1,21 @@
 package people;
 
 import rocket.room.*;
+
 import java.io.Serializable;
 import static timeline.Timeline.*;
 
 import java.time.ZonedDateTime;
 
 public class Human implements Comparable<Human>, Serializable {
-    final String name;
-    final int timeUntilHunger;
-    int lastMealTime = 0;
-    Room room;
+    protected final String name;
+    protected final int timeUntilHunger;
+    protected int lastMealTime = 0;
+    private String username;
+    protected Room room;
     final private ZonedDateTime time;
-    public Human(int timeUntilHunger, Room room){
+    public Human(int timeUntilHunger, String username, Room room){
+        this.username = username;
         time= ZonedDateTime.now();
         this.timeUntilHunger = timeUntilHunger;
         this.name = "Эй ты";
@@ -25,7 +28,8 @@ public class Human implements Comparable<Human>, Serializable {
             throw new RoomException(name, e);
         }
     }
-    public Human(String name, int timeUntilHunger, Room room){
+    public Human(String name, int timeUntilHunger, String username, Room room){
+        this.username = username;
         time= ZonedDateTime.now();
         this.timeUntilHunger = timeUntilHunger;
         this.name = name;
@@ -38,7 +42,8 @@ public class Human implements Comparable<Human>, Serializable {
             throw new RoomException(name, e);
         }
     }
-    public Human(int timeUntilHunger, Room room, ZonedDateTime time){
+    public Human(int timeUntilHunger, String username, Room room, ZonedDateTime time){
+        this.username = username;
         this.time= time;
         this.timeUntilHunger = timeUntilHunger;
         this.name = "Эй ты";
@@ -51,7 +56,8 @@ public class Human implements Comparable<Human>, Serializable {
             throw new RoomException(name, e);
         }
     }
-    public Human(String name, int timeUntilHunger, Room room, ZonedDateTime time){
+    public Human(String name, int timeUntilHunger, String username, Room room, ZonedDateTime time){
+        this.username = username;
         this.time= time;
         this.timeUntilHunger = timeUntilHunger;
         this.name = name;
@@ -83,7 +89,7 @@ public class Human implements Comparable<Human>, Serializable {
         return getCurrentTime() + " часов: " + name + ": не нашёл еду в " + room.toString() + ".";
     }
 
-    private Room getRoom(){
+    public Room getRoom(){
         return room;
     }
 
@@ -125,5 +131,13 @@ public class Human implements Comparable<Human>, Serializable {
 
     public ZonedDateTime getTime() {
         return time;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getInfo(){
+        return name + " находится в "+ room.toString()+ " создан "+ username+ " " + time;
     }
 }

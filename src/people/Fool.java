@@ -31,20 +31,20 @@ public class Fool extends Donut{
         }
     }
 
-    public Fool(String name, int timeUntilHunger,  Room room, int thumbLength){
-        super(name, timeUntilHunger, room);
+    public Fool(String name, int timeUntilHunger,  Room room, int thumbLength, String username){
+        super(name, timeUntilHunger, room, username);
         thumb = new Thumb(thumbLength);
     }
-    public Fool(String name, int timeUntilHunger,  Room room, String foodName,int thumbLength){
-        super(name, timeUntilHunger, room, foodName);
+    public Fool(String name, int timeUntilHunger, Room room, String foodName, int thumbLength, String username){
+        super(name, timeUntilHunger, room, foodName, username);
         thumb = new Thumb(thumbLength);
     }
-    public Fool(String name, int timeUntilHunger, Room room, int thumbLength, ZonedDateTime time){
-        super(name, timeUntilHunger, room, time);
+    public Fool(String name, int timeUntilHunger, Room room, int thumbLength, ZonedDateTime time, String username){
+        super(name, timeUntilHunger, room, time, username);
         thumb = new Thumb(thumbLength);
     }
-    public Fool(String name, int timeUntilHunger,  Room room, String foodName,int thumbLength, ZonedDateTime time){
-        super(name, timeUntilHunger, room, foodName, time);
+    public Fool(String name, int timeUntilHunger, Room room, String foodName, int thumbLength, ZonedDateTime time, String username){
+        super(name, timeUntilHunger, room, foodName, time, username);
         thumb = new Thumb(thumbLength);
     }
     public void seems(int distance, int rocketSpeed){

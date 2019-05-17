@@ -40,6 +40,7 @@ public class NewClient {
                     if (line.equalsIgnoreCase("disconnect")) break;
                     if (line.isEmpty()) continue;
                     String login = line.split(" ")[0];
+                    String username = login;
                     String password = hashString(line.split(" ")[1]);
                     String commandWord = line.split(" ")[2];
                     try {
@@ -56,7 +57,7 @@ public class NewClient {
                         /*buf = commandWord.getBytes();
                         DatagramPacket packet = new DatagramPacket(buf, buf.length);
                         socket.send(packet);*/
-                            human = readJSON(line.split(" ", 2)[1]);
+                            human = readJSON(line.split(" ", 4)[3], username);
                         /*ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         ObjectOutputStream objos = new ObjectOutputStream(bos);
                         objos.writeObject(human);
@@ -156,7 +157,7 @@ public class NewClient {
         reader.close();
         return msg;
     }
-    private static Human readJSON(String string) throws ParseException, NullPointerException {
+    private static Human readJSON(String string, String username) throws ParseException, NullPointerException {
         Human human;
         JSONObject jo = (JSONObject) new JSONParser().parse(string);
         String name;
@@ -193,17 +194,17 @@ public class NewClient {
         }
         if (timeUntilHunger < 1) throw new ParseException(1);
         if (name.isEmpty()){
-            human = new Human(timeUntilHunger, temporyRoom);
+            human = new Human(timeUntilHunger, username, temporyRoom);
         }else if (thumbLength > 0){
             if (!foodName.isEmpty()) {
-                human = new Fool(name, timeUntilHunger, temporyRoom, foodName, thumbLength);
+                human = new Fool(name, timeUntilHunger, temporyRoom, foodName, thumbLength, username);
             }else{
-                human = new  Fool(name, timeUntilHunger, temporyRoom, thumbLength);
+                human = new  Fool(name, timeUntilHunger, temporyRoom, thumbLength, username);
             }
         }else if (!foodName.isEmpty()){
-            human = new Donut(name, timeUntilHunger, temporyRoom, foodName);
+            human = new Donut(name, timeUntilHunger, temporyRoom, foodName, username);
         }else{
-            human = new Human(name, timeUntilHunger, temporyRoom);
+            human = new Human(name, timeUntilHunger, username, temporyRoom);
         }
         return human;
     }
