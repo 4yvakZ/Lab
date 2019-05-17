@@ -12,10 +12,8 @@ import rocket.room.Room;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
@@ -42,18 +40,19 @@ public class Activity {
                 int thumbLength = resultSet.getInt("thumb_length");
                 String name = resultSet.getString("name");
                 String foodName = resultSet.getString("food_name");
+                ZonedDateTime time = ZonedDateTime.parse(resultSet.getString("zoned_time"));
                 if (name.isEmpty()){
-                    rocket.addPassenger(new Human(timeUntilHunger, room));
+                    rocket.addPassenger(new Human(timeUntilHunger, room, time));
                 }else if (thumbLength != 0){
                     if (foodName !=null) {
-                        rocket.addPassenger(new Fool(name, timeUntilHunger, room, foodName, thumbLength));
+                        rocket.addPassenger(new Fool(name, timeUntilHunger, room, foodName, thumbLength, time));
                     }else{
-                        rocket.addPassenger(new Fool(name, timeUntilHunger, room, thumbLength));
+                        rocket.addPassenger(new Fool(name, timeUntilHunger, room, thumbLength, time));
                     }
                 }else if (foodName != null){
-                    rocket.addPassenger((new Donut(name, timeUntilHunger, room, foodName)));
+                    rocket.addPassenger((new Donut(name, timeUntilHunger, room, foodName, time)));
                 }else {
-                    rocket.addPassenger(new Human(name, timeUntilHunger, room));
+                    rocket.addPassenger(new Human(name, timeUntilHunger, room, time));
                 }
             }
             statement.close();
@@ -500,8 +499,8 @@ public class Activity {
      * @param connection connection to SQL database
      */
     public void save(ConcurrentSkipListSet<Human> passengers, Connection connection){
-        Statement statement;
         try {
+            Statement statement;
             connection.setAutoCommit(false);
             statement = connection.createStatement();
             statement.executeUpdate("DELETE FROM HUMANS *");
@@ -509,25 +508,26 @@ public class Activity {
             String colums, value;
             for (Human human: passengers) {
                 String name = human.getName();
+                ZonedDateTime time = human.getTime();
                 int timeUntilHunger = human.getTimeUntilHunger();
                 if(human instanceof Fool){
                     Fool fool = (Fool) human;
                     String foodName = fool.getFoodName();
                     int thumbLength = fool.getThumbLength();
-                    colums = "(name, time_until_hunger, food_name, thumb_length, username) ";
-                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"',"+thumbLength+",'admin');";
+                    colums = "(name, time_until_hunger, food_name, thumb_length, username, zoned_time) ";
+                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"',"+thumbLength+",'admin','"+time+"');";
                 }else if (human instanceof Donut){
                     Donut donut = (Donut) human;
                     String foodName = donut.getFoodName();
-                    colums = "(name, time_until_hunger, food_name, username) ";
-                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"','admin');";
-                }else{
-                    colums = "(name, time_until_hunger, username) ";
-                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'admin');";
+                    colums = "(name, time_until_hunger, food_name, username, zoned_time) ";
+                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"','admin','"+time+"');";
+                }else {
+                    colums = "(name, time_until_hunger, username, zoned_time) ";
+                    value = "VALUES ('" + name + "'," + timeUntilHunger + ",'admin','"+time+"');";
                 }
                 statement.executeUpdate(table+colums+value);
             }
-            statement.close();
+            if (statement!=null) statement.close();
             connection.commit();
             connection.close();
         } catch (SQLException e) {

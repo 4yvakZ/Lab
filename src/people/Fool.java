@@ -4,6 +4,7 @@ import rocket.room.*;
 import space.objects.SpaceObject;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 
 import static timeline.Timeline.*;
 
@@ -38,7 +39,14 @@ public class Fool extends Donut{
         super(name, timeUntilHunger, room, foodName);
         thumb = new Thumb(thumbLength);
     }
-
+    public Fool(String name, int timeUntilHunger, Room room, int thumbLength, ZonedDateTime time){
+        super(name, timeUntilHunger, room, time);
+        thumb = new Thumb(thumbLength);
+    }
+    public Fool(String name, int timeUntilHunger,  Room room, String foodName,int thumbLength, ZonedDateTime time){
+        super(name, timeUntilHunger, room, foodName, time);
+        thumb = new Thumb(thumbLength);
+    }
     public void seems(int distance, int rocketSpeed){
         String str = getCurrentTime() + " часов: " + name + ": кажется, что ";
         if(distance/rocketSpeed > thumb.getLength()/2){

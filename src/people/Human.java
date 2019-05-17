@@ -3,16 +3,17 @@ package people;
 import rocket.room.*;
 import java.io.Serializable;
 import static timeline.Timeline.*;
-import java.util.Date;
+
+import java.time.ZonedDateTime;
 
 public class Human implements Comparable<Human>, Serializable {
     final String name;
     final int timeUntilHunger;
     int lastMealTime = 0;
     Room room;
-    private Date date;
+    final private ZonedDateTime time;
     public Human(int timeUntilHunger, Room room){
-        date = new Date();
+        time= ZonedDateTime.now();
         this.timeUntilHunger = timeUntilHunger;
         this.name = "Эй ты";
         try{
@@ -25,7 +26,33 @@ public class Human implements Comparable<Human>, Serializable {
         }
     }
     public Human(String name, int timeUntilHunger, Room room){
-        date = new Date();
+        time= ZonedDateTime.now();
+        this.timeUntilHunger = timeUntilHunger;
+        this.name = name;
+        try{
+            if(room == null){
+                throw new NullPointerException();
+            }
+            this.room = room;
+        }catch(NullPointerException e){
+            throw new RoomException(name, e);
+        }
+    }
+    public Human(int timeUntilHunger, Room room, ZonedDateTime time){
+        this.time= time;
+        this.timeUntilHunger = timeUntilHunger;
+        this.name = "Эй ты";
+        try{
+            if(room == null){
+                throw new NullPointerException();
+            }
+            this.room = room;
+        }catch(NullPointerException e){
+            throw new RoomException(name, e);
+        }
+    }
+    public Human(String name, int timeUntilHunger, Room room, ZonedDateTime time){
+        this.time= time;
         this.timeUntilHunger = timeUntilHunger;
         this.name = name;
         try{
@@ -94,5 +121,9 @@ public class Human implements Comparable<Human>, Serializable {
 
     public void setRoom(Room room) {
         this.room = room;
+    }
+
+    public ZonedDateTime getTime() {
+        return time;
     }
 }

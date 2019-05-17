@@ -1,12 +1,22 @@
 package people;
 
 import rocket.room.*;
+
+import java.time.ZonedDateTime;
+
 import static timeline.Timeline.*;
 
 public class Donut extends Human{
     private String foodName = "";
     public Donut(String name,int timeUntilHunger, Room room){
         super(name, timeUntilHunger, room);
+    }
+    public Donut(String name,int timeUntilHunger, Room room, String foodName, ZonedDateTime time){
+        super(name, timeUntilHunger, room, time);
+        this.foodName = foodName;
+    }
+    public Donut(String name, int timeUntilHunger, Room room, ZonedDateTime time){
+        super(name, timeUntilHunger, room, time);
     }
     public Donut(String name,int timeUntilHunger, Room room, String foodName){
         super(name, timeUntilHunger, room);
