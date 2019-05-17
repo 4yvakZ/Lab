@@ -1,4 +1,4 @@
-package activity;
+package security;
 
 import java.io.Serializable;
 
@@ -8,7 +8,7 @@ public class User implements Comparable<User>, Serializable {
 
     public User(String login, String password){
         this.login = login;
-        this.password = password;
+        this.password =  password;
     }
     public String getLogin() {
         return login;

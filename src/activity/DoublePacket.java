@@ -1,6 +1,7 @@
 package activity;
 
 import people.Human;
+import security.User;
 
 import java.io.Serializable;
 

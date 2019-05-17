@@ -1,11 +1,10 @@
 import activity.*;
-import people.Donut;
-import people.Fool;
 import people.Human;
 import rocket.Rocket;
 import rocket.SpeedException;
 import rocket.room.Room;
 import rocket.room.Type;
+import security.User;
 import space.objects.Earth;
 import space.objects.Moon;
 import space.objects.SpaceObject;
@@ -24,7 +23,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import static timeline.Timeline.setTime;
-import static activity.Serializer.*;
+import static security.Serializer.*;
 
 public class DatagramChannelServer {
     public static void main(String[] args) throws IOException {

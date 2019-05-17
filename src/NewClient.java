@@ -1,5 +1,5 @@
 import activity.DoublePacket;
-import activity.User;
+import security.User;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -17,8 +17,8 @@ import java.net.InetAddress;
 import java.net.PortUnreachableException;
 import java.nio.CharBuffer;
 import java.util.Scanner;
-import static activity.Serializer.*;
-
+import static security.Serializer.*;
+import static security.MD2Hasher.*;
 
 public class NewClient {
     private static Room temporyRoom = new Room(Type.FOODSTORAGE, "Бездна");
@@ -40,7 +40,7 @@ public class NewClient {
                     if (line.equalsIgnoreCase("disconnect")) break;
                     if (line.isEmpty()) continue;
                     String login = line.split(" ")[0];
-                    String password = line.split(" ")[1];
+                    String password = hashString(line.split(" ")[1]);
                     String commandWord = line.split(" ")[2];
                     try {
                         if (commandWord.equals("import")) {
