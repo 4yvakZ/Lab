@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import static timeline.Timeline.getCurrentTime;
 import static timeline.Timeline.increaseTime;
 
-public class DatagramCommand extends Thread{
+public final class DatagramCommand extends Thread{
     private SocketAddress received;
     private ConcurrentSkipListSet<Human> passengers;
     private Activity activity;

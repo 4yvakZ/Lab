@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  *
  */
-public class Activity {
+public final class Activity {
     private final String saveFile = "save.csv";
     private Room room;
 

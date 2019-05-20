@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class MD2Hasher {
+public final class MD2Hasher {
     private MD2Hasher(){}
     public static String hashString(String input) {
         try {

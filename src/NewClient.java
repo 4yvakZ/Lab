@@ -23,7 +23,9 @@ import static security.MD2Hasher.*;
 public class NewClient {
     private static Room temporyRoom = new Room(Type.FOODSTORAGE, "Бездна");
     public static void main(String[] args) throws IOException {
-        System.out.println("Welcome to Client side");
+        System.out.println("Welcome to Client side to register new user type your mail else use your account and pattern:\n" +
+                "mail password command\n" +
+                "to see the list of commands use \"help\" command");
         DatagramSocket socket = new DatagramSocket();
         InetAddress address = InetAddress.getByName("localhost");
         socket.connect(address, 8989);
@@ -33,52 +35,58 @@ public class NewClient {
         try {
             while (true) {
                 try {
-
-
                     System.out.print("->");
                     String line = scanner.nextLine();
+
                     if (line.equalsIgnoreCase("disconnect")) break;
                     if (line.isEmpty()) continue;
-                    String login = line.split(" ")[0];
-                    String username = login;
-                    String password = hashString(line.split(" ")[1]);
-                    String commandWord = line.split(" ")[2];
-                    try {
-                        if (commandWord.equals("import")) {
-                            line = "load " + readFile(line.split(" ", 2)[1]);
-                        }
-                    } catch (IOException e) {
-                        System.out.println("File " + line.split(" ", 2)[1] + " does not exist");
-                        continue;
-                    }
-                    Human human = null;
-                    if (commandWord.equals("add") || commandWord.equals("remove_lower") || commandWord.equals("add_if_max") || commandWord.equals("remove")) {
+                    if (line.split(" ").length == 1){
+                        DoublePacket doublePacket = new DoublePacket(line, null, null);
+                        buf = serialize(doublePacket);
+                        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                        socket.send(packet);
+                    }else {
+                        String login = line.split(" ")[0];
+                        String username = login;
+                        String password = hashString(line.split(" ")[1]);
+                        String commandWord = line.split(" ")[2];
                         try {
+                            if (commandWord.equals("import")) {
+                                line = "load " + readFile(line.split(" ", 2)[1]);
+                            }
+                        } catch (IOException e) {
+                            System.out.println("File " + line.split(" ", 2)[1] + " does not exist");
+                            continue;
+                        }
+                        Human human = null;
+                        if (commandWord.equals("add") || commandWord.equals("remove_lower") || commandWord.equals("add_if_max") || commandWord.equals("remove")) {
+                            try {
                         /*buf = commandWord.getBytes();
                         DatagramPacket packet = new DatagramPacket(buf, buf.length);
                         socket.send(packet);*/
-                            human = readJSON(line.split(" ", 4)[3], username);
+                                human = readJSON(line.split(" ", 4)[3], username);
                         /*ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         ObjectOutputStream objos = new ObjectOutputStream(bos);
                         objos.writeObject(human);
                         objos.close();
                         buf = bos.toByteArray();*/
-                            DoublePacket doublePacket = new DoublePacket(commandWord, human, new User(login, password));
+                                DoublePacket doublePacket = new DoublePacket(commandWord, human, new User(login, password));
+                                buf = serialize(doublePacket);
+                                DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                                socket.send(packet);
+                            } catch (ParseException e) {
+                                System.out.println("Wrong format!");
+                                continue;
+                            } catch (NullPointerException e) {
+                                System.out.println("wrong format!");
+                                continue;
+                            }
+                        } else {
+                            DoublePacket doublePacket = new DoublePacket(line.split(" ", 3)[2], null, new User(login, password));
                             buf = serialize(doublePacket);
                             DatagramPacket packet = new DatagramPacket(buf, buf.length);
                             socket.send(packet);
-                        } catch (ParseException e) {
-                            System.out.println("Wrong format!");
-                            continue;
-                        } catch (NullPointerException e) {
-                            System.out.println("wrong format!");
-                            continue;
                         }
-                    } else {
-                        DoublePacket doublePacket = new DoublePacket(line.split(" ", 3)[2], null, new User(login, password));
-                        buf = serialize(doublePacket);
-                        DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                        socket.send(packet);
                     }
                     byte[] buffer = new byte[65000];
                     DatagramPacket packet1 = new DatagramPacket(buffer, buffer.length);

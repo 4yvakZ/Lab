@@ -1,10 +1,10 @@
-package activity;
+package PostgresSQL;
 
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class PostgresConnector {
+public final class PostgresConnector {
 
     private final String databaseURL;
     private final String user;

@@ -1,4 +1,7 @@
+import PostgresSQL.PasswordGenerator;
+import PostgresSQL.PostgresConnector;
 import activity.*;
+import mail.MailSender;
 import people.Human;
 import rocket.Rocket;
 import rocket.SpeedException;
@@ -9,6 +12,7 @@ import space.objects.Earth;
 import space.objects.Moon;
 import space.objects.SpaceObject;
 
+import javax.mail.SendFailedException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -24,6 +28,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import static timeline.Timeline.setTime;
 import static security.Serializer.*;
+import static security.MD2Hasher.*;
 
 public class DatagramChannelServer {
     public static void main(String[] args) throws IOException {
@@ -85,6 +90,40 @@ public class DatagramChannelServer {
 
 
             User user = doublePacket.getUser();
+
+            if(user == null){
+                boolean userExist = false;
+                for (User user1: users) {
+                    if(user1.getLogin().equals(doublePacket.getCommad())) userExist = true;
+                }
+                if(userExist){
+                    server.send(ByteBuffer.wrap("User with this email already exist".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+                    continue;
+                }
+                PasswordGenerator passwordGenerator = new PasswordGenerator(true,true,true);
+                String password = passwordGenerator.generatePassword(16);
+                user = new User(doublePacket.getCommad(), hashString(password));
+                try {
+                    MailSender mailSender = new MailSender(user.getLogin(), "Welcome new User,\n\n"
+                            + "Your password is " + password);
+                    mailSender.send();
+                }catch (SendFailedException e){
+                    server.send(ByteBuffer.wrap("Invalid email address".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+                    continue;
+                }
+                users.add(user);
+                try {
+                    connection.setAutoCommit(false);
+                    Statement statement = connection.createStatement();
+                    statement.executeUpdate("INSERT INTO users (login, password) VALUES('" + user.getLogin() + "','" + user.getPassword() + "')");
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                server.send(ByteBuffer.wrap("If you haven't received letter with your password in 5 minutes maybe you entered wrong email address".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+                continue;
+            }
+
             String username = user.getLogin();
             boolean authorisation = false;
             for(User user1: users){
