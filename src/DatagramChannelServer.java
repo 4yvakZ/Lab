@@ -1,4 +1,4 @@
-import PostgresSQL.PasswordGenerator;
+import security.PasswordGenerator;
 import PostgresSQL.PostgresConnector;
 import activity.*;
 import mail.MailSender;

@@ -1,4 +1,4 @@
-package PostgresSQL;
+package security;
 
 public final class PasswordGenerator {
 
