@@ -114,15 +114,16 @@ public class Human implements Comparable<Human>, Serializable {
         return room.equals(human.getRoom())
                 && name.equals(human.getName())
                 && lastMealTime == human.getLastMealTime()
-                && timeUntilHunger == human.getTimeUntilHunger();
+                && timeUntilHunger == human.getTimeUntilHunger()
+                && username.equals(human.username);
     }
 
     @Override
     public int compareTo(Human human) {
-        if (room.compareTo(human.getRoom()) == 0){
-            return name.compareTo(human.name);
+        if (name.compareTo(human.name) == 0){
+            return username.compareTo(human.getUsername());
         }
-        return room.compareTo(human.getRoom());
+        return name.compareTo(human.name);
     }
 
     public void setRoom(Room room) {

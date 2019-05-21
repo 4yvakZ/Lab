@@ -338,25 +338,6 @@ public final class Activity {
 
     /**<p>Remove all elements lower than written</p>
      * @param passengers Human collection
-     * @param string JSON string
-     * @param username active username
-     * @return action message
-     * @throws ParseException wrong format exception
-     * @throws NullPointerException wrong format exception
-     */
-    public String removeLower(ConcurrentSkipListSet<Human> passengers, String string, String username) throws ParseException, NullPointerException {
-        Human human;
-        human = readJSON(string, username);
-        if(passengers.retainAll(passengers.stream()
-                .filter(x -> x.compareTo(human) >= 0)
-                .collect(Collectors.toCollection(ConcurrentSkipListSet::new)))){
-            return "Some objects were removed";
-        }
-        return "Nothing happened";
-    }
-
-    /**<p>Remove all elements lower than written</p>
-     * @param passengers Human collection
      * @param human to remove lower
      * @return action message
      * @throws NullPointerException wrong format exception
@@ -368,22 +349,6 @@ public final class Activity {
             return "Some objects were removed";
         }
         return "Nothing happened";
-    }
-
-    /**<p>Remove element from Human collection</p>
-     * @param passengers Human collection
-     * @param string JSON string
-     * @param username active username
-     * @return action message
-     * @throws NullPointerException wrong format exception
-     * @throws ParseException wrong format exception
-     */
-    public String remove(ConcurrentSkipListSet<Human> passengers, String string, String username) throws NullPointerException, ParseException {
-        Human human = readJSON(string, username);
-        if(passengers.remove(human)){
-            return human.toString() + " was successfully removed";
-        }
-        return "Nothing was removed";
     }
 
     /**<p>Remove element from Human collection</p>
@@ -494,21 +459,22 @@ public final class Activity {
             for (Human human: passengers) {
                 String name = human.getName();
                 ZonedDateTime time = human.getTime();
+                String username = human.getUsername();
                 int timeUntilHunger = human.getTimeUntilHunger();
                 if(human instanceof Fool){
                     Fool fool = (Fool) human;
                     String foodName = fool.getFoodName();
                     int thumbLength = fool.getThumbLength();
                     colums = "(name, time_until_hunger, food_name, thumb_length, username, zoned_time) ";
-                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"',"+thumbLength+",'admin','"+time+"');";
+                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"',"+thumbLength+",'"+username +"','"+time+"');";
                 }else if (human instanceof Donut){
                     Donut donut = (Donut) human;
                     String foodName = donut.getFoodName();
                     colums = "(name, time_until_hunger, food_name, username, zoned_time) ";
-                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"','admin','"+time+"');";
+                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"','"+username +"','"+time+"');";
                 }else {
                     colums = "(name, time_until_hunger, username, zoned_time) ";
-                    value = "VALUES ('" + name + "'," + timeUntilHunger + ",'admin','"+time+"');";
+                    value = "VALUES ('" + name + "'," + timeUntilHunger + ",'"+username +"','"+time+"');";
                 }
                 statement.executeUpdate(table+colums+value);
             }

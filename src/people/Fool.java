@@ -64,4 +64,10 @@ public class Fool extends Donut{
     public int getThumbLength() {
         return thumb.getLength();
     }
+
+    public boolean equals(Fool human) {
+        return super.equals(human)
+                &&getThumbLength() == human.getThumbLength()
+                &&foodName.equals(human.getFoodName());
+    }
 }

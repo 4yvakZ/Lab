@@ -1,3 +1,4 @@
+import security.EmailValidator;
 import security.PasswordGenerator;
 import PostgresSQL.PostgresConnector;
 import activity.*;
@@ -72,95 +73,94 @@ public class DatagramChannelServer {
             e.printStackTrace();
         }
 
+        DoublePacket doublePacket = null;
         while (true) {
             ByteBuffer buffer = ByteBuffer.allocate(650000);
-            //receive buffer from client.
             SocketAddress remoteAdd = server.receive(buffer);
-            //change mode of buffer
             buffer.flip();
             int limits = buffer.limit();
             byte bytes[] = new byte[limits];
             buffer.get(bytes, 0, limits);
-            DoublePacket doublePacket = null;
             try {
                 doublePacket = (DoublePacket) deserialize(buffer.array());
             } catch (ClassNotFoundException e) {
                 System.out.println("Not serialized object");
             }
 
-
             User user = doublePacket.getUser();
+            String msg = doublePacket.getCommad();
 
-            if(user == null){
-                boolean userExist = false;
-                for (User user1: users) {
-                    if(user1.getLogin().equals(doublePacket.getCommad())) userExist = true;
-                }
-                if(userExist){
-                    server.send(ByteBuffer.wrap("User with this email already exist".getBytes(StandardCharsets.UTF_8)), remoteAdd);
-                    continue;
-                }
-                PasswordGenerator passwordGenerator = new PasswordGenerator(true,true,true);
-                String password = passwordGenerator.generatePassword(16);
-                user = new User(doublePacket.getCommad(), hashString(password));
-                try {
-                    MailSender mailSender = new MailSender(user.getLogin(), "Welcome new User,\n\n"
-                            + "Your password is " + password);
-                    mailSender.send();
-                }catch (SendFailedException e){
-                    server.send(ByteBuffer.wrap("Invalid email address".getBytes(StandardCharsets.UTF_8)), remoteAdd);
-                    continue;
-                }
-                users.add(user);
-                try {
-                    connection.setAutoCommit(false);
-                    Statement statement = connection.createStatement();
-                    statement.executeUpdate("INSERT INTO users (login, password) VALUES('" + user.getLogin() + "','" + user.getPassword() + "')");
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                server.send(ByteBuffer.wrap("If you haven't received letter with your password in 5 minutes maybe you entered wrong email address".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+            if (user == null) {
+                registration(users,doublePacket,server,remoteAdd, connection);
                 continue;
             }
 
-            String username = user.getLogin();
             boolean authorisation = false;
-            for(User user1: users){
-                if(user.equals(user1)){
+            for (User user1 : users) {
+                if (user.equals(user1)) {
                     authorisation = true;
                     break;
                 }
             }
-            if(!authorisation){
+            if (!authorisation) {
                 server.send(ByteBuffer.wrap("Wrong login or password!".getBytes(StandardCharsets.UTF_8)), remoteAdd);
                 continue;
+            }else if (msg == null){
+                server.send(ByteBuffer.wrap(("Welcome back "+user.getLogin()).getBytes(StandardCharsets.UTF_8)), remoteAdd);
+                continue;
             }
-            String msg = doublePacket.getCommad();
+
             System.out.println(msg);
             String command = msg.split(" ", 2)[0];
             if (msg.equalsIgnoreCase("shutdown")) {
                 server.send(ByteBuffer.wrap("Server shutdown".getBytes(StandardCharsets.UTF_8)), remoteAdd);
                 break;
-            } else if(command.equals("add")|| command.equals("remove_lower")|| command.equals("add_if_max")|| command.equals("remove")) {
-                //ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(msg.split(" ", 2)[1].getBytes()));
-                //Human human = (Human) objectInputStream.readObject();
+            } else if (command.equals("add") || command.equals("remove_lower") || command.equals("add_if_max") || command.equals("remove")) {
                 Human human = doublePacket.getHuman();
-                //objectInputStream.close();
-                /*buffer.flip();
-                limits = buffer.limit();
-                bytes = new byte[limits];
-                buffer.get(bytes, 0, limits);
-                ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-                ObjectInputStream objos = new ObjectInputStream(bis);*/
                 human.setRoom(cabin);
                 new DatagramCommand(remoteAdd, passengers, activity, server, command, human);
             } else {
-                //server.send(ByteBuffer.wrap(msg.getBytes(StandardCharsets.UTF_8)), remoteAdd);
-                new DatagramCommand(remoteAdd, passengers, activity, server, foodStorage, msg, rocket, username);
+                new DatagramCommand(remoteAdd, passengers, activity, server, foodStorage, msg, rocket, user.getLogin());
             }
         }
         System.out.println("Server shutdown");
         server.close();
+    }
+
+    static void registration(TreeSet<User> users, DoublePacket doublePacket, DatagramChannel server, SocketAddress remoteAdd, Connection connection) throws IOException {
+        boolean userExist = false;
+        EmailValidator emailValidator = new EmailValidator();
+        for (User user1 : users) {
+            if (user1.getLogin().equals(doublePacket.getCommad())) userExist = true;
+        }
+        if (userExist) {
+            server.send(ByteBuffer.wrap("User with this email already exist".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+            return;
+        }
+        if(!emailValidator.validate(doublePacket.getCommad())){
+            server.send(ByteBuffer.wrap("Invalid email address".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+            return;
+        }
+        PasswordGenerator passwordGenerator = new PasswordGenerator(true, true, true);
+        String password = passwordGenerator.generatePassword(16);
+        User user = new User(doublePacket.getCommad(), hashString(password));
+        try {
+            MailSender mailSender = new MailSender(user.getLogin(), "Welcome new User,\n\n"
+                    + "Your password is " + password);
+            mailSender.send();
+        } catch (SendFailedException e) {
+            server.send(ByteBuffer.wrap("Invalid email address".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+            return;
+        }
+        users.add(user);
+        try {
+            connection.setAutoCommit(false);
+            Statement statement = connection.createStatement();
+            statement.executeUpdate("INSERT INTO users (login, password) VALUES('" + user.getLogin() + "','" + user.getPassword() + "')");
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        server.send(ByteBuffer.wrap("If you haven't received letter with your password in 5 minutes maybe you entered wrong email address".getBytes(StandardCharsets.UTF_8)), remoteAdd);
     }
 }

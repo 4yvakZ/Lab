@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 import static timeline.Timeline.*;
 
 public class Donut extends Human{
-    private String foodName = "";
+    protected String foodName = "";
     public Donut(String name, int timeUntilHunger, Room room, String username){
         super(name, timeUntilHunger, username, room);
     }
@@ -71,5 +71,10 @@ public class Donut extends Human{
             return getCurrentTime() + " часов: " + name + ": ест "+ food.toString() + ", находясь в " + room.toString() + ".";
         }
         return getCurrentTime() + " часов: " + name + ": не нашёл "+ food.toString() + ", находясь в " + room.toString() + ".";
+    }
+
+    public boolean equals(Donut human) {
+        return super.equals(human)
+                &&foodName.equals(human.getFoodName());
     }
 }
