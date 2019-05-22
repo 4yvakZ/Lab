@@ -28,7 +28,7 @@ public class NewClient {
                 "to register new user type \"reg\" <your mail>\n" +
                 "to use your account use \"sign in\" command:\n" +
                 "to exit your account type \"sign out\"\n" +
-                "to exit program use \"disconnect\"");
+                "to exit program use \"exit\"");
         DatagramSocket socket = new DatagramSocket();
         InetAddress address = InetAddress.getByName("localhost");
         socket.connect(address, 8989);
@@ -40,7 +40,7 @@ public class NewClient {
                     System.out.print("->");
                     String line = scanner.nextLine();
 
-                    if (line.equalsIgnoreCase("disconnect")) break;
+                    if (line.equalsIgnoreCase("exit")) break;
                     if (line.isEmpty()) continue;
                     if (line.split(" ", 2)[0].equals("reg")){
                         send(line.split(" ",2)[1], null, null, socket);
