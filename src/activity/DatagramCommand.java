@@ -16,12 +16,12 @@ import static timeline.Timeline.getCurrentTime;
 import static timeline.Timeline.increaseTime;
 
 public final class DatagramCommand extends Thread{
-    private SocketAddress received;
-    private ConcurrentSkipListSet<Human> passengers;
-    private Activity activity;
-    private DatagramChannel channel;
+    private final SocketAddress received;
+    private final ConcurrentSkipListSet<Human> passengers;
+    private final Activity activity;
+    private final DatagramChannel channel;
     private Room foodStorage;
-    private String msg;
+    private final String msg;
     private Rocket rocket;
 
     public DatagramCommand(SocketAddress received, ConcurrentSkipListSet<Human> passengers, Activity activity, DatagramChannel channel, String msg, Human human) throws IOException {

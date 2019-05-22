@@ -323,7 +323,7 @@ public final class Activity {
      */
     public String show(ConcurrentSkipListSet<Human> passengers){
         StringBuilder out = new StringBuilder();
-        passengers.stream().forEach(x-> out.append(x.getInfo()+ "\n"));
+        passengers.forEach(x-> out.append(x.getInfo()+ "\n"));
         out.deleteCharAt(out.length()-1);
         return out.toString();
     }

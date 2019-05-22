@@ -11,7 +11,7 @@ public class Human implements Comparable<Human>, Serializable {
     protected final String name;
     protected final int timeUntilHunger;
     protected int lastMealTime = 0;
-    private String username;
+    private final String username;
     protected Room room;
     final private ZonedDateTime time;
     public Human(int timeUntilHunger, String username, Room room){

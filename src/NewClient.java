@@ -22,7 +22,7 @@ import static security.Serializer.*;
 import static security.MD2Hasher.*;
 
 public class NewClient {
-    private static Room temporyRoom = new Room(Type.FOODSTORAGE, "Бездна");
+    private static final Room temporyRoom = new Room(Type.FOODSTORAGE, "Бездна");
     public static void main(String[] args) throws IOException {
         System.out.println("Welcome to Client side\n" +
                 "to register new user type \"reg\" <your mail>\n" +
@@ -33,7 +33,6 @@ public class NewClient {
         InetAddress address = InetAddress.getByName("localhost");
         socket.connect(address, 8989);
         Scanner scanner = new Scanner(System.in);
-        byte[] buf;
         try {
             while (true) {
                 try {
@@ -64,7 +63,7 @@ public class NewClient {
                                 System.out.println("File " + line.split(" ", 2)[1] + " does not exist");
                                 continue;
                             }
-                            Human human = null;
+                            Human human;
                             if (commandWord.equals("add") || commandWord.equals("remove_lower") || commandWord.equals("add_if_max") || commandWord.equals("remove")) {
                                 try {
                                     human = readJSON(line.split(" ", 2)[1], login);
@@ -104,7 +103,7 @@ public class NewClient {
         reader.read(buffer);
         buffer.flip();
         int limits = buffer.limit();
-        char chars[] = new char[limits];
+        char[] chars = new char[limits];
         buffer.get(chars, 0, limits);
         String msg = new String(chars);
         reader.close();

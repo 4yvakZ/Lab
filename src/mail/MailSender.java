@@ -1,9 +1,6 @@
 package mail;
 
 import javax.mail.*;
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -13,13 +10,13 @@ import java.util.Properties;
 
 public final class MailSender {
 
-    private String receiver;
-    private String text;
+    private final String receiver;
+    private final String text;
     public MailSender(String receiver, String text){
         this.receiver = receiver;
         this.text = text;
     }
-    public void send() throws SendFailedException{
+    public void send() {
     //public static void main(String[] args) {
         final String username = "oreoflamespam@gmail.com";
         final String password = "filmmuwfuhlkdlpw";

@@ -1,7 +1,6 @@
 package people;
 
 import rocket.room.*;
-import security.User;
 
 import java.time.ZonedDateTime;
 
@@ -43,7 +42,7 @@ public class Donut extends Human{
     }
     public String eat(){
         class DonutFood{
-            private String name;
+            private final String name;
             private DonutFood(){
                 name = "Пышка";
             }

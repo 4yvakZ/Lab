@@ -3,7 +3,6 @@ package PostgresSQL;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
 
 public final class PostgresConnector {
 

@@ -79,7 +79,7 @@ public class DatagramChannelServer {
             SocketAddress remoteAdd = server.receive(buffer);
             buffer.flip();
             int limits = buffer.limit();
-            byte bytes[] = new byte[limits];
+            byte[] bytes = new byte[limits];
             buffer.get(bytes, 0, limits);
             try {
                 doublePacket = (DoublePacket) deserialize(buffer.array());
