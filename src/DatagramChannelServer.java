@@ -137,21 +137,16 @@ public class DatagramChannelServer {
             server.send(ByteBuffer.wrap("User with this email already exist".getBytes(StandardCharsets.UTF_8)), remoteAdd);
             return;
         }
-        if(!emailValidator.validate(doublePacket.getCommad())){
+        if (!emailValidator.validate(doublePacket.getCommad())) {
             server.send(ByteBuffer.wrap("Invalid email address".getBytes(StandardCharsets.UTF_8)), remoteAdd);
             return;
         }
         PasswordGenerator passwordGenerator = new PasswordGenerator(true, true, true);
         String password = passwordGenerator.generatePassword(16);
         User user = new User(doublePacket.getCommad(), hashString(password));
-        try {
-            MailSender mailSender = new MailSender(user.getLogin(), "Welcome new User,\n\n"
-                    + "Your password is " + password);
-            mailSender.send();
-        } catch (SendFailedException e) {
-            server.send(ByteBuffer.wrap("Invalid email address".getBytes(StandardCharsets.UTF_8)), remoteAdd);
-            return;
-        }
+        MailSender mailSender = new MailSender(user.getLogin(), "Welcome new User,\n\n"
+                + "Your password is " + password);
+        mailSender.send();
         users.add(user);
         try {
             connection.setAutoCommit(false);
