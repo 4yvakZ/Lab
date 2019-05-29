@@ -1,4 +1,6 @@
 { "name": "JsonTest", "thumbLength": 10, "foodName":"KEk", "timeUntilHunger": 8, }
-{ "name": "Keklol","thumbLength": 10, "foodName":"KEk", "timeUntilHunger": 8, }
+add { "name": "Keklol","thumbLength": 10, "foodName":"KEk", "timeUntilHunger": 8, }
+
+remove { "name": "Keklol","thumbLength": 10, "foodName":"KEk", "timeUntilHunger": 8, }
 next_hour
 remove_lower { "name": "О","thumbLength": 10, "foodName":"KEk", "timeUntilHunger": 8, }

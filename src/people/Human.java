@@ -8,6 +8,7 @@ import static timeline.Timeline.*;
 import java.time.ZonedDateTime;
 
 public class Human implements Comparable<Human>, Serializable {
+    private static final long serialVersionUID = 4L;
     protected final String name;
     protected final int timeUntilHunger;
     protected int lastMealTime = 0;

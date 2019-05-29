@@ -69,10 +69,12 @@ public class NewClient {
                                     human = readJSON(line.split(" ", 2)[1], login);
                                     send(commandWord, human, new User(login, password), socket);
                                 } catch (ParseException e) {
-                                    System.out.println("Wrong format!");
+                                    System.out.println("Wrong format!\n->");
+                                    line = scanner.nextLine();
                                     continue;
                                 } catch (NullPointerException e) {
-                                    System.out.println("wrong format!");
+                                    System.out.println("wrong format!\n->");
+                                    line = scanner.nextLine();
                                     continue;
                                 }
                             } else if(line.equals("sign out")) {
