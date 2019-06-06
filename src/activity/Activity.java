@@ -23,6 +23,16 @@ import java.util.stream.Collectors;
 public final class Activity {
     private final String saveFile = "save.csv";
     private Room room;
+    private static Activity activity;
+
+    private Activity(){}
+
+    public static synchronized Activity getActivity() {
+        if(activity == null){
+            activity = new Activity();
+        }
+        return activity;
+    }
 
     /**<p>Read collection from SQL database</p>
      * @param connection connection to SQL database

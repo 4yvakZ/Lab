@@ -38,8 +38,7 @@ public class DatagramChannelServer {
         server.bind(iAdd);
         System.out.println("Server Started: " + iAdd);
 
-
-        Activity activity = new Activity();
+        Activity activity = Activity.getActivity();
         setTime(0);
         Room cabin = new Room(Type.CABIN, "Кабина");
         Room foodStorage = new Room(Type.FOODSTORAGE, "Пищевой блок");
