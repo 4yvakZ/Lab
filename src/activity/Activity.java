@@ -48,7 +48,7 @@ public final class Activity {
             while (resultSet.next()){
                 int timeUntilHunger = resultSet.getInt("time_until_hunger");
                 int thumbLength = resultSet.getInt("thumb_length");
-                String name = resultSet.getString("name");
+                String name = resultSet.getString("hello");
                 String foodName = resultSet.getString("food_name");
                 ZonedDateTime time = ZonedDateTime.parse(resultSet.getString("zoned_time"));
                 String user = resultSet.getString("username");
@@ -218,8 +218,8 @@ public final class Activity {
 
         JSONObject jo = (JSONObject) new JSONParser().parse(string);
         String name;
-        if(jo.get("name") instanceof String) {
-            name = (String) jo.get("name");
+        if(jo.get("hello") instanceof String) {
+            name = (String) jo.get("hello");
         }else{
             throw new ParseException(0);
         }

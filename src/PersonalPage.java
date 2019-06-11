@@ -14,7 +14,7 @@ public class PersonalPage extends JFrame {
     private ResourceBundle bundle;
     private JComboBox<Locale> languageComboBox = new JComboBox<>();
     private JButton sendButton, back;
-    private JLabel helloLabel, languageLabel;
+    private JLabel helloLabel, languageLabel, commandLabel, nameLabel, timeUntilHungerLabel, foodNameLabel, thumbLengthLabel, objectsLabel, usersLabel;
 
     public PersonalPage(String username, DatagramSocket socket, Locale locale) {
         Font font = new Font("Arial", Font.BOLD, 14);
@@ -31,7 +31,7 @@ public class PersonalPage extends JFrame {
 
         topBox.add(Box.createVerticalStrut(20));
 
-        helloLabel = new JLabel(bundle.getString("name") + ", " + username + "!");
+        helloLabel = new JLabel(bundle.getString("hello") + ", " + username + "!");
         helloLabel.setFont(font);
 
         topBox.add(helloLabel);
@@ -47,7 +47,7 @@ public class PersonalPage extends JFrame {
 
         JPanel topPanel = new JPanel(new GridLayout(1, 5, 5, 5));
 
-        JLabel commandLabel = new JLabel("Command");
+        commandLabel = new JLabel(bundle.getString("command"));
         commandLabel.setFont(font);
 
         topPanel.add(commandLabel);
@@ -91,14 +91,10 @@ public class PersonalPage extends JFrame {
 
         JPanel humanInfoPanel = new JPanel(new GridLayout(4, 2, 10, 10));
 
-        JLabel nameLabel = new JLabel("Name", SwingConstants.CENTER);
-        //nameLabel.setFont(font);
-        JLabel timeUntilHungerLabel = new JLabel("Time Until Hunger", SwingConstants.CENTER);
-        //timeUntilHungerLabel.setFont(font);
-        JLabel foodNameLabel = new JLabel("Food Name", SwingConstants.CENTER);
-        //foodNameLabel.setFont(font);
-        JLabel thumbLengthLabel = new JLabel("Thumb Length", SwingConstants.CENTER);
-        //thumbLengthLabel.setFont(font);
+        nameLabel = new JLabel(bundle.getString("name"), SwingConstants.CENTER);
+        timeUntilHungerLabel = new JLabel(bundle.getString("time_until_hunger"), SwingConstants.CENTER);
+        foodNameLabel = new JLabel(bundle.getString("food_name"), SwingConstants.CENTER);
+        thumbLengthLabel = new JLabel(bundle.getString("thumb_length"), SwingConstants.CENTER);
 
         JTextField nameTextField = new JTextField("", SwingConstants.CENTER);
         JTextField timeUntilHungerTextField = new JTextField("", SwingConstants.CENTER);
@@ -117,14 +113,32 @@ public class PersonalPage extends JFrame {
         bottomBox.add(humanInfoPanel);
         bottomBox.add(Box.createHorizontalStrut(5));
 
+        Box objectsBox = Box.createVerticalBox();
+
+        objectsLabel = new JLabel(bundle.getString("objects"), SwingConstants.CENTER);
+        objectsLabel.setFont(font);
+
+        objectsBox.add(objectsLabel);
+
         JTable humansTable = new JTable(10, 5);
 
-        bottomBox.add(humansTable);
+        objectsBox.add(humansTable);
+
+        bottomBox.add(objectsBox);
         bottomBox.add(Box.createHorizontalStrut(5));
+
+        Box usersBox = Box.createVerticalBox();
+
+        usersLabel = new JLabel(bundle.getString("users"), SwingConstants.CENTER);
+        usersLabel.setFont(font);
+
+        usersBox.add(usersLabel);
 
         JTable usersTable = new JTable(10, 1);
 
-        bottomBox.add(usersTable);
+        usersBox.add(usersTable);
+
+        bottomBox.add(usersBox);
         bottomBox.add(Box.createHorizontalStrut(20));
 
         mainBox.add(bottomBox);
@@ -156,9 +170,16 @@ public class PersonalPage extends JFrame {
 
     private void updateLanguage(Locale locale, String username) {
         bundle = ResourceBundle.getBundle("Bundle", locale);
-        helloLabel.setText(bundle.getString("name") + ", " + username + "!");
+        helloLabel.setText(bundle.getString("hello") + ", " + username + "!");
         languageLabel.setText(bundle.getString("language") + " ");
         sendButton.setText(bundle.getString("send"));
         back.setText(bundle.getString("back"));
+        commandLabel.setText(bundle.getString("command"));
+        nameLabel.setText(bundle.getString("name"));
+        timeUntilHungerLabel.setText(bundle.getString("time_until_hunger"));
+        foodNameLabel.setText(bundle.getString("food_name"));
+        thumbLengthLabel.setText(bundle.getString("thumb_length"));
+        objectsLabel.setText(bundle.getString("objects"));
+        usersLabel.setText(bundle.getString("users"));
     }
 }

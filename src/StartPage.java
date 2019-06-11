@@ -20,7 +20,7 @@ public class StartPage extends JFrame {
     private Locale plLocale = new Locale("pl","PL");
     private Locale esLocale = new Locale("es","ES");
     private ResourceBundle bundle;
-    private JComboBox<Locale> languageComboBox = new JComboBox();
+    private JComboBox<Locale> languageComboBox = new JComboBox<>();
     private JLabel welcomeLabel, loginLabel, passwordLabel,infoLabel;
     private JButton signInButton, signUpButton, exitButton;
     public StartPage(DatagramSocket socket, Locale locale) {
