@@ -3,8 +3,6 @@ import people.Human;
 import security.User;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.*;
 import java.util.Locale;
@@ -93,12 +91,7 @@ public class StartPage extends JFrame {
         languageComboBox.setMaximumSize(new Dimension(100,20));
         languageComboBox.setSelectedItem(locale);
 
-        languageComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                updateLanguage(languageComboBox.getItemAt(languageComboBox.getSelectedIndex()));
-            }
-        });
+        languageComboBox.addActionListener(actionEvent -> updateLanguage(languageComboBox.getItemAt(languageComboBox.getSelectedIndex())));
 
         mainBox.add(languageComboBox);
         mainBox.add(Box.createVerticalStrut(20));

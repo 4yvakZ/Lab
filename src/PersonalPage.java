@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.DatagramSocket;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -144,24 +142,17 @@ public class PersonalPage extends JFrame {
         mainBox.add(bottomBox);
 
         mainBox.add(Box.createHorizontalStrut(20));
-        languageComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                updateLanguage(languageComboBox.getItemAt(languageComboBox.getSelectedIndex()), username);
-            }
-        });
+        languageComboBox.addActionListener(actionEvent -> updateLanguage(languageComboBox.getItemAt(languageComboBox.getSelectedIndex()), username));
 
 
         //Canvas canvas = new Draw();
         //canvas.setSize(900, 500);
         //add(canvas);
 
-        back.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                StartPage window = new StartPage(socket, (Locale) languageComboBox.getSelectedItem());
-                window.setVisible(true);
-                dispose();
-            }
+        back.addActionListener(e -> {
+            StartPage window = new StartPage(socket, (Locale) languageComboBox.getSelectedItem());
+            window.setVisible(true);
+            dispose();
         });
         back.setBounds(800, 0, 100, 50);
 
