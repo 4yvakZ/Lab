@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 
 public class StartPage extends JFrame {
@@ -12,69 +11,67 @@ public class StartPage extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Container container = this.getContentPane();
-        JPanel panel = new JPanel();
-        panel.setLayout(null);
+        Box mainBox = Box.createVerticalBox();
 
-        JLabel label = new JLabel("Welcome!", SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.PLAIN, 24));
-        label.setBounds(0, 0, w, h/4);
-        panel.add(label);
+        JLabel welcomeLabel = new JLabel("Welcome!", SwingConstants.CENTER);
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 40));
+        welcomeLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
-        JLabel label1 = new JLabel("Login", SwingConstants.RIGHT);
-        label1.setBounds(0, 4*h/16, w/4, h/8);
-        panel.add(label1);
+        mainBox.add(Box.createVerticalGlue());
+        mainBox.add(welcomeLabel);
+        mainBox.add(Box.createVerticalStrut(20));
 
-        JLabel label2 = new JLabel("Password", SwingConstants.RIGHT);
-        label2.setBounds(0, 8*h/16, w/4, h/8);
-        panel.add(label2);
+        JPanel loginPasswordPanel = new JPanel(new GridLayout(2,2,5,10));
 
-        JTextField input1 = new JTextField("", SwingConstants.CENTER);
-        input1.setBounds(w/4, 4*h/16, w/2, h/8);
-        panel.add(input1);
+        JLabel loginLabel = new JLabel("Login:", SwingConstants.LEFT);
+        loginLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        JLabel passwordLabel = new JLabel("Password:", SwingConstants.LEFT);
+        passwordLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        JTextField loginInput = new JTextField("", SwingConstants.CENTER);
+        JPasswordField passwordInput = new JPasswordField("", SwingConstants.CENTER);
 
-        JPasswordField input2 = new JPasswordField("", SwingConstants.CENTER);
-        input2.setBounds(w/4, 8*h/16, w/2, h/8);
-        panel.add(input2);
+        loginPasswordPanel.add(loginLabel);
+        loginPasswordPanel.add(loginInput);
+        loginPasswordPanel.add(passwordLabel);
+        loginPasswordPanel.add(passwordInput);
 
-        JButton button1 = new JButton("Sign in");
-        button1.setBounds(0, 3*h/4, w/3, h/4);
-        panel.add(button1);
 
-        JButton button2 = new JButton("Sign up");
-        button2.setBounds(w/3, 3*h/4, w/3, h/4);
-        panel.add(button2);
+        loginPasswordPanel.setMaximumSize(new Dimension(300,200));
 
-        JButton button3 = new JButton("Exit");
-        button3.setBounds(2*w/3, 3*h/4, w/3, h/4);
-        panel.add(button3);
+        mainBox.add(loginPasswordPanel);
+        mainBox.add(Box.createVerticalStrut(20));
 
-        button1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                PersonalPage main_window = new PersonalPage(input1.getText());
-                main_window.setLocationRelativeTo(null);
-                main_window.setVisible(true);
-                setVisible(false);
-            }
+        JPanel buttonPanel = new JPanel(new GridLayout(1,3,5,10));
+
+        JButton signInButton = new JButton("Sign in");
+        JButton signUpButton = new JButton("Sign up");
+        JButton exitButton = new JButton("Exit");
+
+        buttonPanel.add(signInButton);
+        buttonPanel.add(signUpButton);
+        buttonPanel.add(exitButton);
+        buttonPanel.setMaximumSize(new Dimension(400, 1000));
+
+        mainBox.add(buttonPanel);
+        mainBox.add(Box.createVerticalGlue());
+
+        signInButton.addActionListener(actionEvent -> {
+            PersonalPage main_window = new PersonalPage(loginInput.getText());
+            main_window.setLocationRelativeTo(null);
+            main_window.setVisible(true);
+            setVisible(false);
         });
-        button3.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                System.exit(0);
-            }
-        });
-        container.add(panel);
+        exitButton.addActionListener(actionEvent -> System.exit(0));
+        container.add(mainBox);
     }
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    StartPage app = new StartPage();
-                    app.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        EventQueue.invokeLater(() -> {
+            try {
+                StartPage app = new StartPage();
+                app.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
