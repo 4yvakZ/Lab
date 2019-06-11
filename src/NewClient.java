@@ -1,4 +1,5 @@
-import activity.DoublePacket;
+/*
+import activity.ClientPacket;
 import security.User;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -164,8 +165,8 @@ public class NewClient {
     }
 
     private static void send(String commandWord, Human human, User user, DatagramSocket socket) throws IOException {
-        DoublePacket doublePacket = new DoublePacket(commandWord, human, user);
-        byte[] buf = serialize(doublePacket);
+        ClientPacket clientPacket = new ClientPacket(commandWord, human, user);
+        byte[] buf = serialize(clientPacket);
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
         socket.send(packet);
     }
@@ -234,3 +235,4 @@ public class NewClient {
                 "Power the server!");
     }
 }
+*/

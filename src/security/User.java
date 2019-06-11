@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class User implements Comparable<User>, Serializable {
     private String login;
     private String password;
-
+    private static final long serialVersionUID = 4L;
 
     public User(String login){
         this.login = login;

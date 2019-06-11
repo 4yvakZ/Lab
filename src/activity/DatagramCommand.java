@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import static security.Serializer.serialize;
 import static timeline.Timeline.getCurrentTime;
 import static timeline.Timeline.increaseTime;
 
@@ -48,25 +49,23 @@ public final class DatagramCommand extends Thread{
         try {
             switch (msg) {
                 case "add":
-                    channel.send(ByteBuffer.wrap(activity.add(passengers, human).getBytes()),received);
+                    channel.send(ByteBuffer.wrap(serialize(new ServerPacket(activity.add(passengers, human)))),received);
                     break;
                 case "remove_lower":
-                    channel.send(ByteBuffer.wrap(activity.removeLower(passengers, human).getBytes()), received);
+                    channel.send(ByteBuffer.wrap(serialize(new ServerPacket(activity.removeLower(passengers, human)))), received);
                     break;
                 case "remove":
-                    channel.send(ByteBuffer.wrap(activity.remove(passengers, human).getBytes()), received);
+                    channel.send(ByteBuffer.wrap(serialize(new ServerPacket(activity.remove(passengers, human)))), received);
                     break;
                 case "add_if_max":
-                    channel.send(ByteBuffer.wrap(activity.addIfMax(passengers, human).getBytes()), received);
+                    channel.send(ByteBuffer.wrap(serialize(new ServerPacket(activity.addIfMax(passengers, human)))), received);
                     break;
                 default:
-                    channel.send(ByteBuffer.wrap("Input error. Please try again or see 'help'.".getBytes()), received);
+                    channel.send(ByteBuffer.wrap(serialize(new ServerPacket("Input error. Please try again or see 'help'."))), received);
                     break;
             }
-        }catch (NullPointerException e) {
-            channel.send(ByteBuffer.wrap("Wrong format!".getBytes()), received);
-        }catch (ArrayIndexOutOfBoundsException e){
-            channel.send(ByteBuffer.wrap("Wrong format!".getBytes()), received);
+        }catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            channel.send(ByteBuffer.wrap(serialize(new ServerPacket("Wrong format!"))), received);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,54 +75,38 @@ public final class DatagramCommand extends Thread{
         try {
             switch (command) {
                 case "load":
-                    channel.send(ByteBuffer.wrap(activity.load(msg.split(" ", 2)[1], rocket, foodStorage, username).getBytes()), received);
+                    channel.send(ByteBuffer.wrap(serialize(new ServerPacket(activity.load(msg.split(" ", 2)[1], rocket, foodStorage, username)))), received);
                     break;
-                /*case "add":
-                    channel.send(ByteBuffer.wrap(activity.add(passengers, msg.split(" ", 2)[1], foodStorage).getBytes()),received);
-                    break;*/
                 case "show":
-                    channel.send(ByteBuffer.wrap(activity.show(passengers).getBytes()), received);
+                    channel.send(ByteBuffer.wrap(serialize(new ServerPacket(activity.show(passengers)))), received);
                     break;
                 case "info":
-                    channel.send(ByteBuffer.wrap(activity.info(passengers).getBytes()), received);
+                    channel.send(ByteBuffer.wrap(serialize(new ServerPacket(activity.info(passengers)))), received);
                     break;
                 case "help":
                     String help = "List of Command:\nhelp\nadd\nshow\ninfo\nremove_lower {element}\nremove {element}\nadd_if_max {element}\nnext_hour\ndisconnect\nshutdown\nimport file";
-                    channel.send(ByteBuffer.wrap(help.getBytes()), received);
+                    channel.send(ByteBuffer.wrap(serialize(new ServerPacket(help))), received);
                     break;
-                /*case "remove_lower":
-                    channel.send(ByteBuffer.wrap(activity.removeLower(passengers, msg.split(" ", 2)[1]).getBytes()), received);
-                    break;
-                case "remove":
-                    channel.send(ByteBuffer.wrap(activity.remove(passengers, msg.split(" ", 2)[1]).getBytes()), received);
-                    break;
-                case "add_if_max":
-                    channel.send(ByteBuffer.wrap(activity.addIfMax(passengers, msg.split(" ", 1)[1], foodStorage).getBytes()), received);
-                    break;*/
                 case "next_hour":
                     StringBuilder out = new StringBuilder();
-                    passengers.stream().filter(x -> x.isHungryNow()).forEach(x ->{
-                        out.append(x.goTo(foodStorage) + "\n");
-                        out.append(x.eat()+ "\n");
+                    passengers.stream().filter(Human::isHungryNow).forEach(x ->{
+                        out.append(x.goTo(foodStorage)).append("\n");
+                        out.append(x.eat()).append("\n");
                     });
                     if (!out.toString().isEmpty()) {
                         out.deleteCharAt(out.length() - 1);
-                        channel.send(ByteBuffer.wrap(out.toString().getBytes()), received);
+                        channel.send(ByteBuffer.wrap(serialize(new ServerPacket(out.toString()))), received);
                     }else{
-                        channel.send(ByteBuffer.wrap(((getCurrentTime()) + ": Ничего не происходит").getBytes()), received);
+                        channel.send(ByteBuffer.wrap(serialize(new ServerPacket((getCurrentTime()) + ": Ничего не происходит"))), received);
                     }
                     increaseTime();
                     break;
                 default:
-                    channel.send(ByteBuffer.wrap("Input error. Please try again or see 'help'.".getBytes()), received);
+                    channel.send(ByteBuffer.wrap(serialize(new ServerPacket("Input error. Please try again or see 'help'."))), received);
                     break;
             }
-        }catch (NullPointerException e) {
-            channel.send(ByteBuffer.wrap("Wrong format!".getBytes()), received);
-        }catch (ParseException e) {
-            channel.send(ByteBuffer.wrap("Wrong format!".getBytes()), received);
-        }catch (ArrayIndexOutOfBoundsException e){
-            channel.send(ByteBuffer.wrap("Wrong format!".getBytes()), received);
+        }catch (NullPointerException | ParseException | ArrayIndexOutOfBoundsException e) {
+            channel.send(ByteBuffer.wrap(serialize(new ServerPacket("Wrong format!"))), received);
         }
     }
 }

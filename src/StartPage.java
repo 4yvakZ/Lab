@@ -1,4 +1,4 @@
-import activity.DoublePacket;
+import activity.ClientPacket;
 import people.Human;
 import security.User;
 
@@ -143,8 +143,8 @@ public class StartPage extends JFrame {
     }
 
     private static void send(String commandWord, Human human, User user, DatagramSocket socket) throws IOException {
-        DoublePacket doublePacket = new DoublePacket(commandWord, human, user);
-        byte[] buf = serialize(doublePacket);
+        ClientPacket clientPacket = new ClientPacket(commandWord, human, user);
+        byte[] buf = serialize(clientPacket);
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
         socket.send(packet);
     }

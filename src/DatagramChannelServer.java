@@ -37,6 +37,7 @@ public class DatagramChannelServer {
         server.bind(iAdd);
         System.out.println("Server Started: " + iAdd);
 
+        ConcurrentSkipListSet<String> onlineUsers = new ConcurrentSkipListSet<>();
         Activity activity = Activity.getActivity();
         setTime(0);
         Room cabin = new Room(Type.CABIN, "Кабина");
@@ -59,7 +60,7 @@ public class DatagramChannelServer {
             activity.save(passengers, connection);
         }));
 
-        TreeSet<User> users = new TreeSet<User>();
+        ConcurrentSkipListSet<User> users = new ConcurrentSkipListSet<>();
         try {
             connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
@@ -71,7 +72,7 @@ public class DatagramChannelServer {
             e.printStackTrace();
         }
 
-        DoublePacket doublePacket = null;
+        ClientPacket clientPacket = null;
         while (true) {
             ByteBuffer buffer = ByteBuffer.allocate(650000);
             SocketAddress remoteAdd = server.receive(buffer);
@@ -80,16 +81,21 @@ public class DatagramChannelServer {
             byte[] bytes = new byte[limits];
             buffer.get(bytes, 0, limits);
             try {
-                doublePacket = (DoublePacket) deserialize(buffer.array());
+                clientPacket = (ClientPacket) deserialize(buffer.array());
             } catch (ClassNotFoundException e) {
                 System.out.println("Not serialized object");
             }
 
-            User user = doublePacket.getUser();
-            String msg = doublePacket.getCommad();
+            if(clientPacket.isPing()){
+                onlineUsers.add(clientPacket.getUser().getLogin());
+                ServerPacket serverPacket = new ServerPacket(onlineUsers, passengers);
+                server.send(ByteBuffer.wrap(serialize(serverPacket)), remoteAdd);
+            }
+            User user = clientPacket.getUser();
+            String msg = clientPacket.getCommand();
 
             if (user == null) {
-                registration(users,doublePacket,server,remoteAdd, connection);
+                registration(users, clientPacket,server,remoteAdd, connection);
                 continue;
             }
 
@@ -101,20 +107,20 @@ public class DatagramChannelServer {
                 }
             }
             if (!authorisation) {
-                server.send(ByteBuffer.wrap("Wrong login or password!".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+                server.send(ByteBuffer.wrap(serialize(new ServerPacket("Wrong login or password!"))), remoteAdd);
                 continue;
             }else if (msg == null){
-                server.send(ByteBuffer.wrap(("Welcome back "+user.getLogin()).getBytes(StandardCharsets.UTF_8)), remoteAdd);
+                server.send(ByteBuffer.wrap(serialize(new ServerPacket("Welcome back "+user.getLogin()))), remoteAdd);
                 continue;
             }
 
             System.out.println(msg);
             String command = msg.split(" ", 2)[0];
             if (msg.equalsIgnoreCase("shutdown")) {
-                server.send(ByteBuffer.wrap("Server shutdown".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+                server.send(ByteBuffer.wrap(serialize(new ServerPacket("Server shutdown"))), remoteAdd);
                 break;
             } else if (command.equals("add") || command.equals("remove_lower") || command.equals("add_if_max") || command.equals("remove")) {
-                Human human = doublePacket.getHuman();
+                Human human = clientPacket.getHuman();
                 human.setRoom(cabin);
                 new DatagramCommand(remoteAdd, passengers, activity, server, command, human);
             } else {
@@ -125,23 +131,23 @@ public class DatagramChannelServer {
         server.close();
     }
 
-    static void registration(TreeSet<User> users, DoublePacket doublePacket, DatagramChannel server, SocketAddress remoteAdd, Connection connection) throws IOException {
+    static void registration(ConcurrentSkipListSet<User> users, ClientPacket clientPacket, DatagramChannel server, SocketAddress remoteAdd, Connection connection) throws IOException {
         boolean userExist = false;
         EmailValidator emailValidator = new EmailValidator();
         for (User user1 : users) {
-            if (user1.getLogin().equals(doublePacket.getCommad())) userExist = true;
+            if (user1.getLogin().equals(clientPacket.getCommand())) userExist = true;
         }
         if (userExist) {
-            server.send(ByteBuffer.wrap("User with this email already exist".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+            server.send(ByteBuffer.wrap(serialize(new ServerPacket("User with this email already exist"))), remoteAdd);
             return;
         }
-        if (!emailValidator.validate(doublePacket.getCommad())) {
-            server.send(ByteBuffer.wrap("Invalid email address".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+        if (!emailValidator.validate(clientPacket.getCommand())) {
+            server.send(ByteBuffer.wrap(serialize(new ServerPacket("Invalid email address"))), remoteAdd);
             return;
         }
         PasswordGenerator passwordGenerator = new PasswordGenerator(true, true, true);
         String password = passwordGenerator.generatePassword(16);
-        User user = new User(doublePacket.getCommad(), hashString(password));
+        User user = new User(clientPacket.getCommand(), hashString(password));
         MailSender mailSender = new MailSender(user.getLogin(), "Welcome new User,\n\n"
                 + "Your password is " + password);
         mailSender.send();
@@ -154,6 +160,6 @@ public class DatagramChannelServer {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        server.send(ByteBuffer.wrap("Please check your email :D".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+        server.send(ByteBuffer.wrap(serialize(new ServerPacket("Please check your email :D"))), remoteAdd);
     }
 }
