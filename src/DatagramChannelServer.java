@@ -154,6 +154,6 @@ public class DatagramChannelServer {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        server.send(ByteBuffer.wrap("If you haven't received letter with your password in 5 minutes maybe you entered wrong email address".getBytes(StandardCharsets.UTF_8)), remoteAdd);
+        server.send(ByteBuffer.wrap("Please check your email :D".getBytes(StandardCharsets.UTF_8)), remoteAdd);
     }
 }

@@ -4,10 +4,11 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.DatagramSocket;
 
 public class PersonalPage extends JFrame {
     private JPanel contentPane;
-    public PersonalPage(String username) {
+    public PersonalPage(String username, DatagramSocket socket) {
         setTitle("Personal page");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(0, 0, 900, 500);
@@ -31,10 +32,20 @@ public class PersonalPage extends JFrame {
         table2.setBounds(310, 80, 280, 380);
         contentPane.add(table2);
 
+        String[] items = {
+                "add",
+                "remove",
+                "add_if_max",
+                "remove_lower"
+        };
+        JComboBox comboBox = new JComboBox(items);
+        comboBox.setBounds(325, 25, 125, 25);
+        contentPane.add(comboBox);
+
         JButton back = new JButton("Sign out");
         back.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                StartPage window = new StartPage();
+                StartPage window = new StartPage(socket);
                 window.setVisible(true);
                 dispose();
             }
