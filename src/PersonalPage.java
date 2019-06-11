@@ -18,9 +18,9 @@ public class PersonalPage extends JFrame {
     private JLabel label, label1;
     private JButton btn_send, back;
     private JPanel contentPane;
-    public PersonalPage(String username, DatagramSocket socket) {
-        bundle = ResourceBundle.getBundle("Bundle", ruLocale);
-        setTitle("Personal page");
+    public PersonalPage(String username, DatagramSocket socket, Locale locale) {
+        bundle = ResourceBundle.getBundle("Bundle", locale);
+        setTitle(bundle.getString("personal_page"));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(0, 0, 900, 500);
         contentPane = new JPanel();
@@ -79,10 +79,10 @@ public class PersonalPage extends JFrame {
         //canvas.setSize(900, 500);
         //add(canvas);
 
-        back = new JButton(bundle.getString("exit"));
+        back = new JButton(bundle.getString("back"));
         back.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                StartPage window = new StartPage(socket);
+                StartPage window = new StartPage(socket, locale);
                 window.setVisible(true);
                 dispose();
             }
@@ -95,6 +95,6 @@ public class PersonalPage extends JFrame {
         label.setText(bundle.getString("name") + ", " + username + "!");
         label1.setText(bundle.getString("language") + " ");
         btn_send.setText(bundle.getString("send"));
-        back.setText(bundle.getString("exit"));
+        back.setText(bundle.getString("back"));
     }
 }
