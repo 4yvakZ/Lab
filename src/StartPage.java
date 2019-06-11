@@ -21,18 +21,18 @@ public class StartPage extends JFrame {
     private Locale esLocale = new Locale("es","ES");
     private ResourceBundle bundle;
     private JComboBox<Locale> languageComboBox = new JComboBox();
-    private JLabel welcomeLabel, loginLabel, passwordLabel;
+    private JLabel welcomeLabel, loginLabel, passwordLabel,infoLabel;
     private JButton signInButton, signUpButton, exitButton;
     public StartPage(DatagramSocket socket, Locale locale) {
         bundle = ResourceBundle.getBundle("Bundle", locale);
         setTitle(bundle.getString("start_page"));
-        int w = 400;
-        int h = 300;
+        int w = 600;
+        int h = 400;
         this.setBounds(100, 100, w, h);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Font font = new Font("Arial", Font.BOLD, 14);
 
-        Container container = this.getContentPane();
         Box mainBox = Box.createVerticalBox();
         mainBox.add(Box.createVerticalGlue());
 
@@ -46,9 +46,9 @@ public class StartPage extends JFrame {
         JPanel loginPasswordPanel = new JPanel(new GridLayout(2,2,5,10));
 
         loginLabel = new JLabel(bundle.getString("login") + ":", SwingConstants.LEFT);
-        loginLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        loginLabel.setFont(font);
         passwordLabel = new JLabel(bundle.getString("password") + ":", SwingConstants.LEFT);
-        passwordLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        passwordLabel.setFont(font);
         JTextField loginInput = new JTextField("", SwingConstants.CENTER);
         JPasswordField passwordInput = new JPasswordField("", SwingConstants.CENTER);
 
@@ -65,7 +65,7 @@ public class StartPage extends JFrame {
 
         JLabel messageLabel = new JLabel("",SwingConstants.CENTER);
         messageLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-        messageLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        messageLabel.setFont(font);
 
         mainBox.add(messageLabel);
         mainBox.add(Box.createVerticalStrut(20));
@@ -80,7 +80,7 @@ public class StartPage extends JFrame {
         buttonPanel.add(signUpButton);
         buttonPanel.add(exitButton);
         buttonPanel.setMinimumSize(new Dimension(350, 600));
-        buttonPanel.setMaximumSize(new Dimension(350, 1000));
+        buttonPanel.setMaximumSize(new Dimension(500, 1000));
 
         mainBox.add(buttonPanel);
         mainBox.add(Box.createVerticalStrut(20));
@@ -91,6 +91,7 @@ public class StartPage extends JFrame {
         languageComboBox.addItem(esLocale);
         languageComboBox.setAlignmentX(JComponent.CENTER_ALIGNMENT);
         languageComboBox.setMaximumSize(new Dimension(100,20));
+        languageComboBox.setSelectedItem(locale);
 
         languageComboBox.addActionListener(new ActionListener() {
             @Override
@@ -100,6 +101,13 @@ public class StartPage extends JFrame {
         });
 
         mainBox.add(languageComboBox);
+        mainBox.add(Box.createVerticalStrut(20));
+
+        infoLabel = new JLabel(bundle.getString("info"),SwingConstants.CENTER);
+        infoLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        infoLabel.setFont(new Font("Arial", Font.BOLD, 10));
+
+        mainBox.add(infoLabel);
         mainBox.add(Box.createVerticalGlue());
 
 
@@ -116,7 +124,7 @@ public class StartPage extends JFrame {
             } catch (IOException e) {
                 printMeme();
             }*/
-            PersonalPage main_window = new PersonalPage(loginInput.getText(), socket, locale);
+            PersonalPage main_window = new PersonalPage(loginInput.getText(), socket, (Locale) languageComboBox.getSelectedItem());
             main_window.setLocationRelativeTo(null);
             main_window.setVisible(true);
             dispose();
@@ -135,7 +143,7 @@ public class StartPage extends JFrame {
         });
 
         exitButton.addActionListener(actionEvent -> System.exit(0));
-        container.add(mainBox);
+        setContentPane(mainBox);
     }
 
     public static void main(String[] args) {
@@ -182,6 +190,7 @@ public class StartPage extends JFrame {
         signInButton.setText(bundle.getString("sign_in"));
         signUpButton.setText(bundle.getString("sign_up"));
         exitButton.setText(bundle.getString("exit"));
+        infoLabel.setText(bundle.getString("info"));
     }
     private static void printMeme(){
         System.out.println("2Xi2s:rsiiiiiiSiSiSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS2sr;SsSi5SSsisSSS59ABBBBBBHG255555523&HBBHGX223&&32X9X9&GHAGBG\n" +
