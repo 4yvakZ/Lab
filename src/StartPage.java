@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.event.WindowEvent;
 import javax.swing.*;
 
 public class StartPage extends JFrame {
@@ -41,6 +42,13 @@ public class StartPage extends JFrame {
         mainBox.add(loginPasswordPanel);
         mainBox.add(Box.createVerticalStrut(20));
 
+        JLabel messageLabel = new JLabel("",SwingConstants.CENTER);
+        messageLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        messageLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        mainBox.add(messageLabel);
+        mainBox.add(Box.createVerticalStrut(20));
+
         JPanel buttonPanel = new JPanel(new GridLayout(1,3,5,10));
 
         JButton signInButton = new JButton("Sign in");
@@ -50,17 +58,26 @@ public class StartPage extends JFrame {
         buttonPanel.add(signInButton);
         buttonPanel.add(signUpButton);
         buttonPanel.add(exitButton);
+        buttonPanel.setMinimumSize(new Dimension(400, 400));
         buttonPanel.setMaximumSize(new Dimension(400, 1000));
 
         mainBox.add(buttonPanel);
         mainBox.add(Box.createVerticalGlue());
 
         signInButton.addActionListener(actionEvent -> {
-            PersonalPage main_window = new PersonalPage(loginInput.getText());
+            /*PersonalPage main_window = new PersonalPage(loginInput.getText());
             main_window.setLocationRelativeTo(null);
             main_window.setVisible(true);
-            setVisible(false);
+            dispose();*/
+            messageLabel.setForeground(Color.RED);
+            messageLabel.setText("Wrong login or password!!!");
         });
+
+        signUpButton.addActionListener(actionEvent ->{
+            messageLabel.setForeground(Color.BLACK);
+            messageLabel.setText("Please, check your mail :D");
+        });
+
         exitButton.addActionListener(actionEvent -> System.exit(0));
         container.add(mainBox);
     }

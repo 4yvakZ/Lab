@@ -13,7 +13,6 @@ import space.objects.Earth;
 import space.objects.Moon;
 import space.objects.SpaceObject;
 
-import javax.mail.SendFailedException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;

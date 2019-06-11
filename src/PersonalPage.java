@@ -36,7 +36,7 @@ public class PersonalPage extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 StartPage window = new StartPage();
                 window.setVisible(true);
-                setVisible(false);
+                dispose();
             }
         });
         back.setBounds(800, 0, 100, 50);

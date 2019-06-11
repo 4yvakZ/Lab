@@ -1,6 +1,5 @@
 package activity;
 
-
 import org.json.simple.parser.ParseException;
 import people.Human;
 import rocket.Rocket;
