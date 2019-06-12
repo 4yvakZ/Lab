@@ -67,8 +67,9 @@ public class PersonalPage extends JFrame {
             }
         });
 
-        onStart(user,socket);
-        ping.start();
+        //TODO uncomment this
+        //onStart(user,socket);
+        //ping.start();
         Font font = new Font("Arial", Font.BOLD, 14);
         bundle = ResourceBundle.getBundle("Bundle", locale);
         setTitle(bundle.getString("personal_page"));
@@ -182,8 +183,8 @@ public class PersonalPage extends JFrame {
         objectsLabel.setFont(font);
 
         objectsBox.add(objectsLabel);
-
-        objectsTableModel = new MyTableModel(new String[]{
+        //TODO uncomment this
+        /*objectsTableModel = new MyTableModel(new String[]{
                 bundle.getString("name"),
                 bundle.getString("time_until_hunger"),
                 bundle.getString("food_name"),
@@ -191,14 +192,12 @@ public class PersonalPage extends JFrame {
                 bundle.getString("room"),
                 bundle.getString("user"),
                 bundle.getString("data")
-        }, getObjectsData());
+        }, getObjectsData());*/
         objectsTable = new JTable(objectsTableModel);
-        //JTable objectsTable = new JTable(10,6);
 
         objectsTable.setFillsViewportHeight(true);
         JScrollPane objectsScroll = new JScrollPane(objectsTable);
         resizeColumnWidth(objectsTable);
-        //objectsScroll.setMinimumSize(new Dimension(750, 500));
 
         objectsBox.add(objectsScroll);
 
@@ -212,7 +211,8 @@ public class PersonalPage extends JFrame {
         usersBox.add(usersLabel);
         usersBox.setPreferredSize(usersBox.getMinimumSize());
 
-        usersTableModel = new MyTableModel(new String[]{bundle.getString("user")}, getUsersData());
+        //TODO uncomment this
+        //usersTableModel = new MyTableModel(new String[]{bundle.getString("user")}, getUsersData());
         usersTable = new JTable(usersTableModel);
         usersTable.setFillsViewportHeight(true);
         JScrollPane usersScroll = new JScrollPane(usersTable);
@@ -258,7 +258,8 @@ public class PersonalPage extends JFrame {
             thumbLengthTextField.setText(objectsTable.getValueAt(objectsTable.getSelectedRow(), 3).toString());
         });
 
-        sendButton.addActionListener(e -> {
+        //TODO uncomment this
+        /*sendButton.addActionListener(e -> {
             messageLabel.setText("");
             lock.lock();
             try {
@@ -399,7 +400,7 @@ public class PersonalPage extends JFrame {
                 dispose();
             }
             lock.unlock();
-        });
+        });*/
         setContentPane(mainBox);
 
 

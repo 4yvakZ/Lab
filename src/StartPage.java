@@ -113,7 +113,8 @@ public class StartPage extends JFrame {
             String login = loginInput.getText();
             String password = hashString(new String(passwordInput.getPassword()));
             User user = new User(login, password);
-            try {
+            //TODO uncomment this
+            /*try {
                 send(null,null, user, socket);
                 if(!receive(socket).equals("Welcome back "+ login)){
                     messageLabel.setForeground(Color.RED);
@@ -123,7 +124,7 @@ public class StartPage extends JFrame {
             } catch (IOException e) {
                 printMeme();
                 return;
-            }
+            }*/
             PersonalPage main_window = new PersonalPage(user, socket, (Locale) languageComboBox.getSelectedItem());
             main_window.setLocationRelativeTo(null);
             main_window.setVisible(true);
@@ -132,14 +133,15 @@ public class StartPage extends JFrame {
 
         signUpButton.addActionListener(actionEvent ->{
             String login = loginInput.getText();
-            try {
+            //TODO uncomment this
+            /*try {
                 send(login, null, null, socket);
                 messageLabel.setForeground(Color.BLACK);
                 messageLabel.setText(receive(socket));
             } catch (IOException e) {
                 printMeme();
                 return;
-            }
+            }*/
         });
 
         exitButton.addActionListener(actionEvent -> System.exit(0));
