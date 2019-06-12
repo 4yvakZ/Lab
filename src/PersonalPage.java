@@ -3,6 +3,8 @@ import activity.ServerPacket;
 import people.Donut;
 import people.Fool;
 import people.Human;
+import rocket.room.Room;
+import rocket.room.Type;
 import security.User;
 
 import javax.swing.*;
@@ -199,8 +201,12 @@ public class PersonalPage extends JFrame {
         Canvas canvas = new Draw();
         canvas.setSize(900, 500);
         mainBox.add(canvas);
+        Draw draw = new Draw();
+        Room room = new Room(rocket.room.Type.CABIN, "Кабина");
+        draw.smile2room(Color.RED, 0, 0, room);
+        draw.smile2room(Color.BLUE, 0, 50, room);
 
-        addMouseListener(new MouseAdapter() {
+        /*addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getX() > 0 && e.getX() < 400) {
@@ -209,7 +215,7 @@ public class PersonalPage extends JFrame {
                     }
                 }
             }
-        });
+        });*/
 
         back.addActionListener(e -> {
             StartPage window = new StartPage(socket, (Locale) languageComboBox.getSelectedItem());

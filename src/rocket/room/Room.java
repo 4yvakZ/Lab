@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class Room implements Comparable<Room>, Serializable {
     private static final long serialVersionUID = 4L;
     private final Type type;
-    private final String name;
+    public final String name;
     public Room(Type type, String name){
         this.type = type;
         this.name = name;
