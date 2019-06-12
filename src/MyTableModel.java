@@ -1,5 +1,4 @@
 import javax.swing.table.AbstractTableModel;
-import java.lang.reflect.Array;
 
 public class MyTableModel extends AbstractTableModel {
     private String[] columnNames;
