@@ -7,6 +7,9 @@ import security.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -196,6 +199,17 @@ public class PersonalPage extends JFrame {
         Canvas canvas = new Draw();
         canvas.setSize(900, 500);
         mainBox.add(canvas);
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getX() > 0 && e.getX() < 400) {
+                    if (e.getY() > 0 && e.getY() < 200) {
+                        JOptionPane.showMessageDialog(null, "param");
+                    }
+                }
+            }
+        });
 
         back.addActionListener(e -> {
             StartPage window = new StartPage(socket, (Locale) languageComboBox.getSelectedItem());
