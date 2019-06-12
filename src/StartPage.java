@@ -1,4 +1,5 @@
 import activity.ClientPacket;
+import activity.ServerPacket;
 import people.Human;
 import security.User;
 
@@ -10,6 +11,7 @@ import java.util.ResourceBundle;
 import javax.swing.*;
 
 import static security.MD2Hasher.hashString;
+import static security.Serializer.deserialize;
 import static security.Serializer.serialize;
 
 public class StartPage extends JFrame {
@@ -107,8 +109,9 @@ public class StartPage extends JFrame {
         signInButton.addActionListener(actionEvent -> {
             String login = loginInput.getText();
             String password = hashString(new String(passwordInput.getPassword()));
+            User user = new User(login, password);
             /*try {
-                TODO send(null,null, new User(login, password), socket);
+                TODO send(null,null, user, socket);
                 if(!receive(socket).equals("Welcome back "+ login)){
                     messageLabel.setForeground(Color.RED);
                     messageLabel.setText("Wrong login or password!!!");
@@ -117,7 +120,7 @@ public class StartPage extends JFrame {
             } catch (IOException e) {
                 printMeme();
             }*/
-            PersonalPage main_window = new PersonalPage(loginInput.getText(), socket, (Locale) languageComboBox.getSelectedItem());
+            PersonalPage main_window = new PersonalPage(user, socket, (Locale) languageComboBox.getSelectedItem());
             main_window.setLocationRelativeTo(null);
             main_window.setVisible(true);
             dispose();
@@ -159,21 +162,27 @@ public class StartPage extends JFrame {
         }
     }
 
-    private static void send(String commandWord, Human human, User user, DatagramSocket socket) throws IOException {
+    private  void send(String commandWord, Human human, User user, DatagramSocket socket) throws IOException {
         ClientPacket clientPacket = new ClientPacket(commandWord, human, user);
         byte[] buf = serialize(clientPacket);
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
         socket.send(packet);
     }
 
-    private static String receive(DatagramSocket socket) throws IOException {
-        String received;
+    private String receive(DatagramSocket socket) throws IOException {
         byte[] buffer = new byte[65000];
         DatagramPacket packet1 = new DatagramPacket(buffer, buffer.length);
         socket.receive(packet1);
-        received = new String(packet1.getData(), 0, packet1.getLength());
-        System.out.println(received);
-        return received;
+        ServerPacket serverPacket = null;
+        try {
+            serverPacket = (ServerPacket) deserialize(packet1.getData());
+        } catch (ClassNotFoundException e) {
+            System.out.println("Not serialized object");
+        }
+        if(serverPacket.isPing()){
+            return null;
+        }
+        return serverPacket.getAnswer();
     }
     private void updateLanguage(Locale locale) {
         bundle = ResourceBundle.getBundle("Bundle", locale);
