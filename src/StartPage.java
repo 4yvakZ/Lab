@@ -49,8 +49,11 @@ public class StartPage extends JFrame {
         loginLabel.setFont(font);
         passwordLabel = new JLabel(bundle.getString("password") + ":", SwingConstants.LEFT);
         passwordLabel.setFont(font);
+
         JTextField loginInput = new JTextField("", SwingConstants.CENTER);
         JPasswordField passwordInput = new JPasswordField("", SwingConstants.CENTER);
+        loginInput.setText("l21mi0@onemail.host");
+        passwordInput.setText("K#jf,dFBTcS3qsr/");
 
         loginPasswordPanel.add(loginLabel);
         loginPasswordPanel.add(loginInput);
@@ -111,7 +114,7 @@ public class StartPage extends JFrame {
             String password = hashString(new String(passwordInput.getPassword()));
             User user = new User(login, password);
             /*try {
-                TODO send(null,null, user, socket);
+                send(null,null, user, socket);
                 if(!receive(socket).equals("Welcome back "+ login)){
                     messageLabel.setForeground(Color.RED);
                     messageLabel.setText("Wrong login or password!!!");
@@ -128,8 +131,7 @@ public class StartPage extends JFrame {
 
         signUpButton.addActionListener(actionEvent ->{
             String login = loginInput.getText();
-            /* TODO
-            try {
+            /*try {
                 send(login, null, null, socket);
                 messageLabel.setForeground(Color.BLACK);
                 messageLabel.setText(receive(socket));
@@ -193,6 +195,7 @@ public class StartPage extends JFrame {
         signUpButton.setText(bundle.getString("sign_up"));
         exitButton.setText(bundle.getString("exit"));
         infoLabel.setText(bundle.getString("info"));
+        setTitle(bundle.getString("start_page"));
     }
     private static void printMeme(){
         System.out.println("2Xi2s:rsiiiiiiSiSiSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS2sr;SsSi5SSsisSSS59ABBBBBBHG255555523&HBBHGX223&&32X9X9&GHAGBG\n" +

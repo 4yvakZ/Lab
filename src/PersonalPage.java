@@ -1,5 +1,7 @@
 import activity.ClientPacket;
 import activity.ServerPacket;
+import people.Donut;
+import people.Fool;
 import people.Human;
 import security.User;
 
@@ -10,6 +12,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import static security.Serializer.deserialize;
 import static security.Serializer.serialize;
@@ -23,6 +26,9 @@ public class PersonalPage extends JFrame {
     private JComboBox<Locale> languageComboBox = new JComboBox<>();
     private JButton sendButton, back;
     private JLabel helloLabel, languageLabel, commandLabel, nameLabel, timeUntilHungerLabel, foodNameLabel, thumbLengthLabel, objectsLabel, usersLabel;
+    private JScrollPane usersScroll, objectsScroll;
+    private ConcurrentSkipListSet<Human> passengers;
+    private ConcurrentSkipListSet<String> users;
 
     public PersonalPage(User user, DatagramSocket socket, Locale locale) {
         Thread update = new Thread(() -> {
@@ -42,19 +48,18 @@ public class PersonalPage extends JFrame {
             }
         });
 
+        //onStart(user,socket);
         Font font = new Font("Arial", Font.BOLD, 14);
         bundle = ResourceBundle.getBundle("Bundle", locale);
         setTitle(bundle.getString("personal_page"));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(0, 0, 900, 500);
+        setBounds(0, 0, 1080, 720);
 
         Box mainBox = Box.createVerticalBox();
 
         mainBox.add(Box.createVerticalStrut(20));
 
         Box topBox = Box.createHorizontalBox();
-
-        topBox.add(Box.createVerticalStrut(20));
 
         helloLabel = new JLabel(bundle.getString("hello") + ", " + user.getLogin() + "!");
         helloLabel.setFont(font);
@@ -103,7 +108,6 @@ public class PersonalPage extends JFrame {
 
         topPanel.add(back);
         topPanel.setMaximumSize(new Dimension(100, 30));
-        topBox.add(Box.createHorizontalStrut(20));
 
         topBox.add(topPanel);
 
@@ -146,9 +150,22 @@ public class PersonalPage extends JFrame {
 
         objectsBox.add(objectsLabel);
 
-        JTable humansTable = new JTable(10, 5);
+        JTable objectsTable = new JTable(10,6);
 
-        objectsBox.add(humansTable);
+        /*JTable objectsTable = new JTable(getData(), new String[]{
+                bundle.getString("name"),
+                bundle.getString("time_until_hunger"),
+                bundle.getString("food_name"),
+                bundle.getString("thumb_length"),
+                bundle.getString("room"),
+                bundle.getString("user"),
+                bundle.getString("data")
+        });*/
+        objectsTable.setFillsViewportHeight(true);
+        objectsScroll = new JScrollPane(objectsTable);
+        objectsTable.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+
+        objectsBox.add(objectsScroll);
 
         bottomBox.add(objectsBox);
         bottomBox.add(Box.createHorizontalStrut(5));
@@ -160,9 +177,13 @@ public class PersonalPage extends JFrame {
 
         usersBox.add(usersLabel);
 
-        JTable usersTable = new JTable(10, 1);
+        usersScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JTable usersTable = new JTable();
 
-        usersBox.add(usersTable);
+        usersScroll.add(usersTable);
+        usersScroll.setMinimumSize(usersLabel.getSize());
+
+        usersBox.add(usersScroll);
 
         bottomBox.add(usersBox);
         bottomBox.add(Box.createHorizontalStrut(20));
@@ -182,7 +203,6 @@ public class PersonalPage extends JFrame {
             window.setVisible(true);
             dispose();
         });
-        back.setBounds(800, 0, 100, 50);
 
         setContentPane(mainBox);
 
@@ -202,6 +222,9 @@ public class PersonalPage extends JFrame {
         thumbLengthLabel.setText(bundle.getString("thumb_length"));
         objectsLabel.setText(bundle.getString("objects"));
         usersLabel.setText(bundle.getString("users"));
+        setTitle(bundle.getString("personal_page"));
+        //objectsScroll.setMinimumSize(objectsLabel.getSize());
+        //usersScroll.setMinimumSize(usersLabel.getSize());
     }
 
     private void send(String commandWord, Human human, User user, DatagramSocket socket) throws IOException {
@@ -232,6 +255,44 @@ public class PersonalPage extends JFrame {
     }
 
 
+    private void onStart(User user, DatagramSocket socket){
+        try {
+            send(user, socket);
+            ServerPacket serverPacket = receive(socket);
+            if (serverPacket.isPing()) {
+                passengers = serverPacket.getPassengers();
+                users = serverPacket.getOnlineUsers();
+            }else{
+                System.out.println("Somehow server did it");
+            }
+        } catch (IOException e) {
+            printMeme();
+        }
+    }
+
+    private Object[][] getData(){
+        Object[][] data = new Object[passengers.size()][7];
+        Object[] humans = passengers.stream().toArray();
+        for(int i = 0; i<passengers.size(); i++){
+            Object human = humans[i];
+            data[i][0] = ((Human)human).getName();
+            data[i][1] = ((Human)human).getTimeUntilHunger();
+            if(human instanceof Donut){
+                data[i][2] = ((Donut)human).getFoodName();
+            }else {
+                data[i][2] = "";
+            }
+            if(human instanceof Fool){
+                data[i][3] = ((Fool)human).getThumbLength();
+            }else {
+                data[i][3] = "";
+            }
+            data[i][4] = ((Human)human).getUsername();
+            data[i][5] = ((Human)human).getRoom();
+            data[i][6] = ((Human)human).getTime();
+        }
+        return data;
+    }
     private void printMeme(){
         System.out.println("2Xi2s:rsiiiiiiSiSiSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS2sr;SsSi5SSsisSSS59ABBBBBBHG255555523&HBBHGX223&&32X9X9&GHAGBG\n" +
                 "32S5r;siiiiiiiSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS22X5;:rrrSSsrr;;:;r52hABBBBBHG3555555223ABMBBBA322XX2XXh22&&&HMMG\n" +
