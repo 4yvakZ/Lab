@@ -278,61 +278,62 @@ public class PersonalPage extends JFrame {
                     thumbLength = 0;
                 }
                 String username = user.getLogin();
-                Room temporyRoom;
+                Room room;
                 switch (roomTextFiled.getText()) {
                     case "Склад":
-                        temporyRoom = new Room(rocket.room.Type.STORAGE, "Склад");
+                        room = new Room(rocket.room.Type.STORAGE, "Склад");
                         break;
                     case "Пищевой блок":
-                        temporyRoom = new Room(rocket.room.Type.FOODSTORAGE, "Пищевой блок");
+                        room = new Room(rocket.room.Type.FOODSTORAGE, "Пищевой блок");
                         break;
                     case "Кабина":
-                        temporyRoom = new Room(rocket.room.Type.CABIN, "Кабина");
+                        room = new Room(rocket.room.Type.CABIN, "Кабина");
                         break;
                     case "Тех отсек":
-                        temporyRoom = new Room(rocket.room.Type.ENGINE, "Тех отсек");
+                        room = new Room(rocket.room.Type.ENGINE, "Тех отсек");
                         break;
                     default:
                         throw new ParseException(1);
                 }
                 if (timeUntilHunger < 1) throw new ParseException(1);
                 if (name.isEmpty()) {
-                    human = new Human(timeUntilHunger, username, temporyRoom);
+                    human = new Human(timeUntilHunger, username, room);
                 } else if (thumbLength > 0) {
                     if (!foodName.isEmpty()) {
-                        human = new Fool(name, timeUntilHunger, temporyRoom, foodName, thumbLength, username);
+                        human = new Fool(name, timeUntilHunger, room, foodName, thumbLength, username);
                     } else {
-                        human = new Fool(name, timeUntilHunger, temporyRoom, thumbLength, username);
+                        human = new Fool(name, timeUntilHunger, room, thumbLength, username);
                     }
                 } else if (!foodName.isEmpty()) {
-                    human = new Donut(name, timeUntilHunger, temporyRoom, foodName, username);
+                    human = new Donut(name, timeUntilHunger, room, foodName, username);
                 } else {
-                    human = new Human(name, timeUntilHunger, username, temporyRoom);
+                    human = new Human(name, timeUntilHunger, username, room);
                 }
                 boolean isCommandEdit = false;
                 switch (Objects.requireNonNull(commandComboBox.getSelectedItem()).toString()) {
                     case "edit":
                         isCommandEdit = true;
                         Human editableHuman;
-                        name = objectsTable.getValueAt(objectsTable.getSelectedRow(), 0).toString();
+                        Room editableRoom;
+                        String editableName = objectsTable.getValueAt(objectsTable.getSelectedRow(), 0).toString();
                         try {
                             timeUntilHunger = Integer.parseInt(objectsTable.getValueAt(objectsTable.getSelectedRow(), 1).toString());
                         }catch (NumberFormatException ex){
                             timeUntilHunger = 0;
                         }
-                        foodName = objectsTable.getValueAt(objectsTable.getSelectedRow(), 2).toString();
+                        String editableFoodName = objectsTable.getValueAt(objectsTable.getSelectedRow(), 2).toString();
                         switch (objectsTable.getValueAt(objectsTable.getSelectedRow(), 4).toString()) {
                             case "Склад":
-                                temporyRoom = new Room(rocket.room.Type.STORAGE, "Склад");
+                                editableRoom = new Room(rocket.room.Type.STORAGE, "Склад");
                                 break;
                             case "Пищевой блок":
-                                temporyRoom = new Room(rocket.room.Type.FOODSTORAGE, "Пищевой блок");
+                                editableRoom = new Room(rocket.room.Type.FOODSTORAGE, "Пищевой блок");
                                 break;
                             case "Кабина":
-                                temporyRoom = new Room(rocket.room.Type.CABIN, "Кабина");
+                                editableRoom = new Room(rocket.room.Type.CABIN, "Кабина");
                                 break;
                             case "Тех отсек":
-                                temporyRoom = new Room(rocket.room.Type.ENGINE, "Тех отсек");
+                                editableRoom = new Room(rocket.room.Type.ENGINE, "Тех отсек");
                                 break;
                             default:
                                 throw new ParseException(1);
@@ -343,18 +344,18 @@ public class PersonalPage extends JFrame {
                             thumbLength = 0;
                         }
                         if (timeUntilHunger < 1) throw new ParseException(1);
-                        if (name.isEmpty()) {
-                            editableHuman = new Human(timeUntilHunger, username, temporyRoom);
+                        if (editableName.isEmpty()) {
+                            editableHuman = new Human(timeUntilHunger, username, editableRoom);
                         } else if (thumbLength > 0) {
-                            if (!foodName.isEmpty()) {
-                                editableHuman = new Fool(name, timeUntilHunger, temporyRoom, foodName, thumbLength, username);
+                            if (!editableFoodName.isEmpty()) {
+                                editableHuman = new Fool(editableName, timeUntilHunger, editableRoom, editableFoodName, thumbLength, username);
                             } else {
-                                editableHuman = new Fool(name, timeUntilHunger, temporyRoom, thumbLength, username);
+                                editableHuman = new Fool(editableName, timeUntilHunger, editableRoom, thumbLength, username);
                             }
-                        } else if (!foodName.isEmpty()) {
-                            editableHuman = new Donut(name, timeUntilHunger, temporyRoom, foodName, username);
+                        } else if (!editableFoodName.isEmpty()) {
+                            editableHuman = new Donut(editableName, timeUntilHunger, editableRoom, editableFoodName, username);
                         } else {
-                            editableHuman = new Human(name, timeUntilHunger, username, temporyRoom);
+                            editableHuman = new Human(editableName, timeUntilHunger, username, editableRoom);
                         }
                         send("remove",editableHuman,user,socket);
                         ServerPacket serverPacket = receive(socket);

@@ -123,7 +123,6 @@ public class DatagramChannelServer {
                 break;
             } else if (command.equals("add") || command.equals("remove_lower") || command.equals("add_if_max") || command.equals("remove")) {
                 Human human = clientPacket.getHuman();
-                human.setRoom(cabin);
                 new DatagramCommand(remoteAdd, passengers, activity, server, command, human);
             } else {
                 new DatagramCommand(remoteAdd, passengers, activity, server, foodStorage, msg, rocket, user.getLogin());
