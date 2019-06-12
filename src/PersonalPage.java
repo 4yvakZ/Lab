@@ -26,6 +26,9 @@ import static security.Serializer.serialize;
 
 public class PersonalPage extends JFrame {
     private static Locale ruLocale = new Locale("ru", "RU");
+    private Locale slLocale = new Locale("sl", "SL");
+    private Locale plLocale = new Locale("pl", "PL");
+    private Locale esLocale = new Locale("es", "ES");
     private ResourceBundle bundle;
     private JComboBox<Locale> languageComboBox = new JComboBox<>();
     private JButton sendButton, back;
@@ -238,10 +241,26 @@ public class PersonalPage extends JFrame {
         });
 
         /*Canvas canvas = new Draw(100, 37, Color.RED, 50, 80);
+        Canvas canvas = new Draw();
+        canvas.setSize(900, 500);
         mainBox.add(canvas);
+        Draw draw = new Draw();
+        Room room = new Room(rocket.room.Type.CABIN, "Кабина");
+        draw.smile2room(Color.RED, 0, 0, room);
+        draw.smile2room(Color.BLUE, 0, 50, room);
 
         Canvas canvas1 = new Draw(100, 37, Color.BLUE, 10, 5);
         mainBox.add(canvas1);*/
+        /*addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getX() > 0 && e.getX() < 400) {
+                    if (e.getY() > 0 && e.getY() < 200) {
+                        JOptionPane.showMessageDialog(null, "param");
+                    }
+                }
+            }
+        });*/
 
         back.addActionListener(e -> {
             StartPage window = new StartPage(socket, (Locale) languageComboBox.getSelectedItem());
@@ -466,6 +485,7 @@ public class PersonalPage extends JFrame {
         return serverPacket;
     }
 
+
     private void onStart(User user, DatagramSocket socket){
         try {
             send(user, socket);
@@ -639,25 +659,5 @@ public class PersonalPage extends JFrame {
                 "---██─█---█──██─█─█─█─█─█──█──█─█─█──█────█─██─█──█──█──█---█──█─█───█────█──██─█───█\n" +
                 "---█──█---████──███─█─█──█─█──█─█──██─────█─█──█──█──████---████─███─█────████──███─█\n"+
                 "Power the server!");
-    }
-
-    private void resizeColumnWidth(JTable table) {
-        final TableColumnModel columnModel = table.getColumnModel();
-        for (int column = 0; column < table.getColumnCount(); column++) {
-            columnModel.getColumn(column).setPreferredWidth(200);
-        }
-    }
-
-    private String[] getSortParameters(Locale locale){
-        bundle = ResourceBundle.getBundle("Bundle", locale);
-        return new String[]{
-                bundle.getString("name"),
-                bundle.getString("time_until_hunger"),
-                bundle.getString("food_name"),
-                bundle.getString("thumb_length"),
-                bundle.getString("room"),
-                bundle.getString("user"),
-                bundle.getString("data")
-        };
     }
 }
