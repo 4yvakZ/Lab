@@ -506,78 +506,47 @@ public class PersonalPage extends JFrame {
         Object[] humans;
         switch (sortingIndex){
             case 0:
-                humans = passengers.stream().sorted(new Comparator<Human>() {
-                    @Override
-                    public int compare(Human o1, Human o2) {
-                        return o1.getName().compareTo(o2.getName());
-                    }
-                }).toArray();
+                humans = passengers.stream().sorted(Comparator.comparing(Human::getName)).toArray();
                 break;
             case 1:
-                humans = passengers.stream().sorted(new Comparator<Human>() {
-                    @Override
-                    public int compare(Human o1, Human o2) {
-                        return o1.getTimeUntilHunger()-o2.getTimeUntilHunger();
-                    }
-                }).toArray();
+                humans = passengers.stream().sorted(Comparator.comparingInt(Human::getTimeUntilHunger)).toArray();
                 break;
             case 2:
-                humans = passengers.stream().sorted(new Comparator<Human>() {
-                    @Override
-                    public int compare(Human o1, Human o2) {
-                        if(o1 instanceof Donut){
-                            if(o2 instanceof Donut){
-                                return ((Donut) o1).getFoodName().compareTo(((Donut) o2).getFoodName());
-                            }
-                            return 100500;
-                        }
+                humans = passengers.stream().sorted((o1, o2) -> {
+                    if(o1 instanceof Donut){
                         if(o2 instanceof Donut){
-                            return -100500;
+                            return ((Donut) o1).getFoodName().compareTo(((Donut) o2).getFoodName());
                         }
-                        return 0;
+                        return 100500;
                     }
+                    if(o2 instanceof Donut){
+                        return -100500;
+                    }
+                    return 0;
                 }).toArray();
                 break;
             case 3:
-                humans = passengers.stream().sorted(new Comparator<Human>() {
-                    @Override
-                    public int compare(Human o1, Human o2) {
-                        if(o1 instanceof Fool){
-                            if(o2 instanceof Fool){
-                                return ((Fool) o1).getThumbLength()-((Fool) o2).getThumbLength();
-                            }
-                            return 100500;
-                        }
+                humans = passengers.stream().sorted((o1, o2) -> {
+                    if(o1 instanceof Fool){
                         if(o2 instanceof Fool){
-                            return -100500;
+                            return ((Fool) o1).getThumbLength()-((Fool) o2).getThumbLength();
                         }
-                        return 0;
+                        return 100500;
                     }
+                    if(o2 instanceof Fool){
+                        return -100500;
+                    }
+                    return 0;
                 }).toArray();
                 break;
             case 4:
-                humans = passengers.stream().sorted(new Comparator<Human>() {
-                    @Override
-                    public int compare(Human o1, Human o2) {
-                        return o1.getRoom().compareTo(o2.getRoom());
-                    }
-                }).toArray();
+                humans = passengers.stream().sorted(Comparator.comparing(Human::getRoom)).toArray();
                 break;
             case 5:
-                humans = passengers.stream().sorted(new Comparator<Human>() {
-                    @Override
-                    public int compare(Human o1, Human o2) {
-                        return o1.getUsername().compareTo(o2.getUsername());
-                    }
-                }).toArray();
+                humans = passengers.stream().sorted(Comparator.comparing(Human::getUsername)).toArray();
                 break;
             case 6:
-                humans = passengers.stream().sorted(new Comparator<Human>() {
-                    @Override
-                    public int compare(Human o1, Human o2) {
-                        return o1.getTime().compareTo(o2.getTime());
-                    }
-                }).toArray();
+                humans = passengers.stream().sorted(Comparator.comparing(Human::getTime)).toArray();
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + sortingIndex);
@@ -603,6 +572,25 @@ public class PersonalPage extends JFrame {
         return data;
     }
 
+    private void resizeColumnWidth(JTable table) {
+        final TableColumnModel columnModel = table.getColumnModel();
+        for (int column = 0; column < table.getColumnCount(); column++) {
+            columnModel.getColumn(column).setPreferredWidth(200);
+        }
+    }
+
+    private String[] getSortParameters(Locale locale){
+        bundle = ResourceBundle.getBundle("Bundle", locale);
+        return new String[]{
+                bundle.getString("name"),
+                bundle.getString("time_until_hunger"),
+                bundle.getString("food_name"),
+                bundle.getString("thumb_length"),
+                bundle.getString("room"),
+                bundle.getString("user"),
+                bundle.getString("data")
+        };
+    }
     private Object[][] getUsersData(){
         return new Object[][]{users.toArray()};
     }
