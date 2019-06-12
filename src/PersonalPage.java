@@ -8,14 +8,13 @@ import rocket.room.Room;
 import security.User;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -30,12 +29,14 @@ public class PersonalPage extends JFrame {
     private ResourceBundle bundle;
     private JComboBox<Locale> languageComboBox = new JComboBox<>();
     private JButton sendButton, back;
-    private JLabel helloLabel, languageLabel, commandLabel, nameLabel, timeUntilHungerLabel, foodNameLabel, thumbLengthLabel, objectsLabel, usersLabel, roomLabel;
+    private JLabel helloLabel, languageLabel, commandLabel, nameLabel, timeUntilHungerLabel, foodNameLabel, thumbLengthLabel, objectsLabel, usersLabel, roomLabel, messageLabel, sortLabel;
     private ConcurrentSkipListSet<Human> passengers;
     private ConcurrentSkipListSet<String> users;
     private JTable usersTable, objectsTable;
     private MyTableModel usersTableModel, objectsTableModel;
     private ReentrantLock lock = new ReentrantLock();
+    private JComboBox<String> sortComboBox;
+    private int sortingIndex = 0;
     public PersonalPage(User user, DatagramSocket socket, Locale locale) {
         Thread ping = new Thread(new Runnable() {
 
@@ -52,8 +53,10 @@ public class PersonalPage extends JFrame {
                                 } else {
                                     users = serverPacket.getOnlineUsers();
                                     usersTableModel.setData(getUsersData());
+                                    usersTable.repaint();
                                     passengers = serverPacket.getPassengers();
                                     objectsTableModel.setData(getObjectsData());
+                                    objectsTable.repaint();
                                 }
                             }
                         } catch (IOException e) {
@@ -63,6 +66,7 @@ public class PersonalPage extends JFrame {
                 }
             }
         });
+
         onStart(user,socket);
         ping.start();
         Font font = new Font("Arial", Font.BOLD, 14);
@@ -144,12 +148,15 @@ public class PersonalPage extends JFrame {
         foodNameLabel = new JLabel(bundle.getString("food_name"), SwingConstants.CENTER);
         thumbLengthLabel = new JLabel(bundle.getString("thumb_length"), SwingConstants.CENTER);
         roomLabel = new JLabel(bundle.getString("room"), SwingConstants.CENTER);
+        sortLabel = new JLabel(bundle.getString("sort")+":", SwingConstants.CENTER);
 
         JTextField nameTextField = new JTextField("", SwingConstants.CENTER);
         JTextField timeUntilHungerTextField = new JTextField("", SwingConstants.CENTER);
         JTextField foodNameTextField = new JTextField("", SwingConstants.CENTER);
         JTextField thumbLengthTextField = new JTextField("", SwingConstants.CENTER);
         JTextField roomTextFiled = new JTextField("", SwingConstants.CENTER);
+
+        sortComboBox = new JComboBox<>(getSortParameters(locale));
 
         humanInfoPanel.add(nameLabel);
         humanInfoPanel.add(nameTextField);
@@ -161,8 +168,10 @@ public class PersonalPage extends JFrame {
         humanInfoPanel.add(thumbLengthTextField);
         humanInfoPanel.add(roomLabel);
         humanInfoPanel.add(roomTextFiled);
+        humanInfoPanel.add(sortLabel);
+        humanInfoPanel.add(sortComboBox);
 
-        humanInfoPanel.setMaximumSize(new Dimension(100, 150));
+        humanInfoPanel.setMaximumSize(new Dimension(150, 200));
 
         bottomBox.add(humanInfoPanel);
         bottomBox.add(Box.createHorizontalStrut(5));
@@ -217,10 +226,16 @@ public class PersonalPage extends JFrame {
         mainBox.add(bottomBox);
 
         mainBox.add(Box.createHorizontalStrut(20));
-        JLabel messageLabel = new JLabel("", SwingConstants.CENTER);
+        messageLabel = new JLabel("", SwingConstants.CENTER);
         mainBox.add(messageLabel);
         mainBox.add(Box.createVerticalStrut(20));
         languageComboBox.addActionListener(actionEvent -> updateLanguage(languageComboBox.getItemAt(languageComboBox.getSelectedIndex()), user.getLogin()));
+
+        sortComboBox.addActionListener(actionEvent -> {
+            sortingIndex = sortComboBox.getSelectedIndex();
+            objectsTableModel.setData(getObjectsData());
+            objectsTable.repaint();
+        });
 
         /*Canvas canvas = new Draw(100, 37, Color.RED, 50, 80);
         mainBox.add(canvas);
@@ -239,7 +254,7 @@ public class PersonalPage extends JFrame {
             nameTextField.setText(objectsTable.getValueAt(objectsTable.getSelectedRow(), 0).toString());
             timeUntilHungerTextField.setText(objectsTable.getValueAt(objectsTable.getSelectedRow(), 1).toString());
             foodNameTextField.setText(objectsTable.getValueAt(objectsTable.getSelectedRow(), 2).toString());
-            roomTextFiled.setText(objectsTable.getValueAt(objectsTable.getSelectedRow(), 5).toString());
+            roomTextFiled.setText(objectsTable.getValueAt(objectsTable.getSelectedRow(), 4).toString());
             thumbLengthTextField.setText(objectsTable.getValueAt(objectsTable.getSelectedRow(), 3).toString());
         });
 
@@ -258,7 +273,7 @@ public class PersonalPage extends JFrame {
                 String foodName = foodNameTextField.getText();
                 int thumbLength;
                 try {
-                    thumbLength = Integer.parseInt(thumbLengthLabel.getText());
+                    thumbLength = Integer.parseInt(thumbLengthTextField.getText());
                 }catch (NumberFormatException ex){
                     thumbLength = 0;
                 }
@@ -306,7 +321,7 @@ public class PersonalPage extends JFrame {
                             timeUntilHunger = 0;
                         }
                         foodName = objectsTable.getValueAt(objectsTable.getSelectedRow(), 2).toString();
-                        switch (objectsTable.getValueAt(objectsTable.getSelectedRow(), 5).toString()) {
+                        switch (objectsTable.getValueAt(objectsTable.getSelectedRow(), 4).toString()) {
                             case "Склад":
                                 temporyRoom = new Room(rocket.room.Type.STORAGE, "Склад");
                                 break;
@@ -371,9 +386,11 @@ public class PersonalPage extends JFrame {
                 if (serverPacket.isPing()) {
                     users = serverPacket.getOnlineUsers();
                     usersTableModel.setData(getUsersData());
+                    usersTable.repaint();
                     passengers = serverPacket.getPassengers();
                     objectsTableModel.setData(getObjectsData());
                 }
+                objectsTable.repaint();
             } catch (ParseException ex) {
                 messageLabel.setText("Wrong input!");
             } catch (IOException ex) {
@@ -414,6 +431,10 @@ public class PersonalPage extends JFrame {
         th.getColumnModel().getColumn(5).setHeaderValue( bundle.getString("user") );
         th.getColumnModel().getColumn(6).setHeaderValue( bundle.getString("data") );
         th.repaint();
+        messageLabel.setText("");
+        sortLabel.setText(bundle.getString("sort")+":");
+        sortComboBox.setModel(new DefaultComboBoxModel<>(getSortParameters(locale)));
+        sortComboBox.setSelectedIndex(sortingIndex);
     }
 
     private void send(String commandWord, Human human, User user, DatagramSocket socket) throws IOException {
@@ -460,7 +481,85 @@ public class PersonalPage extends JFrame {
 
     private Object[][] getObjectsData(){
         Object[][] data = new Object[passengers.size()][7];
-        Object[] humans = passengers.stream().toArray();
+        Object[] humans;
+        switch (sortingIndex){
+            case 0:
+                humans = passengers.stream().sorted(new Comparator<Human>() {
+                    @Override
+                    public int compare(Human o1, Human o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+                }).toArray();
+                break;
+            case 1:
+                humans = passengers.stream().sorted(new Comparator<Human>() {
+                    @Override
+                    public int compare(Human o1, Human o2) {
+                        return o1.getTimeUntilHunger()-o2.getTimeUntilHunger();
+                    }
+                }).toArray();
+                break;
+            case 2:
+                humans = passengers.stream().sorted(new Comparator<Human>() {
+                    @Override
+                    public int compare(Human o1, Human o2) {
+                        if(o1 instanceof Donut){
+                            if(o2 instanceof Donut){
+                                return ((Donut) o1).getFoodName().compareTo(((Donut) o2).getFoodName());
+                            }
+                            return 100500;
+                        }
+                        if(o2 instanceof Donut){
+                            return -100500;
+                        }
+                        return 0;
+                    }
+                }).toArray();
+                break;
+            case 3:
+                humans = passengers.stream().sorted(new Comparator<Human>() {
+                    @Override
+                    public int compare(Human o1, Human o2) {
+                        if(o1 instanceof Fool){
+                            if(o2 instanceof Fool){
+                                return ((Fool) o1).getThumbLength()-((Fool) o2).getThumbLength();
+                            }
+                            return 100500;
+                        }
+                        if(o2 instanceof Fool){
+                            return -100500;
+                        }
+                        return 0;
+                    }
+                }).toArray();
+                break;
+            case 4:
+                humans = passengers.stream().sorted(new Comparator<Human>() {
+                    @Override
+                    public int compare(Human o1, Human o2) {
+                        return o1.getRoom().compareTo(o2.getRoom());
+                    }
+                }).toArray();
+                break;
+            case 5:
+                humans = passengers.stream().sorted(new Comparator<Human>() {
+                    @Override
+                    public int compare(Human o1, Human o2) {
+                        return o1.getUsername().compareTo(o2.getUsername());
+                    }
+                }).toArray();
+                break;
+            case 6:
+                humans = passengers.stream().sorted(new Comparator<Human>() {
+                    @Override
+                    public int compare(Human o1, Human o2) {
+                        return o1.getTime().compareTo(o2.getTime());
+                    }
+                }).toArray();
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + sortingIndex);
+        }
         for(int i = 0; i<passengers.size(); i++){
             Object human = humans[i];
             data[i][0] = ((Human)human).getName();
@@ -475,8 +574,8 @@ public class PersonalPage extends JFrame {
             }else {
                 data[i][3] = "";
             }
-            data[i][4] = ((Human)human).getUsername();
-            data[i][5] = ((Human)human).getRoom();
+            data[i][5] = ((Human)human).getUsername();
+            data[i][4] = ((Human)human).getRoom();
             data[i][6] = ((Human)human).getTime();
         }
         return data;
@@ -540,10 +639,23 @@ public class PersonalPage extends JFrame {
                 "Power the server!");
     }
 
-    public void resizeColumnWidth(JTable table) {
+    private void resizeColumnWidth(JTable table) {
         final TableColumnModel columnModel = table.getColumnModel();
         for (int column = 0; column < table.getColumnCount(); column++) {
             columnModel.getColumn(column).setPreferredWidth(200);
         }
+    }
+
+    private String[] getSortParameters(Locale locale){
+        bundle = ResourceBundle.getBundle("Bundle", locale);
+        return new String[]{
+                bundle.getString("name"),
+                bundle.getString("time_until_hunger"),
+                bundle.getString("food_name"),
+                bundle.getString("thumb_length"),
+                bundle.getString("room"),
+                bundle.getString("user"),
+                bundle.getString("data")
+        };
     }
 }
