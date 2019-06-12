@@ -193,13 +193,9 @@ public class PersonalPage extends JFrame {
         mainBox.add(Box.createHorizontalStrut(20));
         languageComboBox.addActionListener(actionEvent -> updateLanguage(languageComboBox.getItemAt(languageComboBox.getSelectedIndex()), user.getLogin()));
 
-        Canvas canvas = new Draw(100, 37, Color.RED, 50, 80);
+        Canvas canvas = new Draw();
+        canvas.setSize(900, 500);
         mainBox.add(canvas);
-        //canvas.addMouseListener();
-        //canvas.remove();
-
-        Canvas canvas1 = new Draw(100, 37, Color.BLUE, 10, 5);
-        mainBox.add(canvas1);
 
         back.addActionListener(e -> {
             StartPage window = new StartPage(socket, (Locale) languageComboBox.getSelectedItem());

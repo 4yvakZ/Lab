@@ -1,17 +1,20 @@
+import javax.swing.*;
 import java.awt.*;
 
 public class Draw extends Canvas {
-    int ws, hs, thumbLength, fat;
-    Color color;
-    public Draw(int ws, int hs, Color color, int thumbLength, int timeUntilHunger) {
-        this.hs = hs;
-        this.ws = ws;
-        this.color = color;
-        this.thumbLength = (int) (thumbLength*0.1+25);
-        this.fat = (int) (timeUntilHunger*0.1+75);
-    }
     @Override
     public void paint(Graphics g) {
+        //JPanel panel = new JPanel(new GridLayout(2, 2));
+        g.setColor(Color.BLACK);
+        g.drawRect(0, 0, 400, 200);
+        g.drawRect(400, 200, 800, 400);
+        g.drawRect(0, 0, 800, 400);
+        paint_smile(g, 100, 100, Color.RED, 0, 0);
+        paint_smile(g, 300, 100, Color.BLUE, 5, 30);
+    }
+    public void paint_smile(Graphics g, int ws, int hs, Color color, int thumbLength, int fat) {
+        fat = (int) (fat*0.1+75);
+        thumbLength = (int) (thumbLength*0.1+25);
         g.setColor(color);
         g.drawLine(ws, hs, ws+12, hs);
         g.drawLine(ws, hs+12, ws+12, hs+12);
