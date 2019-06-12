@@ -18,12 +18,10 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import static timeline.Timeline.setTime;
@@ -55,6 +53,7 @@ public class DatagramChannelServer {
         ConcurrentSkipListSet<Human> passengers = rocket.getPassengers();
 
         Connection connection = (new PostgresConnector()).getSQLConnection();
+        //activity.start(cabin, rocket, "ivan009ki@gmail.com"); RESET FROM CSV
         activity.start(cabin, rocket, connection);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             activity.save(passengers, connection);
@@ -90,6 +89,7 @@ public class DatagramChannelServer {
                 onlineUsers.add(clientPacket.getUser().getLogin());
                 ServerPacket serverPacket = new ServerPacket(onlineUsers, passengers);
                 server.send(ByteBuffer.wrap(serialize(serverPacket)), remoteAdd);
+                continue;
             }
             User user = clientPacket.getUser();
             String msg = clientPacket.getCommand();
