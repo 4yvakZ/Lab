@@ -5,12 +5,17 @@ import people.Donut;
 import people.Fool;
 import people.Human;
 import rocket.room.Room;
+import rocket.room.Type;
 import security.User;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -40,6 +45,8 @@ public class PersonalPage extends JFrame {
     private ReentrantLock lock = new ReentrantLock();
     private JComboBox<String> sortComboBox;
     private int sortingIndex = 0;
+    private int x0=0, x1=1080, y0=0, y1=400;
+    private int k1=0, k2=0, k3=0, k4=0;
     public PersonalPage(User user, DatagramSocket socket, Locale locale) {
         Thread ping = new Thread(new Runnable() {
 
@@ -240,23 +247,46 @@ public class PersonalPage extends JFrame {
             objectsTable.repaint();
         });
 
-        /*Canvas canvas = new Draw(100, 37, Color.RED, 50, 80);
-        Canvas canvas = new Draw();
+        //Canvas canvas = new Draw(100, 37, Color.RED, 50, 80);
+        /*Canvas canvas = new Canvas();
         canvas.setSize(900, 500);
         mainBox.add(canvas);
-        Draw draw = new Draw();
-        Room room = new Room(rocket.room.Type.CABIN, "Кабина");
-        draw.smile2room(Color.RED, 0, 0, room);
-        draw.smile2room(Color.BLUE, 0, 50, room);
+        BufferStrategy bufferStrategy = canvas.getBufferStrategy();
+        Graphics g = bufferStrategy.getDrawGraphics();
+        Draw draw = new Draw();*/
 
-        Canvas canvas1 = new Draw(100, 37, Color.BLUE, 10, 5);
+        BufferedImage image = new BufferedImage(1080, 400, BufferedImage.TYPE_INT_RGB);
+        Graphics g = image.getGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        g.setColor(Color.BLACK);
+        //Label for each room
+        g.drawRect(x0, y0, x1/2, y1/2);
+        g.drawRect(x1/2, y1/2, x1, y1);
+        g.drawRect(x0, y0, x1, y1);
+        Room room = new Room(rocket.room.Type.CABIN, "Кабина");
+        smile2room(g, Color.RED, 0, 0, room);
+        smile2room(g, Color.BLUE, 0, 50, room);
+        JLabel jl = new JLabel(new ImageIcon(image), SwingConstants.LEFT);
+        jl.setBounds(0, 0, 1080, 400);
+        JScrollPane jsp = new JScrollPane(jl);
+        mainBox.add(jsp);
+
+
+
+        /*Canvas canvas1 = new Draw(100, 37, Color.BLUE, 10, 5);
         mainBox.add(canvas1);*/
         /*addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getX() > 0 && e.getX() < 400) {
                     if (e.getY() > 0 && e.getY() < 200) {
-                        JOptionPane.showMessageDialog(null, "param");
+                        messageLabel.setText("");
+                        nameTextField.setText();
+                        timeUntilHungerTextField.setText();
+                        foodNameTextField.setText();
+                        roomTextFiled.setText();
+                        thumbLengthTextField.setText();
                     }
                 }
             }
@@ -457,7 +487,52 @@ public class PersonalPage extends JFrame {
         sortComboBox.setModel(new DefaultComboBoxModel<>(getSortParameters(locale)));
         sortComboBox.setSelectedIndex(sortingIndex);
     }
-
+    public void paint_smile(Graphics g, int ws, int hs, Color color, int thumbLength, int fat) {
+        fat = (int) (fat*0.1+75);
+        //thumbLength = (int) (thumbLength*0.1+25);
+        //Canvas canvas = new Draw();
+        //BufferStrategy bufferStrategy = getBufferStrategy();
+        //Graphics g = bufferStrategy.getDrawGraphics();
+        //Graphics g = getGraphics();
+        g.setColor(color);
+        /*g.drawLine(ws, hs, ws+12, hs);
+        g.drawLine(ws, hs+12, ws+12, hs+12);
+        g.drawLine(ws, hs+25, ws+12, hs+25);
+        g.drawLine(ws, hs+37, ws+12, hs+37);
+        g.drawLine(ws, hs+50, ws+25, hs+50);
+        g.drawLine(ws+12, hs, ws+12, hs-thumbLength);
+        g.drawLine(ws+12, hs-thumbLength, ws+25, hs-thumbLength);
+        g.drawLine(ws+25, hs-thumbLength, ws+25, hs);
+        g.drawLine(ws, hs, ws, hs+50);
+        g.drawArc(ws+25, hs, 5, 50, 270, 180);*/
+        g.fillOval((int) (ws-75-(fat-75)/2), (int) (hs-37-(fat-75)/2), fat, fat);
+        g.setColor(Color.WHITE);
+        g.drawArc(ws-37-18, hs+10, 36, 10, 180, 180);
+        g.drawOval(ws-27, hs-12, 5, 5);
+        g.drawOval(ws-52, hs-12, 5, 5);
+    }
+    public void smile2room(Graphics g, Color color, int thumbLength, int fat, Room room) {
+        if (room.getType() == rocket.room.Type.CABIN) {
+            k1++;
+            int mid_y = y1/4;
+            paint_smile(g,  k1*100, mid_y, color, thumbLength, fat);
+        }
+        /*if (room.name == "пищевой блок") {
+            k2++;
+            int mid_y = y1/4;
+            paint_smile(g, x1/2 + k2*50, mid_y, color, thumbLength, fat);
+        }
+        if (room.name == "тех отсек") {
+            k3++;
+            int mid_y = 3*y1/4;
+            paint_smile(g, k3*50, mid_y, color, thumbLength, fat);
+        }
+        if (room.name == "склад") {
+            k4++;
+            int mid_y = 3*y1/4;
+            paint_smile(g, x1/2 + k4*50, mid_y, color, thumbLength, fat);
+        }*/
+    }
     private void send(String commandWord, Human human, User user, DatagramSocket socket) throws IOException {
         ClientPacket clientPacket = new ClientPacket(commandWord, human, user);
         byte[] buf = serialize(clientPacket);
