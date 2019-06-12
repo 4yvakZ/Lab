@@ -1,23 +1,31 @@
 import java.awt.*;
 
 public class Draw extends Canvas {
-    /*public void paint(String name, int thumbLength, int timeUntilHunger, String username, String foodName) {
-
-    }*/
+    int ws, hs, thumbLength, fat;
+    Color color;
+    public Draw(int ws, int hs, Color color, int thumbLength, int timeUntilHunger) {
+        this.hs = hs;
+        this.ws = ws;
+        this.color = color;
+        this.thumbLength = (int) (thumbLength*0.1+25);
+        this.fat = (int) (timeUntilHunger*0.1+75);
+    }
     @Override
     public void paint(Graphics g) {
-        int hm = 200, wm = 200, hs = 100, ws = 25;
-        g.setColor(new Color(255, 0, 0));
-        g.drawLine(ws, hs, ws+25, hs);
-        g.drawLine(ws, hs+25, ws+25, hs+25);
+        g.setColor(color);
+        g.drawLine(ws, hs, ws+12, hs);
+        g.drawLine(ws, hs+12, ws+12, hs+12);
+        g.drawLine(ws, hs+25, ws+12, hs+25);
+        g.drawLine(ws, hs+37, ws+12, hs+37);
         g.drawLine(ws, hs+50, ws+25, hs+50);
-        g.drawLine(ws, hs+75, ws+25, hs+75);
-        g.drawLine(ws, hs+100, ws+50, hs+100);
-        g.drawLine(ws+25, hs, ws+25, hs-50);
-        g.drawLine(ws+25, hs-50, ws+50, hs-50);
-        g.drawLine(ws+50, hs-50, ws+50, hs);
-        g.drawLine(ws, hs, ws, hs+100);
-        g.drawArc(ws+50, hs, 10, hs, 270, 180);
-        //g.fillOval();
+        g.drawLine(ws+12, hs, ws+12, hs-thumbLength);
+        g.drawLine(ws+12, hs-thumbLength, ws+25, hs-thumbLength);
+        g.drawLine(ws+25, hs-thumbLength, ws+25, hs);
+        g.drawLine(ws, hs, ws, hs+50);
+        g.drawArc(ws+25, hs, 5, 50, 270, 180);
+        g.drawOval((int) (ws-75-(fat-75)/2), (int) (hs-37-(fat-75)/2), fat, fat);
+        g.drawArc(ws-37-18, hs+10, 36, 10, 180, 180);
+        g.drawOval(ws-27, hs-12, 5, 5);
+        g.drawOval(ws-52, hs-12, 5, 5);
     }
 }
