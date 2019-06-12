@@ -353,8 +353,9 @@ public final class Activity {
      * @throws NullPointerException wrong format exception
      */
     public String removeLower(ConcurrentSkipListSet<Human> passengers, Human human) throws NullPointerException {
-        if(passengers.retainAll(passengers.stream()
-                .filter(x -> x.compareTo(human) >= 0).filter(x-> x.getUsername().equals(human.getUsername()))
+        if(passengers.removeAll(passengers.stream()
+                .filter(x-> x.getUsername().equals(human.getUsername()))
+                .filter(x -> x.compareTo(human) <= 0)
                 .collect(Collectors.toCollection(ConcurrentSkipListSet::new)))){
             return "Some objects were removed";
         }
@@ -398,7 +399,8 @@ public final class Activity {
      * @throws NullPointerException wrong format exception
      */
     public String addIfMax(ConcurrentSkipListSet<Human> passengers, Human human) throws NullPointerException{
-        if(passengers.higher(human)==null){
+        ConcurrentSkipListSet<Human> passengers1 = passengers.stream().filter(x -> x.getUsername().equals(human.getUsername())).collect(Collectors.toCollection(ConcurrentSkipListSet::new));
+        if(passengers1.higher(human)==null){
             passengers.add(human);
             return "Objects was successfully added";
         }

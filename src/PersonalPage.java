@@ -1,59 +1,75 @@
 import activity.ClientPacket;
 import activity.ServerPacket;
+import org.json.simple.parser.ParseException;
 import people.Donut;
 import people.Fool;
 import people.Human;
+import rocket.room.Room;
 import security.User;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static security.Serializer.deserialize;
 import static security.Serializer.serialize;
 
 public class PersonalPage extends JFrame {
     private static Locale ruLocale = new Locale("ru", "RU");
-    private Locale slLocale = new Locale("sl", "SL");
-    private Locale plLocale = new Locale("pl", "PL");
-    private Locale esLocale = new Locale("es", "ES");
     private ResourceBundle bundle;
     private JComboBox<Locale> languageComboBox = new JComboBox<>();
     private JButton sendButton, back;
-    private JLabel helloLabel, languageLabel, commandLabel, nameLabel, timeUntilHungerLabel, foodNameLabel, thumbLengthLabel, objectsLabel, usersLabel;
-    private JScrollPane usersScroll, objectsScroll;
+    private JLabel helloLabel, languageLabel, commandLabel, nameLabel, timeUntilHungerLabel, foodNameLabel, thumbLengthLabel, objectsLabel, usersLabel, roomLabel;
     private ConcurrentSkipListSet<Human> passengers;
     private ConcurrentSkipListSet<String> users;
-
+    private JTable usersTable, objectsTable;
+    private MyTableModel usersTableModel, objectsTableModel;
+    private ReentrantLock lock = new ReentrantLock();
     public PersonalPage(User user, DatagramSocket socket, Locale locale) {
-        Thread update = new Thread(() -> {
-            while (true) {
-                try {
-                    send(user, socket);
-                    ServerPacket serverPacket = receive(socket);
-                    if (serverPacket.isPing()) {
-                        //TODO tables update
-                        continue;
-                    }else{
-                        //TODO print server massege
+        Thread ping = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                while (true) {
+                    if(!lock.isLocked()) {
+                        try {
+                            send(user, socket);
+                            ServerPacket serverPacket = receive(socket);
+                            if (serverPacket.isPing()) {
+                                if (users.equals(serverPacket.getOnlineUsers()) && passengers.equals(serverPacket.getPassengers())) {
+                                    continue;
+                                } else {
+                                    users = serverPacket.getOnlineUsers();
+                                    usersTableModel.setData(getUsersData());
+                                    passengers = serverPacket.getPassengers();
+                                    objectsTableModel.setData(getObjectsData());
+                                }
+                            }
+                        } catch (IOException e) {
+                            printMeme();
+                        }
                     }
-                } catch (IOException e) {
-                    printMeme();
                 }
             }
         });
-
-        //onStart(user,socket);
+        onStart(user,socket);
+        ping.start();
         Font font = new Font("Arial", Font.BOLD, 14);
         bundle = ResourceBundle.getBundle("Bundle", locale);
         setTitle(bundle.getString("personal_page"));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(0, 0, 1080, 720);
+        setBounds(0, 0, 1366, 920);
 
         Box mainBox = Box.createVerticalBox();
 
@@ -97,8 +113,11 @@ public class PersonalPage extends JFrame {
         topPanel.add(languageLabel);
 
         languageComboBox.addItem(ruLocale);
+        Locale slLocale = new Locale("sl", "SL");
         languageComboBox.addItem(slLocale);
+        Locale plLocale = new Locale("pl", "PL");
         languageComboBox.addItem(plLocale);
+        Locale esLocale = new Locale("es", "ES");
         languageComboBox.addItem(esLocale);
         languageComboBox.setSelectedItem(locale);
 
@@ -118,17 +137,19 @@ public class PersonalPage extends JFrame {
 
         bottomBox.add(Box.createHorizontalStrut(20));
 
-        JPanel humanInfoPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+        JPanel humanInfoPanel = new JPanel(new GridLayout(6, 2, 10, 10));
 
         nameLabel = new JLabel(bundle.getString("name"), SwingConstants.CENTER);
         timeUntilHungerLabel = new JLabel(bundle.getString("time_until_hunger"), SwingConstants.CENTER);
         foodNameLabel = new JLabel(bundle.getString("food_name"), SwingConstants.CENTER);
         thumbLengthLabel = new JLabel(bundle.getString("thumb_length"), SwingConstants.CENTER);
+        roomLabel = new JLabel(bundle.getString("room"), SwingConstants.CENTER);
 
         JTextField nameTextField = new JTextField("", SwingConstants.CENTER);
         JTextField timeUntilHungerTextField = new JTextField("", SwingConstants.CENTER);
         JTextField foodNameTextField = new JTextField("", SwingConstants.CENTER);
         JTextField thumbLengthTextField = new JTextField("", SwingConstants.CENTER);
+        JTextField roomTextFiled = new JTextField("", SwingConstants.CENTER);
 
         humanInfoPanel.add(nameLabel);
         humanInfoPanel.add(nameTextField);
@@ -138,6 +159,9 @@ public class PersonalPage extends JFrame {
         humanInfoPanel.add(foodNameTextField);
         humanInfoPanel.add(thumbLengthLabel);
         humanInfoPanel.add(thumbLengthTextField);
+        humanInfoPanel.add(roomLabel);
+        humanInfoPanel.add(roomTextFiled);
+
         humanInfoPanel.setMaximumSize(new Dimension(100, 150));
 
         bottomBox.add(humanInfoPanel);
@@ -150,9 +174,7 @@ public class PersonalPage extends JFrame {
 
         objectsBox.add(objectsLabel);
 
-        JTable objectsTable = new JTable(10,6);
-
-        /*JTable objectsTable = new JTable(getData(), new String[]{
+        objectsTableModel = new MyTableModel(new String[]{
                 bundle.getString("name"),
                 bundle.getString("time_until_hunger"),
                 bundle.getString("food_name"),
@@ -160,10 +182,14 @@ public class PersonalPage extends JFrame {
                 bundle.getString("room"),
                 bundle.getString("user"),
                 bundle.getString("data")
-        });*/
+        }, getObjectsData());
+        objectsTable = new JTable(objectsTableModel);
+        //JTable objectsTable = new JTable(10,6);
+
         objectsTable.setFillsViewportHeight(true);
-        objectsScroll = new JScrollPane(objectsTable);
-        objectsTable.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+        JScrollPane objectsScroll = new JScrollPane(objectsTable);
+        resizeColumnWidth(objectsTable);
+        //objectsScroll.setMinimumSize(new Dimension(750, 500));
 
         objectsBox.add(objectsScroll);
 
@@ -174,14 +200,14 @@ public class PersonalPage extends JFrame {
 
         usersLabel = new JLabel(bundle.getString("users"), SwingConstants.CENTER);
         usersLabel.setFont(font);
-
         usersBox.add(usersLabel);
+        usersBox.setPreferredSize(usersBox.getMinimumSize());
 
-        usersScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        JTable usersTable = new JTable();
-
-        usersScroll.add(usersTable);
-        usersScroll.setMinimumSize(usersLabel.getSize());
+        usersTableModel = new MyTableModel(new String[]{bundle.getString("user")}, getUsersData());
+        usersTable = new JTable(usersTableModel);
+        usersTable.setFillsViewportHeight(true);
+        JScrollPane usersScroll = new JScrollPane(usersTable);
+        resizeColumnWidth(usersTable);
 
         usersBox.add(usersScroll);
 
@@ -191,13 +217,16 @@ public class PersonalPage extends JFrame {
         mainBox.add(bottomBox);
 
         mainBox.add(Box.createHorizontalStrut(20));
+        JLabel messageLabel = new JLabel("", SwingConstants.CENTER);
+        mainBox.add(messageLabel);
+        mainBox.add(Box.createVerticalStrut(20));
         languageComboBox.addActionListener(actionEvent -> updateLanguage(languageComboBox.getItemAt(languageComboBox.getSelectedIndex()), user.getLogin()));
 
-        Canvas canvas = new Draw(100, 37, Color.RED, 50, 80);
+        /*Canvas canvas = new Draw(100, 37, Color.RED, 50, 80);
         mainBox.add(canvas);
 
         Canvas canvas1 = new Draw(100, 37, Color.BLUE, 10, 5);
-        mainBox.add(canvas1);
+        mainBox.add(canvas1);*/
 
         back.addActionListener(e -> {
             StartPage window = new StartPage(socket, (Locale) languageComboBox.getSelectedItem());
@@ -205,9 +234,157 @@ public class PersonalPage extends JFrame {
             dispose();
         });
 
+        objectsTable.getSelectionModel().addListSelectionListener(event -> {
+            messageLabel.setText("");
+            nameTextField.setText(objectsTable.getValueAt(objectsTable.getSelectedRow(), 0).toString());
+            timeUntilHungerTextField.setText(objectsTable.getValueAt(objectsTable.getSelectedRow(), 1).toString());
+            foodNameTextField.setText(objectsTable.getValueAt(objectsTable.getSelectedRow(), 2).toString());
+            roomTextFiled.setText(objectsTable.getValueAt(objectsTable.getSelectedRow(), 5).toString());
+            thumbLengthTextField.setText(objectsTable.getValueAt(objectsTable.getSelectedRow(), 3).toString());
+        });
+
+        sendButton.addActionListener(e -> {
+            messageLabel.setText("");
+            lock.lock();
+            try {
+                Human human;
+                String name = nameTextField.getText();
+                int timeUntilHunger;
+                try {
+                    timeUntilHunger = Integer.parseInt(timeUntilHungerTextField.getText());
+                }catch (NumberFormatException ex){
+                    timeUntilHunger = 0;
+                }
+                String foodName = foodNameTextField.getText();
+                int thumbLength;
+                try {
+                    thumbLength = Integer.parseInt(thumbLengthLabel.getText());
+                }catch (NumberFormatException ex){
+                    thumbLength = 0;
+                }
+                String username = user.getLogin();
+                Room temporyRoom;
+                switch (roomTextFiled.getText()) {
+                    case "Склад":
+                        temporyRoom = new Room(rocket.room.Type.STORAGE, "Склад");
+                        break;
+                    case "Пищевой блок":
+                        temporyRoom = new Room(rocket.room.Type.FOODSTORAGE, "Пищевой блок");
+                        break;
+                    case "Кабина":
+                        temporyRoom = new Room(rocket.room.Type.CABIN, "Кабина");
+                        break;
+                    case "Тех отсек":
+                        temporyRoom = new Room(rocket.room.Type.ENGINE, "Тех отсек");
+                        break;
+                    default:
+                        throw new ParseException(1);
+                }
+                if (timeUntilHunger < 1) throw new ParseException(1);
+                if (name.isEmpty()) {
+                    human = new Human(timeUntilHunger, username, temporyRoom);
+                } else if (thumbLength > 0) {
+                    if (!foodName.isEmpty()) {
+                        human = new Fool(name, timeUntilHunger, temporyRoom, foodName, thumbLength, username);
+                    } else {
+                        human = new Fool(name, timeUntilHunger, temporyRoom, thumbLength, username);
+                    }
+                } else if (!foodName.isEmpty()) {
+                    human = new Donut(name, timeUntilHunger, temporyRoom, foodName, username);
+                } else {
+                    human = new Human(name, timeUntilHunger, username, temporyRoom);
+                }
+                boolean isCommandEdit = false;
+                switch (Objects.requireNonNull(commandComboBox.getSelectedItem()).toString()) {
+                    case "edit":
+                        isCommandEdit = true;
+                        Human editableHuman;
+                        name = objectsTable.getValueAt(objectsTable.getSelectedRow(), 0).toString();
+                        try {
+                            timeUntilHunger = Integer.parseInt(objectsTable.getValueAt(objectsTable.getSelectedRow(), 1).toString());
+                        }catch (NumberFormatException ex){
+                            timeUntilHunger = 0;
+                        }
+                        foodName = objectsTable.getValueAt(objectsTable.getSelectedRow(), 2).toString();
+                        switch (objectsTable.getValueAt(objectsTable.getSelectedRow(), 5).toString()) {
+                            case "Склад":
+                                temporyRoom = new Room(rocket.room.Type.STORAGE, "Склад");
+                                break;
+                            case "Пищевой блок":
+                                temporyRoom = new Room(rocket.room.Type.FOODSTORAGE, "Пищевой блок");
+                                break;
+                            case "Кабина":
+                                temporyRoom = new Room(rocket.room.Type.CABIN, "Кабина");
+                                break;
+                            case "Тех отсек":
+                                temporyRoom = new Room(rocket.room.Type.ENGINE, "Тех отсек");
+                                break;
+                            default:
+                                throw new ParseException(1);
+                        }
+                        try {
+                            thumbLength = Integer.parseInt(objectsTable.getValueAt(objectsTable.getSelectedRow(), 3).toString());
+                        }catch (NumberFormatException ex){
+                            thumbLength = 0;
+                        }
+                        if (timeUntilHunger < 1) throw new ParseException(1);
+                        if (name.isEmpty()) {
+                            editableHuman = new Human(timeUntilHunger, username, temporyRoom);
+                        } else if (thumbLength > 0) {
+                            if (!foodName.isEmpty()) {
+                                editableHuman = new Fool(name, timeUntilHunger, temporyRoom, foodName, thumbLength, username);
+                            } else {
+                                editableHuman = new Fool(name, timeUntilHunger, temporyRoom, thumbLength, username);
+                            }
+                        } else if (!foodName.isEmpty()) {
+                            editableHuman = new Donut(name, timeUntilHunger, temporyRoom, foodName, username);
+                        } else {
+                            editableHuman = new Human(name, timeUntilHunger, username, temporyRoom);
+                        }
+                        send("remove",editableHuman,user,socket);
+                        ServerPacket serverPacket = receive(socket);
+                        if(!serverPacket.getAnswer().equals("Nothing was removed")){
+                            send("add", human, user, socket);
+                        }
+                        break;
+                    case "add":
+                        send("add",human,user,socket);
+                        break;
+                    case "remove":
+                        send("remove",human,user,socket);
+                        break;
+                    case "remove_lower":
+                        send("remove_lower",human,user,socket);
+                        break;
+                    case "add_if_max":
+                        send("add_if_max",human,user,socket);
+                        break;
+                }
+                ServerPacket serverPacket = receive(socket);
+                if(!isCommandEdit) {
+                    messageLabel.setText(serverPacket.getAnswer());
+                }else {
+                    messageLabel.setText("Object was successfully edited");
+                }
+                send(user, socket);
+                serverPacket = receive(socket);
+                if (serverPacket.isPing()) {
+                    users = serverPacket.getOnlineUsers();
+                    usersTableModel.setData(getUsersData());
+                    passengers = serverPacket.getPassengers();
+                    objectsTableModel.setData(getObjectsData());
+                }
+            } catch (ParseException ex) {
+                messageLabel.setText("Wrong input!");
+            } catch (IOException ex) {
+                printMeme();
+                dispose();
+            }
+            lock.unlock();
+        });
         setContentPane(mainBox);
 
-        //TODO update.start();
+
     }
 
     private void updateLanguage(Locale locale, String username) {
@@ -223,9 +400,20 @@ public class PersonalPage extends JFrame {
         thumbLengthLabel.setText(bundle.getString("thumb_length"));
         objectsLabel.setText(bundle.getString("objects"));
         usersLabel.setText(bundle.getString("users"));
+        roomLabel.setText(bundle.getString("room"));
         setTitle(bundle.getString("personal_page"));
-        //objectsScroll.setMinimumSize(objectsLabel.getSize());
-        //usersScroll.setMinimumSize(usersLabel.getSize());
+        JTableHeader th = usersTable.getTableHeader();
+        th.getColumnModel().getColumn(0).setHeaderValue( bundle.getString("user") );
+        th.repaint();
+        th = objectsTable.getTableHeader();
+        th.getColumnModel().getColumn(0).setHeaderValue( bundle.getString("name") );
+        th.getColumnModel().getColumn(1).setHeaderValue( bundle.getString("time_until_hunger") );
+        th.getColumnModel().getColumn(2).setHeaderValue( bundle.getString("food_name") );
+        th.getColumnModel().getColumn(3).setHeaderValue( bundle.getString("thumb_length") );
+        th.getColumnModel().getColumn(4).setHeaderValue( bundle.getString("room") );
+        th.getColumnModel().getColumn(5).setHeaderValue( bundle.getString("user") );
+        th.getColumnModel().getColumn(6).setHeaderValue( bundle.getString("data") );
+        th.repaint();
     }
 
     private void send(String commandWord, Human human, User user, DatagramSocket socket) throws IOException {
@@ -255,7 +443,6 @@ public class PersonalPage extends JFrame {
         return serverPacket;
     }
 
-
     private void onStart(User user, DatagramSocket socket){
         try {
             send(user, socket);
@@ -271,7 +458,7 @@ public class PersonalPage extends JFrame {
         }
     }
 
-    private Object[][] getData(){
+    private Object[][] getObjectsData(){
         Object[][] data = new Object[passengers.size()][7];
         Object[] humans = passengers.stream().toArray();
         for(int i = 0; i<passengers.size(); i++){
@@ -293,6 +480,10 @@ public class PersonalPage extends JFrame {
             data[i][6] = ((Human)human).getTime();
         }
         return data;
+    }
+
+    private Object[][] getUsersData(){
+        return new Object[][]{users.toArray()};
     }
     private void printMeme(){
         System.out.println("2Xi2s:rsiiiiiiSiSiSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS2sr;SsSi5SSsisSSS59ABBBBBBHG255555523&HBBHGX223&&32X9X9&GHAGBG\n" +
@@ -347,5 +538,12 @@ public class PersonalPage extends JFrame {
                 "---██─█---█──██─█─█─█─█─█──█──█─█─█──█────█─██─█──█──█──█---█──█─█───█────█──██─█───█\n" +
                 "---█──█---████──███─█─█──█─█──█─█──██─────█─█──█──█──████---████─███─█────████──███─█\n"+
                 "Power the server!");
+    }
+
+    public void resizeColumnWidth(JTable table) {
+        final TableColumnModel columnModel = table.getColumnModel();
+        for (int column = 0; column < table.getColumnCount(); column++) {
+            columnModel.getColumn(column).setPreferredWidth(200);
+        }
     }
 }

@@ -50,10 +50,12 @@ public class DatagramChannelServer {
         }
         rocket.addRoom(cabin);
         rocket.addRoom(foodStorage);
+        rocket.addRoom(new Room(Type.ENGINE,"Тех отсек"));
+        rocket.addRoom(new Room(Type.STORAGE, "Склад"));
         ConcurrentSkipListSet<Human> passengers = rocket.getPassengers();
 
         Connection connection = (new PostgresConnector()).getSQLConnection();
-        //activity.start(cabin, rocket, "ivan009ki@gmail.com"); RESET FROM CSV
+        //activity.start(cabin, rocket, "ivan009ki@gmail.com");// RESET FROM CSV
         activity.start(cabin, rocket, connection);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             activity.save(passengers, connection);
