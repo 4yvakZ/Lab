@@ -174,6 +174,8 @@ public class PersonalPage extends JFrame {
 
         Canvas canvas = new Draw(100, 37, Color.RED, 50, 80);
         mainBox.add(canvas);
+        //canvas.addMouseListener();
+        //canvas.remove();
 
         Canvas canvas1 = new Draw(100, 37, Color.BLUE, 10, 5);
         mainBox.add(canvas1);
