@@ -255,7 +255,7 @@ public class PersonalPage extends JFrame {
         Graphics g = bufferStrategy.getDrawGraphics();
         Draw draw = new Draw();*/
 
-        BufferedImage image = new BufferedImage(1080, 400, BufferedImage.TYPE_INT_RGB);
+        /*BufferedImage image = new BufferedImage(1080, 400, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, image.getWidth(), image.getHeight());
@@ -270,9 +270,31 @@ public class PersonalPage extends JFrame {
         JLabel jl = new JLabel(new ImageIcon(image), SwingConstants.LEFT);
         jl.setBounds(0, 0, 1080, 400);
         JScrollPane jsp = new JScrollPane(jl);
-        mainBox.add(jsp);
+        mainBox.add(jsp);*/
 
-
+        Smile smile = new Smile(Color.RED, 20, 5);
+        //smile.setBounds(0, 0, 100, 100);
+        //smile.setSize(100, 100);
+        Smile smile1 = new Smile(Color.BLUE, 35, 2);
+        Room room = new Room(rocket.room.Type.CABIN, "Кабина");
+        JPanel rooms = new JPanel();
+        Box cabin = Box.createHorizontalBox();
+        cabin.setBounds(0, 0, 300, 100);
+        //cabin.setSize(300, 100);
+        /*if (room.getType() == rocket.room.Type.CABIN) {
+             cabin.add(smile);
+             cabin.add(smile1);
+        }*/
+        cabin.add(smile);
+        rooms.add(cabin);
+        //rooms.add(cabin);
+        //rooms.add(cabin);
+        //rooms.setBounds(0, 600, 900, 300);
+        //rooms.setSize(getWidth(), 300);
+        //JScrollPane scrollPane = new JScrollPane();
+        //scrollPane.setBounds(0, 0, 900, 300);
+        //scrollPane.add(rooms);
+        mainBox.add(rooms);
 
         /*Canvas canvas1 = new Draw(100, 37, Color.BLUE, 10, 5);
         mainBox.add(canvas1);*/
@@ -487,52 +509,7 @@ public class PersonalPage extends JFrame {
         sortComboBox.setModel(new DefaultComboBoxModel<>(getSortParameters(locale)));
         sortComboBox.setSelectedIndex(sortingIndex);
     }
-    public void paint_smile(Graphics g, int ws, int hs, Color color, int thumbLength, int fat) {
-        fat = (int) (fat*0.1+75);
-        //thumbLength = (int) (thumbLength*0.1+25);
-        //Canvas canvas = new Draw();
-        //BufferStrategy bufferStrategy = getBufferStrategy();
-        //Graphics g = bufferStrategy.getDrawGraphics();
-        //Graphics g = getGraphics();
-        g.setColor(color);
-        /*g.drawLine(ws, hs, ws+12, hs);
-        g.drawLine(ws, hs+12, ws+12, hs+12);
-        g.drawLine(ws, hs+25, ws+12, hs+25);
-        g.drawLine(ws, hs+37, ws+12, hs+37);
-        g.drawLine(ws, hs+50, ws+25, hs+50);
-        g.drawLine(ws+12, hs, ws+12, hs-thumbLength);
-        g.drawLine(ws+12, hs-thumbLength, ws+25, hs-thumbLength);
-        g.drawLine(ws+25, hs-thumbLength, ws+25, hs);
-        g.drawLine(ws, hs, ws, hs+50);
-        g.drawArc(ws+25, hs, 5, 50, 270, 180);*/
-        g.fillOval((int) (ws-75-(fat-75)/2), (int) (hs-37-(fat-75)/2), fat, fat);
-        g.setColor(Color.WHITE);
-        g.drawArc(ws-37-18, hs+10, 36, 10, 180, 180);
-        g.drawOval(ws-27, hs-12, 5, 5);
-        g.drawOval(ws-52, hs-12, 5, 5);
-    }
-    public void smile2room(Graphics g, Color color, int thumbLength, int fat, Room room) {
-        if (room.getType() == rocket.room.Type.CABIN) {
-            k1++;
-            int mid_y = y1/4;
-            paint_smile(g,  k1*100, mid_y, color, thumbLength, fat);
-        }
-        /*if (room.name == "пищевой блок") {
-            k2++;
-            int mid_y = y1/4;
-            paint_smile(g, x1/2 + k2*50, mid_y, color, thumbLength, fat);
-        }
-        if (room.name == "тех отсек") {
-            k3++;
-            int mid_y = 3*y1/4;
-            paint_smile(g, k3*50, mid_y, color, thumbLength, fat);
-        }
-        if (room.name == "склад") {
-            k4++;
-            int mid_y = 3*y1/4;
-            paint_smile(g, x1/2 + k4*50, mid_y, color, thumbLength, fat);
-        }*/
-    }
+
     private void send(String commandWord, Human human, User user, DatagramSocket socket) throws IOException {
         ClientPacket clientPacket = new ClientPacket(commandWord, human, user);
         byte[] buf = serialize(clientPacket);
