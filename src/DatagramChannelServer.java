@@ -113,6 +113,7 @@ public class DatagramChannelServer {
                 continue;
             }else if (msg == null){
                 server.send(ByteBuffer.wrap(serialize(new ServerPacket("Welcome back "+user.getLogin()))), remoteAdd);
+                onlineUsers.add(user.getLogin());
                 continue;
             }
 

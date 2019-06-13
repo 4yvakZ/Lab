@@ -8,6 +8,7 @@ import people.Fool;
 import people.Human;
 import rocket.Rocket;
 import rocket.room.Room;
+import rocket.room.Type;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -55,6 +56,21 @@ public final class Activity {
                 String foodName = resultSet.getString("food_name");
                 ZonedDateTime time = ZonedDateTime.parse(resultSet.getString("zoned_time"));
                 String user = resultSet.getString("username");
+                String roomName = resultSet.getString("room");
+                switch (roomName) {
+                    case "Склад":
+                        room = new Room(Type.STORAGE, "Склад");
+                        break;
+                    case "Пищевой блок":
+                        room = new Room(Type.FOODSTORAGE, "Пищевой блок");
+                        break;
+                    case "Кабина":
+                        room = new Room(Type.CABIN, "Кабина");
+                        break;
+                    case "Тех отсек":
+                        room = new Room(Type.ENGINE, "Тех отсек");
+                        break;
+                }
                 if (name.isEmpty()){
                     rocket.addPassenger(new Human(timeUntilHunger, user, room, time));
                 }else if (thumbLength != 0){
@@ -253,17 +269,17 @@ public final class Activity {
             thumbLength = 0;
         }
         if (timeUntilHunger < 1) throw new ParseException(1);
-        if (name.isEmpty()){
+        if (name.isEmpty()) {
             human = new Human(timeUntilHunger, user, room);
-        }else if (thumbLength > 0){
+        } else if (thumbLength > 0) {
             if (!foodName.isEmpty()) {
-                human = new  Fool(name, timeUntilHunger, room, foodName, thumbLength, user);
-            }else{
-                human = new  Fool(name, timeUntilHunger, room, thumbLength, user);
+                human = new Fool(name, timeUntilHunger, room, foodName, thumbLength, user);
+            } else {
+                human = new Fool(name, timeUntilHunger, room, thumbLength, user);
             }
-        }else if (!foodName.isEmpty()){
+        } else if (!foodName.isEmpty()) {
             human = new Donut(name, timeUntilHunger, room, foodName, user);
-        }else{
+        } else {
             human = new Human(name, timeUntilHunger, user, room);
         }
         return human;
@@ -472,6 +488,7 @@ public final class Activity {
             String table = "INSERT INTO HUMANS ";
             String colums, value;
             for (Human human: passengers) {
+                String roomName = human.getRoom().toString();
                 String name = human.getName();
                 ZonedDateTime time = human.getTime();
                 String username = human.getUsername();
@@ -480,16 +497,16 @@ public final class Activity {
                     Fool fool = (Fool) human;
                     String foodName = fool.getFoodName();
                     int thumbLength = fool.getThumbLength();
-                    colums = "(name, time_until_hunger, food_name, thumb_length, username, zoned_time) ";
-                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"',"+thumbLength+",'"+username +"','"+time+"');";
+                    colums = "(name, time_until_hunger, food_name, thumb_length, username, zoned_time, room) ";
+                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"',"+thumbLength+",'"+username +"','"+time+"','"+roomName+"');";
                 }else if (human instanceof Donut){
                     Donut donut = (Donut) human;
                     String foodName = donut.getFoodName();
-                    colums = "(name, time_until_hunger, food_name, username, zoned_time) ";
-                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"','"+username +"','"+time+"');";
+                    colums = "(name, time_until_hunger, food_name, username, zoned_time, room) ";
+                    value = "VALUES ('" + name +"'," + timeUntilHunger +",'"+foodName+"','"+username +"','"+time+"','"+roomName+"');";
                 }else {
-                    colums = "(name, time_until_hunger, username, zoned_time) ";
-                    value = "VALUES ('" + name + "'," + timeUntilHunger + ",'"+username +"','"+time+"');";
+                    colums = "(name, time_until_hunger, username, zoned_time, room) ";
+                    value = "VALUES ('" + name + "'," + timeUntilHunger + ",'"+username +"','"+time+"','"+roomName+"');";
                 }
                 statement.executeUpdate(table+colums+value);
             }

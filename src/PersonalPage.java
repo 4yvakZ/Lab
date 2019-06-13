@@ -5,7 +5,6 @@ import people.Donut;
 import people.Fool;
 import people.Human;
 import rocket.room.Room;
-import rocket.room.Type;
 import security.User;
 
 import javax.swing.*;
@@ -14,15 +13,11 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -37,7 +32,18 @@ public class PersonalPage extends JFrame {
     private ResourceBundle bundle;
     private JComboBox<Locale> languageComboBox = new JComboBox<>();
     private JButton sendButton, back;
-    private JLabel helloLabel, languageLabel, commandLabel, nameLabel, timeUntilHungerLabel, foodNameLabel, thumbLengthLabel, objectsLabel, usersLabel, roomLabel, messageLabel, sortLabel;
+    private JLabel helloLabel;
+    private JLabel languageLabel;
+    private JLabel commandLabel;
+    private JLabel nameLabel;
+    private JLabel timeUntilHungerLabel;
+    private JLabel foodNameLabel;
+    private JLabel thumbLengthLabel;
+    private JLabel objectsLabel;
+    private JLabel usersLabel;
+    private JLabel roomLabel;
+    private JLabel messageLabel;
+    private JLabel sortLabel;
     private ConcurrentSkipListSet<Human> passengers;
     private ConcurrentSkipListSet<String> users;
     private JTable usersTable, objectsTable;
@@ -45,41 +51,51 @@ public class PersonalPage extends JFrame {
     private ReentrantLock lock = new ReentrantLock();
     private JComboBox<String> sortComboBox;
     private int sortingIndex = 0;
-    private int x0=0, x1=1080, y0=0, y1=400;
-    private int k1=0, k2=0, k3=0, k4=0;
+    private ConcurrentHashMap<String, Color> usersColours = new ConcurrentHashMap<>();
+    private ArrayList<Smile> smiles = new ArrayList<>();
+    private  Box cabin = Box.createHorizontalBox();
+    private Box foodStorage = Box.createHorizontalBox();
+    private Box engine = Box.createHorizontalBox();
+    private Box storage = Box.createHorizontalBox();
     public PersonalPage(User user, DatagramSocket socket, Locale locale) {
-        Thread ping = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                while (true) {
-                    if(!lock.isLocked()) {
-                        try {
-                            send(user, socket);
-                            ServerPacket serverPacket = receive(socket);
-                            if (serverPacket.isPing()) {
-                                if (users.equals(serverPacket.getOnlineUsers()) && passengers.equals(serverPacket.getPassengers())) {
-                                    continue;
-                                } else {
-                                    users = serverPacket.getOnlineUsers();
-                                    usersTableModel.setData(getUsersData());
-                                    usersTable.repaint();
-                                    passengers = serverPacket.getPassengers();
-                                    objectsTableModel.setData(getObjectsData());
-                                    objectsTable.repaint();
+        Thread ping = new Thread(() -> {
+            while (true) {
+                if(!lock.isLocked()) {
+                    try {
+                        send(user, socket);
+                        ServerPacket serverPacket = receive(socket);
+                        if (serverPacket.isPing()) {
+                            if (users.equals(serverPacket.getOnlineUsers()) && passengers.equals(serverPacket.getPassengers())) {
+                                continue;
+                            } else {
+                                users = serverPacket.getOnlineUsers();
+                                usersTableModel.setData(getUsersData());
+                                usersTable.repaint();
+                                passengers = serverPacket.getPassengers();
+                                objectsTableModel.setData(getObjectsData());
+                                objectsTable.repaint();
+                                ConcurrentSkipListSet<String> usernames = new ConcurrentSkipListSet<>();
+                                for (Human human: passengers) {
+                                    usernames.add(human.getUsername());
                                 }
+                                for (String username: usernames) {
+                                    if(!usersColours.containsKey(username)){
+                                        usersColours.put(username, Color.getHSBColor((float)(Math.random()*256),(float)(Math.random()*256),(float)(Math.random()*256)));
+                                    }
+                                }
+                                updateSmiles();
                             }
-                        } catch (IOException e) {
-                            printMeme();
                         }
+                    } catch (IOException e) {
+                        StartPage.printMeme();
                     }
                 }
             }
         });
 
         //TODO uncomment this
-        //onStart(user,socket);
-        //ping.start();
+        onStart(user,socket);
+        ping.start();
         Font font = new Font("Arial", Font.BOLD, 14);
         bundle = ResourceBundle.getBundle("Bundle", locale);
         setTitle(bundle.getString("personal_page"));
@@ -88,7 +104,7 @@ public class PersonalPage extends JFrame {
 
         Box mainBox = Box.createVerticalBox();
 
-        mainBox.add(Box.createVerticalStrut(20));
+        mainBox.add(Box.createVerticalStrut(10));
 
         Box topBox = Box.createHorizontalBox();
 
@@ -146,7 +162,7 @@ public class PersonalPage extends JFrame {
         topBox.add(topPanel);
 
         mainBox.add(topBox);
-        mainBox.add(Box.createVerticalStrut(20));
+        mainBox.add(Box.createVerticalStrut(10));
 
         Box bottomBox = Box.createHorizontalBox();
 
@@ -194,7 +210,7 @@ public class PersonalPage extends JFrame {
 
         objectsBox.add(objectsLabel);
         //TODO uncomment this
-        /*objectsTableModel = new MyTableModel(new String[]{
+        objectsTableModel = new MyTableModel(new String[]{
                 bundle.getString("name"),
                 bundle.getString("time_until_hunger"),
                 bundle.getString("food_name"),
@@ -202,7 +218,7 @@ public class PersonalPage extends JFrame {
                 bundle.getString("room"),
                 bundle.getString("user"),
                 bundle.getString("data")
-        }, getObjectsData());*/
+        }, getObjectsData());
         objectsTable = new JTable(objectsTableModel);
 
         objectsTable.setFillsViewportHeight(true);
@@ -222,7 +238,7 @@ public class PersonalPage extends JFrame {
         usersBox.setPreferredSize(usersBox.getMinimumSize());
 
         //TODO uncomment this
-        //usersTableModel = new MyTableModel(new String[]{bundle.getString("user")}, getUsersData());
+        usersTableModel = new MyTableModel(new String[]{bundle.getString("user")}, getUsersData());
         usersTable = new JTable(usersTableModel);
         usersTable.setFillsViewportHeight(true);
         JScrollPane usersScroll = new JScrollPane(usersTable);
@@ -235,10 +251,9 @@ public class PersonalPage extends JFrame {
 
         mainBox.add(bottomBox);
 
-        mainBox.add(Box.createHorizontalStrut(20));
+        mainBox.add(Box.createHorizontalStrut(10));
         messageLabel = new JLabel("", SwingConstants.CENTER);
         mainBox.add(messageLabel);
-        mainBox.add(Box.createVerticalStrut(20));
         languageComboBox.addActionListener(actionEvent -> updateLanguage(languageComboBox.getItemAt(languageComboBox.getSelectedIndex()), user.getLogin()));
 
         sortComboBox.addActionListener(actionEvent -> {
@@ -247,46 +262,53 @@ public class PersonalPage extends JFrame {
             objectsTable.repaint();
         });
 
-        //Canvas canvas = new Draw(100, 37, Color.RED, 50, 80);
-        /*Canvas canvas = new Canvas();
-        canvas.setSize(900, 500);
-        mainBox.add(canvas);
-        BufferStrategy bufferStrategy = canvas.getBufferStrategy();
-        Graphics g = bufferStrategy.getDrawGraphics();
-        Draw draw = new Draw();*/
 
-        /*BufferedImage image = new BufferedImage(1080, 400, BufferedImage.TYPE_INT_RGB);
-        Graphics g = image.getGraphics();
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, image.getWidth(), image.getHeight());
-        g.setColor(Color.BLACK);
-        //Label for each room
-        g.drawRect(x0, y0, x1/2, y1/2);
-        g.drawRect(x1/2, y1/2, x1, y1);
-        g.drawRect(x0, y0, x1, y1);
-        Room room = new Room(rocket.room.Type.CABIN, "Кабина");
-        smile2room(g, Color.RED, 0, 0, room);
-        smile2room(g, Color.BLUE, 0, 50, room);
-        JLabel jl = new JLabel(new ImageIcon(image), SwingConstants.LEFT);
-        jl.setBounds(0, 0, 1080, 400);
-        JScrollPane jsp = new JScrollPane(jl);
-        mainBox.add(jsp);*/
+        JPanel rooms = new JPanel(new GridLayout(2, 4));
+        JLabel cabinLabel = new JLabel("Кабина", SwingConstants.CENTER);
+        JLabel foodstorageLabel = new JLabel("Пищевой блок", SwingConstants.CENTER);
+        JLabel engineLabel = new JLabel("Тех отсек", SwingConstants.CENTER);
+        JLabel storageLabel = new JLabel("Склад", SwingConstants.CENTER);
+        rooms.add(cabinLabel);
+        rooms.add(foodstorageLabel);
+        rooms.add(engineLabel);
+        rooms.add(storageLabel);
 
-        Smile smile = new Smile(Color.RED, 20, 5);
-        //smile.setBounds(0, 0, 100, 100);
-        //smile.setSize(100, 100);
-        Smile smile1 = new Smile(Color.BLUE, 35, 2);
-        Room room = new Room(rocket.room.Type.CABIN, "Кабина");
-        JPanel rooms = new JPanel();
-        Box cabin = Box.createHorizontalBox();
-        cabin.setBounds(0, 0, 300, 100);
-        //cabin.setSize(300, 100);
-        /*if (room.getType() == rocket.room.Type.CABIN) {
-             cabin.add(smile);
-             cabin.add(smile1);
-        }*/
-        cabin.add(smile);
+        for (Human human : passengers) {
+            Room room = human.getRoom();
+            int thumbLength = 0;
+            if(human instanceof Fool){
+                thumbLength = ((Fool) human).getThumbLength();
+            }
+            String food = null;
+            if(human instanceof Donut){
+                food = ((Donut) human).getFoodName();
+            }
+
+
+            Smile smile = new Smile(usersColours.get(human.getUsername()), human.getTimeUntilHunger(), thumbLength, human.getName(), human.getUsername(), food, room);
+            smiles.add(smile);
+            switch (room.getType()){
+                case FOODSTORAGE:
+                    foodStorage.add(smile, JComponent.CENTER_ALIGNMENT);
+                    break;
+                case CABIN:
+                    cabin.add(smile, JComponent.CENTER_ALIGNMENT);
+                    break;
+                case ENGINE:
+                    engine.add(smile, JComponent.CENTER_ALIGNMENT);
+                    break;
+                case STORAGE:
+                    storage.add(smile, JComponent.CENTER_ALIGNMENT);
+                    break;
+            }
+        }
+
         rooms.add(cabin);
+        rooms.add(foodStorage);
+        rooms.add(engine);
+        rooms.add(storage);
+
+
         //rooms.add(cabin);
         //rooms.add(cabin);
         //rooms.setBounds(0, 600, 900, 300);
@@ -296,23 +318,40 @@ public class PersonalPage extends JFrame {
         //scrollPane.add(rooms);
         mainBox.add(rooms);
 
-        /*Canvas canvas1 = new Draw(100, 37, Color.BLUE, 10, 5);
-        mainBox.add(canvas1);*/
-        /*addMouseListener(new MouseAdapter() {
+
+        addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getX() > 0 && e.getX() < 400) {
-                    if (e.getY() > 0 && e.getY() < 200) {
-                        messageLabel.setText("");
-                        nameTextField.setText();
-                        timeUntilHungerTextField.setText();
-                        foodNameTextField.setText();
-                        roomTextFiled.setText();
-                        thumbLengthTextField.setText();
+                for (Smile smile : smiles) {
+                    if (Math.abs(e.getLocationOnScreen().x - smile.getLocationOnScreen().x-smile.getWidth()/2) < 32) {
+                        if (Math.abs(e.getLocationOnScreen().y - smile.getLocationOnScreen().y- smile.getHeight()/2) < 32) {
+                            messageLabel.setText("");
+                            nameTextField.setText(smile.getName());
+                            timeUntilHungerTextField.setText(String.valueOf(smile.getTimeUntilHunger()));
+                            foodNameTextField.setText(smile.getName());
+                            roomTextFiled.setText(smile.getRoom().toString());
+                            thumbLengthTextField.setText(String.valueOf((smile.getThumbLength())));
+                            Object[][] data = ((MyTableModel) objectsTable.getModel()).getData();
+                            int kek = 0;
+                            for (int i = 0; i < data.length; i++) {
+                                if((data[i][0].toString()).equals(smile.getName())&&data[i][5].toString().equals(smile.getUser())){
+                                    kek = i;
+                                    break;
+                                }
+                            }
+                            ListSelectionModel selectionModel = objectsTable.getSelectionModel();
+                            selectionModel.setSelectionInterval(kek, kek);
+                        }
                     }
                 }
             }
-        });*/
+        });
+
+        back.addActionListener(e -> {
+            StartPage window = new StartPage(socket, (Locale) languageComboBox.getSelectedItem());
+            window.setVisible(true);
+            dispose();
+        });
 
         back.addActionListener(e -> {
             StartPage window = new StartPage(socket, (Locale) languageComboBox.getSelectedItem());
@@ -330,7 +369,7 @@ public class PersonalPage extends JFrame {
         });
 
         //TODO uncomment this
-        /*sendButton.addActionListener(e -> {
+        sendButton.addActionListener(e -> {
             messageLabel.setText("");
             lock.lock();
             try {
@@ -350,37 +389,24 @@ public class PersonalPage extends JFrame {
                     thumbLength = 0;
                 }
                 String username = user.getLogin();
-                Room room;
+                Room tempRoom;
                 switch (roomTextFiled.getText()) {
                     case "Склад":
-                        room = new Room(rocket.room.Type.STORAGE, "Склад");
+                        tempRoom = new Room(rocket.room.Type.STORAGE, "Склад");
                         break;
                     case "Пищевой блок":
-                        room = new Room(rocket.room.Type.FOODSTORAGE, "Пищевой блок");
+                        tempRoom = new Room(rocket.room.Type.FOODSTORAGE, "Пищевой блок");
                         break;
                     case "Кабина":
-                        room = new Room(rocket.room.Type.CABIN, "Кабина");
+                        tempRoom = new Room(rocket.room.Type.CABIN, "Кабина");
                         break;
                     case "Тех отсек":
-                        room = new Room(rocket.room.Type.ENGINE, "Тех отсек");
+                        tempRoom = new Room(rocket.room.Type.ENGINE, "Тех отсек");
                         break;
                     default:
                         throw new ParseException(1);
                 }
-                if (timeUntilHunger < 1) throw new ParseException(1);
-                if (name.isEmpty()) {
-                    human = new Human(timeUntilHunger, username, room);
-                } else if (thumbLength > 0) {
-                    if (!foodName.isEmpty()) {
-                        human = new Fool(name, timeUntilHunger, room, foodName, thumbLength, username);
-                    } else {
-                        human = new Fool(name, timeUntilHunger, room, thumbLength, username);
-                    }
-                } else if (!foodName.isEmpty()) {
-                    human = new Donut(name, timeUntilHunger, room, foodName, username);
-                } else {
-                    human = new Human(name, timeUntilHunger, username, room);
-                }
+                human = getHuman(name, timeUntilHunger, foodName, thumbLength, username, tempRoom);
                 boolean isCommandEdit = false;
                 switch (Objects.requireNonNull(commandComboBox.getSelectedItem()).toString()) {
                     case "edit":
@@ -462,19 +488,48 @@ public class PersonalPage extends JFrame {
                     usersTable.repaint();
                     passengers = serverPacket.getPassengers();
                     objectsTableModel.setData(getObjectsData());
+                    ConcurrentSkipListSet<String> usernames = new ConcurrentSkipListSet<>();
+                    for (Human humankek: passengers) {
+                        usernames.add(humankek.getUsername());
+                    }
+                    for (String usernamekek: usernames) {
+                        if(!usersColours.containsKey(usernamekek)){
+                            usersColours.put(usernamekek, Color.getHSBColor((float)(Math.random()*256),(float)(Math.random()*256),(float)(Math.random()*256)));
+                        }
+                    }
+                    updateSmiles();
                 }
                 objectsTable.repaint();
             } catch (ParseException ex) {
                 messageLabel.setText("Wrong input!");
             } catch (IOException ex) {
-                printMeme();
+                StartPage.printMeme();
                 dispose();
             }
             lock.unlock();
-        });*/
+        });
         setContentPane(mainBox);
 
 
+    }
+
+    public static Human getHuman(String name, int timeUntilHunger, String foodName, int thumbLength, String username, Room tempRoom) throws ParseException {
+        Human human;
+        if (timeUntilHunger < 1) throw new ParseException(1);
+        if (name.isEmpty()) {
+            human = new Human(timeUntilHunger, username, tempRoom);
+        } else if (thumbLength > 0) {
+            if (!foodName.isEmpty()) {
+                human = new Fool(name, timeUntilHunger, tempRoom, foodName, thumbLength, username);
+            } else {
+                human = new Fool(name, timeUntilHunger, tempRoom, thumbLength, username);
+            }
+        } else if (!foodName.isEmpty()) {
+            human = new Donut(name, timeUntilHunger, tempRoom, foodName, username);
+        } else {
+            human = new Human(name, timeUntilHunger, username, tempRoom);
+        }
+        return human;
     }
 
     private void updateLanguage(Locale locale, String username) {
@@ -539,18 +594,31 @@ public class PersonalPage extends JFrame {
 
 
     private void onStart(User user, DatagramSocket socket){
+        lock.lock();
         try {
             send(user, socket);
             ServerPacket serverPacket = receive(socket);
             if (serverPacket.isPing()) {
                 passengers = serverPacket.getPassengers();
                 users = serverPacket.getOnlineUsers();
+                ConcurrentSkipListSet<String> usernames = new ConcurrentSkipListSet<>();
+                for (Human human: passengers) {
+                    usernames.add(human.getUsername());
+                }
+                for (String username: usernames) {
+                    usersColours.put(username, Color.getHSBColor((float)(Math.random()*256),(float)(Math.random()*256),(float)(Math.random()*256)));
+                }
             }else{
                 System.out.println("Somehow server did it");
             }
         } catch (IOException e) {
             printMeme();
         }
+        lock.unlock();
+    }
+
+    private void checkColors(){
+
     }
 
     private Object[][] getObjectsData(){
@@ -645,7 +713,12 @@ public class PersonalPage extends JFrame {
     }
 
     private Object[][] getUsersData(){
-        return new Object[][]{users.toArray()};
+        Object[][] data = new Object[users.size()][1];
+        Object[] usernames = users.toArray();
+        for(int i = 0; i<users.size(); i++){
+            data[i][0] = usernames[i];
+        }
+        return data;
     }
 
     private void printMeme(){
@@ -662,6 +735,42 @@ public class PersonalPage extends JFrame {
         for (Meme lol :
                 app) {
             lol.setVisible(true);
+        }
+    }
+
+    private void updateSmiles(){
+        for (Smile smile :smiles) {
+            smile.setVisible(false);
+        }
+        smiles.removeAll(smiles);
+        for (Human human : passengers) {
+            Room room = human.getRoom();
+            int thumbLength = 0;
+            if(human instanceof Fool){
+                thumbLength = ((Fool) human).getThumbLength();
+            }
+            String food = null;
+            if(human instanceof Donut){
+                food = ((Donut) human).getFoodName();
+            }
+
+
+            Smile smile = new Smile(usersColours.get(human.getUsername()), human.getTimeUntilHunger(), thumbLength, human.getName(), human.getUsername(), food, room);
+            smiles.add(smile);
+            switch (room.getType()){
+                case FOODSTORAGE:
+                    foodStorage.add(smile, JComponent.CENTER_ALIGNMENT);
+                    break;
+                case CABIN:
+                    cabin.add(smile, JComponent.CENTER_ALIGNMENT);
+                    break;
+                case ENGINE:
+                    engine.add(smile, JComponent.CENTER_ALIGNMENT);
+                    break;
+                case STORAGE:
+                    storage.add(smile, JComponent.CENTER_ALIGNMENT);
+                    break;
+            }
         }
     }
 }

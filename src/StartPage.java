@@ -134,14 +134,14 @@ public class StartPage extends JFrame {
         signUpButton.addActionListener(actionEvent ->{
             String login = loginInput.getText();
             //TODO uncomment this
-            /*try {
+            try {
                 send(login, null, null, socket);
                 messageLabel.setForeground(Color.BLACK);
                 messageLabel.setText(receive(socket));
             } catch (IOException e) {
                 printMeme();
                 return;
-            }*/
+            }
         });
 
         exitButton.addActionListener(actionEvent -> System.exit(0));
@@ -201,7 +201,7 @@ public class StartPage extends JFrame {
         infoLabel.setText(bundle.getString("info"));
         setTitle(bundle.getString("start_page"));
     }
-    private static void printMeme(){
+    public static void printMeme(){
         Meme[] app = new Meme[0];
         try {
             app = new Meme[]{new Meme(0, 0),
