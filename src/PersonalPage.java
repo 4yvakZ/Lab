@@ -1,19 +1,27 @@
 import activity.ClientPacket;
 import activity.ServerPacket;
+import org.json.simple.parser.ParseException;
 import people.Donut;
 import people.Fool;
 import people.Human;
+import rocket.room.Room;
+import rocket.room.Type;
 import security.User;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Comparator;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.locks.ReentrantLock;
@@ -239,6 +247,72 @@ public class PersonalPage extends JFrame {
             objectsTable.repaint();
         });
 
+        //Canvas canvas = new Draw(100, 37, Color.RED, 50, 80);
+        /*Canvas canvas = new Canvas();
+        canvas.setSize(900, 500);
+        mainBox.add(canvas);
+        BufferStrategy bufferStrategy = canvas.getBufferStrategy();
+        Graphics g = bufferStrategy.getDrawGraphics();
+        Draw draw = new Draw();*/
+
+        /*BufferedImage image = new BufferedImage(1080, 400, BufferedImage.TYPE_INT_RGB);
+        Graphics g = image.getGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        g.setColor(Color.BLACK);
+        //Label for each room
+        g.drawRect(x0, y0, x1/2, y1/2);
+        g.drawRect(x1/2, y1/2, x1, y1);
+        g.drawRect(x0, y0, x1, y1);
+        Room room = new Room(rocket.room.Type.CABIN, "Кабина");
+        smile2room(g, Color.RED, 0, 0, room);
+        smile2room(g, Color.BLUE, 0, 50, room);
+        JLabel jl = new JLabel(new ImageIcon(image), SwingConstants.LEFT);
+        jl.setBounds(0, 0, 1080, 400);
+        JScrollPane jsp = new JScrollPane(jl);
+        mainBox.add(jsp);*/
+
+        Smile smile = new Smile(Color.RED, 20, 5);
+        //smile.setBounds(0, 0, 100, 100);
+        //smile.setSize(100, 100);
+        Smile smile1 = new Smile(Color.BLUE, 35, 2);
+        Room room = new Room(rocket.room.Type.CABIN, "Кабина");
+        JPanel rooms = new JPanel();
+        Box cabin = Box.createHorizontalBox();
+        cabin.setBounds(0, 0, 300, 100);
+        //cabin.setSize(300, 100);
+        /*if (room.getType() == rocket.room.Type.CABIN) {
+             cabin.add(smile);
+             cabin.add(smile1);
+        }*/
+        cabin.add(smile);
+        rooms.add(cabin);
+        //rooms.add(cabin);
+        //rooms.add(cabin);
+        //rooms.setBounds(0, 600, 900, 300);
+        //rooms.setSize(getWidth(), 300);
+        //JScrollPane scrollPane = new JScrollPane();
+        //scrollPane.setBounds(0, 0, 900, 300);
+        //scrollPane.add(rooms);
+        mainBox.add(rooms);
+
+        /*Canvas canvas1 = new Draw(100, 37, Color.BLUE, 10, 5);
+        mainBox.add(canvas1);*/
+        /*addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getX() > 0 && e.getX() < 400) {
+                    if (e.getY() > 0 && e.getY() < 200) {
+                        messageLabel.setText("");
+                        nameTextField.setText();
+                        timeUntilHungerTextField.setText();
+                        foodNameTextField.setText();
+                        roomTextFiled.setText();
+                        thumbLengthTextField.setText();
+                    }
+                }
+            }
+        });*/
 
         back.addActionListener(e -> {
             StartPage window = new StartPage(socket, (Locale) languageComboBox.getSelectedItem());
@@ -462,6 +536,7 @@ public class PersonalPage extends JFrame {
         }
         return serverPacket;
     }
+
 
     private void onStart(User user, DatagramSocket socket){
         try {
