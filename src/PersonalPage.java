@@ -1,10 +1,8 @@
 import activity.ClientPacket;
 import activity.ServerPacket;
-import org.json.simple.parser.ParseException;
 import people.Donut;
 import people.Fool;
 import people.Human;
-import rocket.room.Room;
 import security.User;
 
 import javax.swing.*;
@@ -16,7 +14,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Comparator;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.locks.ReentrantLock;
@@ -40,6 +37,8 @@ public class PersonalPage extends JFrame {
     private ReentrantLock lock = new ReentrantLock();
     private JComboBox<String> sortComboBox;
     private int sortingIndex = 0;
+    private int x0=0, x1=1080, y0=0, y1=400;
+    private int k1=0, k2=0, k3=0, k4=0;
     public PersonalPage(User user, DatagramSocket socket, Locale locale) {
         Thread ping = new Thread(new Runnable() {
 
@@ -240,25 +239,6 @@ public class PersonalPage extends JFrame {
             objectsTable.repaint();
         });
 
-        Canvas canvas = new Draw();
-        canvas.setSize(900, 500);
-        mainBox.add(canvas);
-        Draw draw = new Draw();
-        Room room = new Room(rocket.room.Type.CABIN, "Кабина");
-        draw.smile2room(Color.RED, 0, 0, room);
-        draw.smile2room(Color.BLUE, 0, 50, room);
-
-
-        /*addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getX() > 0 && e.getX() < 400) {
-                    if (e.getY() > 0 && e.getY() < 200) {
-                        JOptionPane.showMessageDialog(null, "param");
-                    }
-                }
-            }
-        });*/
 
         back.addActionListener(e -> {
             StartPage window = new StartPage(socket, (Locale) languageComboBox.getSelectedItem());
